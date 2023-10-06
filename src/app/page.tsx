@@ -2,6 +2,8 @@
 import ReactFlow, { Background, ReactFlowProvider, useNodesState, useEdgesState, Node, Edge, BackgroundVariant } from "reactflow";
 import { PIDNodes, nodeTypes } from "./Flows/nodes";
 import LineChart from "./components/Tank/DataTrend";
+import TankPump from "./components/TestGPT/PumpTank";
+import config from "tailwindConfig";
 import "reactflow/dist/style.css";
 import "./globals.css";
 
@@ -16,7 +18,7 @@ export default function Home() {
           style={{
             width: "100vw",
             height: "100vw",
-            backgroundColor: "gray",
+           background: `${config.theme?.extend?.colors['display-bg-tabs']}`
           }}
         >
           <Background variant={BackgroundVariant.Cross} />
@@ -29,7 +31,7 @@ export default function Home() {
           />
         </div>
         <a>
-
+          <TankPump/>
         </a>
       </ReactFlowProvider>
       <LineChart/>

@@ -1,25 +1,28 @@
 import React, { useMemo } from "react";
 import { LinearGaugeProps } from "./LinearGauge.type";
-import { getColorForValue } from "./LinearGauge.utils";
-import { needleStyle } from "./LinearGauge.style";
+import { calculateThresholdBackground } from "./LinearGauge.utils";
+import { needleStyle, thresholdsStyle } from "./LinearGauge.style";
+import tailwindConfig from 'tailwindConfig'
 import "./LinearGauge.css"
 const LinearGauge: React.FC<LinearGaugeProps> = ({
   value,
+  units= 'lt/s',
   width = '80px',
   height = '300px',
   fontSize = '3rem',
   fontFamily = 'Arial, sans-serif',
   borderColor = 'black',
   borderWidth = '2px',
-  thresholds = [
-    { max: 20, color: "#cccccc" },
-    { max: 40, color: "#999999" },
-    { max: 70, color: "#666666" },
-    { max: 90, color: "#333333" },
-    { max: 100, color: "#000000" },
-  ],
+  thresholds = thresholdsStyle([
+    { max: -30, classColor: "", identifier: "Normal" },
+    { max: -20, classColor: "", identifier: "Low Priority Alarm" },
+    { max: -10, classColor: "", identifier: "High Priority Alarm" },
+    { max: 70, classColor: "", identifier: "Normal" },
+    { max: 90, classColor: "", identifier: "Medium Priority Alarm" },
+    { max: 100, classColor: "", identifier: "High Priority Alarm" },
+  ], true)
+  ,
 }) => {
-
   const needleSize: number = useMemo(() => parseInt(width) * 0.3, [width]);
   const setPointSize: number = parseInt(width) / 2;
   const setPointStyle = {
@@ -32,16 +35,8 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
     transform: "translate(-50%, 50%) rotate(45deg)",
     zIndex: 2,
   };
-  const thresholdBackground: string = useMemo(() => {
-    let colors = thresholds.map((t) => t.color);
-    let segments = [];
-    for (let i = 0; i < colors.length; i++) {
-      segments.push(
-        `${colors[i]} ${i > 0 ? thresholds[i - 1].max : 0}%, ${colors[i]} ${thresholds[i].max}%`
-      );
-    }
-    return `linear-gradient(to top, ${segments.join(", ")})`;
-  }, [thresholds]);
+  const thresholdBackground = calculateThresholdBackground(thresholds)
+
 
   return (
     <div className="relative flex flex-col-reverse justify-between border-solid"
@@ -65,7 +60,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
           bottom: `${value - 1}%`,
         }}
       >
-        <div className="text-xl text-black" style={{
+        <div className="text-xl text-black font-mono" style={{
           fontSize,
         }}>{value}</div>
       </div>
@@ -77,12 +72,12 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
           fontSize: '2rem',
         }}
       >
-        lt
+        {units}
       </div>
 
       <div style={setPointStyle}></div>
 
-      <div style={needleStyle(needleSize, getColorForValue(value, thresholds), value)}></div>
+      <div style={needleStyle(needleSize, tailwindConfig.theme.extend.colors['primary-indicator-fg'], value)}></div>
     </div>
   );
 }
