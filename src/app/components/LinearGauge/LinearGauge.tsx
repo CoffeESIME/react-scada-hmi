@@ -6,7 +6,8 @@ import tailwindConfig from 'tailwindConfig'
 import "./LinearGauge.css"
 const LinearGauge: React.FC<LinearGaugeProps> = ({
   value,
-  units= 'lt/s',
+  alarmStatus = false,
+  units = 'lt/s',
   width = '80px',
   height = '300px',
   fontSize = '3rem',
@@ -15,12 +16,12 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
   borderWidth = '2px',
   thresholds = thresholdsStyle([
     { max: -30, classColor: "", identifier: "Normal" },
-    { max: -20, classColor: "", identifier: "Low Priority Alarm" },
-    { max: -10, classColor: "", identifier: "High Priority Alarm" },
+    { max: -20, classColor: "", identifier: "High Priority Alarm" },
+    { max: -10, classColor: "", identifier: "Medium Priority Alarm" },
     { max: 70, classColor: "", identifier: "Normal" },
     { max: 90, classColor: "", identifier: "Medium Priority Alarm" },
     { max: 100, classColor: "", identifier: "High Priority Alarm" },
-  ], true)
+  ], alarmStatus)
   ,
 }) => {
   const needleSize: number = useMemo(() => parseInt(width) * 0.3, [width]);
@@ -77,7 +78,8 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
 
       <div style={setPointStyle}></div>
 
-      <div style={needleStyle(needleSize, tailwindConfig.theme.extend.colors['primary-indicator-fg'], value)}></div>
+      <div style={needleStyle(needleSize, (tailwindConfig.theme?.extend?.colors as any)['primary-indicator-fg'] || '#defaultColorValue'
+        , value)}></div>
     </div>
   );
 }

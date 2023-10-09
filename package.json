@@ -9,16 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tremor/react": "^3.8.2",
+    "apexcharts": "^3.43.0",
     "d3": "^7.8.5",
     "next": "latest",
+    "plotly.js": "^2.26.2",
     "react": "latest",
+    "react-apexcharts": "^1.4.1",
     "react-dom": "latest",
+    "react-plotly.js": "^2.6.0",
     "reactflow": "^11.9.2"
   },
   "devDependencies": {
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@types/react-plotly.js": "^2.6.1",
     "autoprefixer": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",

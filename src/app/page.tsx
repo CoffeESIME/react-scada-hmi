@@ -1,13 +1,13 @@
 "use client"
 import ReactFlow, { Background, ReactFlowProvider, useNodesState, useEdgesState, Node, Edge, BackgroundVariant } from "reactflow";
 import { PIDNodes, nodeTypes } from "./Flows/nodes";
-import LineChart from "./components/Tank/DataTrend";
-import TankPump from "./components/TestGPT/PumpTank";
 import config from "tailwindConfig";
+import { MotorIcon } from "./components/Motors/MotorOne";
 import "reactflow/dist/style.css";
 import "./globals.css";
 
 export default function Home() {
+  
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>(PIDNodes);
   const [edges, setEdges, onEdgeChange] = useEdgesState<Edge[]>([])
   return (
@@ -18,7 +18,8 @@ export default function Home() {
           style={{
             width: "100vw",
             height: "100vw",
-           background: `${config.theme?.extend?.colors['display-bg-tabs']}`
+            
+           background: `${(config.theme?.extend?.colors as any)['display-bg-tabs']}`
           }}
         >
           <Background variant={BackgroundVariant.Cross} />
@@ -30,11 +31,8 @@ export default function Home() {
             onEdgesChange={onEdgeChange}
           />
         </div>
-        <a>
-          <TankPump/>
-        </a>
       </ReactFlowProvider>
-      <LineChart/>
+      <MotorIcon/>
     </main>
   )
 }
