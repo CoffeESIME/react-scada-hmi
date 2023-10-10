@@ -8,9 +8,9 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
   value,
   alarmStatus = false,
   units = 'lt/s',
-  width = '80px',
-  height = '300px',
-  fontSize = '3rem',
+  width = '20px',
+  height = '100px',
+  fontSize = '12px',
   fontFamily = 'Arial, sans-serif',
   borderColor = 'black',
   borderWidth = '2px',
@@ -69,8 +69,8 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
       <div
         className="absolute left-1/2 transform -translate-x-1/2 text-7xlxl text-black"
         style={{
-          bottom: "-20%",
-          fontSize: '2rem',
+          bottom: "-30%",
+          fontSize: '12px',
         }}
       >
         {units}

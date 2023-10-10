@@ -7,7 +7,7 @@ export const needleStyle = (needleSize: number, color: string, value: number) =>
     borderBottom: `${needleSize}px solid ${color}`,
     position: "absolute" as "absolute",
     bottom: `${value - 1}%`,
-    left: "-50%",
+    left: "-70%",
     transform: "rotate(90deg)",
     zIndex: 3,
 });

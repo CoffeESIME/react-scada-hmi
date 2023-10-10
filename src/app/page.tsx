@@ -2,6 +2,7 @@
 import ReactFlow, { Background, ReactFlowProvider, useNodesState, useEdgesState, Node, Edge, BackgroundVariant } from "reactflow";
 import { PIDNodes, nodeTypes } from "./Flows/nodes";
 import config from "tailwindConfig";
+import { ControlDataCard } from "./components/ControlDataCard/ControlDataCard";
 import "reactflow/dist/style.css";
 import "./globals.css";
 
@@ -17,7 +18,6 @@ export default function Home() {
           style={{
             width: "100vw",
             height: "100vw",
-            
            background: `${(config.theme?.extend?.colors as any)['display-bg-tabs']}`
           }}
         >

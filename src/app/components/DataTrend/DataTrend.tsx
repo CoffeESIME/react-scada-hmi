@@ -33,6 +33,6 @@ export const DataTrend: FC = () => {
     ]);
 
     return (
-        <ApexCharts options={options} series={series} type="line" width={500} height={250} />
+        <ApexCharts options={options} series={series} type="line" width={300} height={170} />
     );
 };

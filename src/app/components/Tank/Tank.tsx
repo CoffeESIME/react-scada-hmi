@@ -9,8 +9,8 @@ interface TankProps {
 }
 
 export const Tank: React.FC<TankProps> = ({
-    width = 600,
-    height = 800,
+    width = 300,
+    height = 400,
     fillColor = "#808080",
     strokeColor = "#000",
     strokeWidth = 1,

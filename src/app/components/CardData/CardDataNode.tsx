@@ -2,7 +2,7 @@ import { Node, NodeProps } from 'reactflow';
 import { CardData } from './CardData';
 
 type CardDataNodeData = {
-    info: string;
+    label: string[]
 };
 
 type CardDataNodeProps = NodeProps & {
@@ -10,5 +10,5 @@ type CardDataNodeProps = NodeProps & {
 };
 
 export const CardDataNode: React.FC<CardDataNodeProps> = ({ data }) => {
-    return <CardData info={data.info} />;
+    return <CardData label={data.label} />;
 }

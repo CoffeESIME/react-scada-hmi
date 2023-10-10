@@ -10,7 +10,7 @@ type ValveIconProps = {
     rotation?: number;
 };
 
-export const ValveIcon: React.FC<ValveIconProps> = ({ size = 90, state = 'Open', rotation }) => {
+export const ValveIcon: React.FC<ValveIconProps> = ({ size = 50, state = 'Open', rotation }) => {
     let valveEL;
     switch (state) {
         case 'Open':

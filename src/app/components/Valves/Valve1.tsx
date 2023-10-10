@@ -9,7 +9,7 @@ type ValveIconProps = {
     state: 'Open' | 'Closed' | 'Transition';
 };
 
-export const ValveIcon1: React.FC<ValveIconProps> = ({ size = 90, state = 'Open' }) => {
+export const ValveIcon1: React.FC<ValveIconProps> = ({ size = 40, state = 'Open' }) => {
     let valveEL;
     switch (state) {
         case 'Open':
