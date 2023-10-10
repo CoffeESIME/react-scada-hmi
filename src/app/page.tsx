@@ -2,7 +2,6 @@
 import ReactFlow, { Background, ReactFlowProvider, useNodesState, useEdgesState, Node, Edge, BackgroundVariant } from "reactflow";
 import { PIDNodes, nodeTypes } from "./Flows/nodes";
 import config from "tailwindConfig";
-import { MotorIcon } from "./components/Motors/MotorOne";
 import "reactflow/dist/style.css";
 import "./globals.css";
 
@@ -32,7 +31,6 @@ export default function Home() {
           />
         </div>
       </ReactFlowProvider>
-      <MotorIcon/>
     </main>
   )
 }
