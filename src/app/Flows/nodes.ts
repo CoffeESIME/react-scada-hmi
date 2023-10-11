@@ -5,8 +5,9 @@ import MotorNode from "../components/Motors/MotorNode"
 import ValveNode from "../components/Valves/ValveNode"
 import { CardDataNode } from "../components/CardData/CardDataNode"
 import { ControlDataCardNode } from "../components/ControlDataCard/ControlDataCardNode"
+import { BoxCardNode } from "../components/Boxes/BoxNode"
 import { Node, NodeTypes } from "reactflow";
-
+import { thresholdsStyle } from "../components/LinearGauge/LinearGauge.style"
 
 export const nodeTypes: NodeTypes = {
     linearGauge: LinearGaugeNode,
@@ -16,46 +17,46 @@ export const nodeTypes: NodeTypes = {
     valve: ValveNode,
     card: CardDataNode,
     controlCard: ControlDataCardNode,
-
+    box: BoxCardNode,
 }
 
-const dataTrends: Node[]=[
+const dataTrends: Node[] = [
     {
         id: "dataTrend1",
         type: "dataTrendLine",
-        position: { x: 0, y: 50 },
+        position: { x: 15, y: 70 },
         data: {},
         parentNode: "tank"
     },
     {
         id: "dataTrend2",
         type: "dataTrendLine",
-        position: { x: 0, y: 190 },
+        position: { x: 15, y: 220 },
         data: {},
         parentNode: "tank"
     },
     {
         id: "dataTrend3",
         type: "dataTrendLine",
-        position: { x: 10, y: 100 },
+        position: { x: 10, y: 150 },
         data: {},
     },
     {
         id: "dataTrend4",
         type: "dataTrendLine",
-        position: { x: 10, y: 300 },
+        position: { x: 10, y: 420 },
         data: {},
     },
     {
         id: "dataTrend5",
         type: "dataTrendLine",
-        position: { x: 10, y: 500 },
+        position: { x: 10, y: 690 },
         data: {},
     },
     {
         id: "dataTrend6",
         type: "dataTrendLine",
-        position: { x: 500, y: 500 },
+        position: { x: 800, y: 670 },
         data: {},
     },
 ]
@@ -64,55 +65,55 @@ const navButtons: Node[] = [
     {
         id: "buttonCard1",
         type: "card",
-        position: { x: 10, y: 1000 },
+        position: { x: 30, y: 900 },
         data: { label: ['Main', "Menu"] },
     },
     {
         id: "buttonCard2",
         type: "card",
-        position: { x: 130, y: 1000 },
+        position: { x: 160, y: 900 },
         data: { label: ['Level 1', "Reaction", "Overview"] },
     },
     {
         id: "buttonCard3",
         type: "card",
-        position: { x: 250, y: 1000 },
+        position: { x: 290, y: 900 },
         data: { label: ['Trend', "Control"] },
     },
     {
         id: "buttonCard4",
         type: "card",
-        position: { x: 370, y: 1000 },
+        position: { x: 420, y: 900 },
         data: { label: ['Feed', "System"] },
     },
     {
         id: "buttonCard5",
         type: "card",
-        position: { x: 490, y: 1000 },
+        position: { x: 550, y: 900 },
         data: { label: ['Product', "Recovery"] },
     },
     {
         id: "buttonCard6",
         type: "card",
-        position: { x: 610, y: 1000 },
+        position: { x: 680, y: 900 },
         data: { label: ['M5', "Startup", "Overlay"] },
     },
     {
         id: "buttonCard7",
         type: "card",
-        position: { x: 730, y: 1000 },
+        position: { x: 810, y: 900 },
         data: { label: ['M5', "Sequence", "Overlay"] },
     },
     {
         id: "buttonCard8",
         type: "card",
-        position: { x: 850, y: 1000 },
+        position: { x: 940, y: 900 },
         data: { label: ['- Level 3 -', "M5", "Interlocks"] },
     },
     {
         id: "buttonCard9",
         type: "card",
-        position: { x: 970, y: 1000 },
+        position: { x: 1070, y: 900 },
         data: { label: ['- Level 3 -', "Cooling", "System"] },
     },
 ]
@@ -121,7 +122,7 @@ const controlCards: Node[] = [
     {
         id: "controlCard1",
         type: "controlCard",
-        position: { x: 800, y: 500 },
+        position: { x: 30, y: 50 },
         data: {
             title: "Main Feed",
             processVariableValue: 78.8,
@@ -134,7 +135,7 @@ const controlCards: Node[] = [
     {
         id: "controlCard2",
         type: "controlCard",
-        position: { x: 700, y: 500 },
+        position: { x: 30, y: 320 },
         data: {
             title: "Additive 1",
             processVariableValue: 11.9,
@@ -147,7 +148,7 @@ const controlCards: Node[] = [
     {
         id: "controlCard3",
         type: "controlCard",
-        position: { x: 600, y: 500 },
+        position: { x: 30, y: 590 },
         data: {
             title: "Additive 2",
             processVariableValue: 4.0,
@@ -160,7 +161,7 @@ const controlCards: Node[] = [
     {
         id: "controlCard4",
         type: "controlCard",
-        position: { x: 500, y: 500 },
+        position: { x: 850, y: 150 },
         data: {
             title: "M5 Pressure",
             processVariableValue: 98.0,
@@ -173,7 +174,7 @@ const controlCards: Node[] = [
     {
         id: "controlCard5",
         type: "controlCard",
-        position: { x: 400, y: 500 },
+        position: { x: 850, y: 300 },
         data: {
             title: "M5 Level %",
             processVariableValue: 71.0,
@@ -186,7 +187,7 @@ const controlCards: Node[] = [
     {
         id: "controlCard6",
         type: "controlCard",
-        position: { x: 400, y: 500 },
+        position: { x: 900, y: 850 },
         data: {
             title: "M5 Temp",
             processVariableValue: 45.0,
@@ -198,42 +199,42 @@ const controlCards: Node[] = [
     },
 ]
 
-const valves : Node[] =[
+const valves: Node[] = [
     {
         id: "valve1",
         type: "valve",
-        position: { x: 100, y: 100 },
+        position: { x: 200, y: 100 },
         data: { valveType: 'round', rotation: 0 },
     },
     {
         id: "valve2",
         type: "valve",
-        position: { x: 200, y: 100 },
+        position: { x: 300, y: 100 },
         data: { valveType: 'rect', rotation: 0 },
     },
     {
         id: "valve3",
         type: "valve",
-        position: { x: 100, y: 400 },
+        position: { x: 200, y: 370 },
         data: { valveType: 'round', rotation: 0 },
     },
     {
         id: "valve4",
         type: "valve",
-        position: { x: 200, y: 400 },
+        position: { x: 300, y: 370 },
         data: { valveType: 'rect', rotation: 0 },
     },
     {
         id: "valve5",
         type: "valve",
-        position: { x: 100, y: 700 },
+        position: { x: 200, y: 640 },
         data: { valveType: 'round', rotation: 0 },
     },
     {
         id: "valve6",
         type: "valve",
-        position: { x: 200, y: 700 },
-        data: { valveType: 'round', rotation: 0 },
+        position: { x: 300, y: 640 },
+        data: { valveType: 'rect', rotation: 0 },
     },
     {
         id: "valve7",
@@ -250,7 +251,7 @@ const valves : Node[] =[
     {
         id: "valve9",
         type: "valve",
-        position: { x: 700, y: 100 },
+        position: { x: 800, y: 50 },
         data: { valveType: 'round', rotation: 180 },
     },
     {
@@ -260,32 +261,116 @@ const valves : Node[] =[
         data: { valveType: 'round', rotation: 0 },
     },
 ]
+const gauges = [
+    {
+        id: "lGauge1",
+        type: "linearGauge",
+        position: { x: 15, y: 20 },
+        data: {
+            value: 30, alarmStatus: false, thresholds: thresholdsStyle([
+                { max: -30, classColor: "", identifier: "Normal" },
+                { max: -20, classColor: "", identifier: "High Priority Alarm" },
+                { max: -10, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 70, classColor: "", identifier: "Normal" },
+                { max: 90, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 100, classColor: "", identifier: "High Priority Alarm" },
+            ], false),
+            units: 'mt'
+        },
+        parentNode: 'boxLinearGauges'
+    },
+    {
+        id: "lGauge2",
+        type: "linearGauge",
+        position: { x: 80, y: 20 },
+        data: {
+            value: 10, alarmStatus: false, thresholds: thresholdsStyle([
+                { max: 0, classColor: "", identifier: "Normal" },
+                { max: 10, classColor: "", identifier: "High Priority Alarm" },
+                { max: 30, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 70, classColor: "", identifier: "Normal" },
+                { max: 80, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 100, classColor: "", identifier: "High Priority Alarm" },
+            ], true),
+            units: 'lt/s'
+        },
+        parentNode: 'boxLinearGauges'
+    },
+    {
+        id: "lGauge3",
+        type: "linearGauge",
+        position: { x: 145, y: 20 },
+        data: {
+            value: 30, alarmStatus: false, thresholds: thresholdsStyle([
+                { max: -30, classColor: "", identifier: "Normal" },
+                { max: -20, classColor: "", identifier: "High Priority Alarm" },
+                { max: -10, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 70, classColor: "", identifier: "Normal" },
+                { max: 90, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 100, classColor: "", identifier: "High Priority Alarm" },
+            ], false),
+            units: 'mt'
+        },
+        parentNode: 'boxLinearGauges'
+    },
+    {
+        id: "lGauge4",
+        type: "linearGauge",
+        position: { x: 210, y: 20 },
+        data: {
+            value: 30, alarmStatus: false, thresholds: thresholdsStyle([
+                { max: -30, classColor: "", identifier: "Normal" },
+                { max: -20, classColor: "", identifier: "High Priority Alarm" },
+                { max: -10, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 70, classColor: "", identifier: "Normal" },
+                { max: 90, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 100, classColor: "", identifier: "High Priority Alarm" },
+            ], false),
+            units: 'mt'
+        },
+        parentNode: 'boxLinearGauges'
+    },
+    {
+        id: "lGauge5",
+        type: "linearGauge",
+        position: { x: 275, y: 20 },
+        data: {
+            value: 30, alarmStatus: false, thresholds: thresholdsStyle([
+                { max: -30, classColor: "", identifier: "Normal" },
+                { max: -20, classColor: "", identifier: "High Priority Alarm" },
+                { max: -10, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 70, classColor: "", identifier: "Normal" },
+                { max: 90, classColor: "", identifier: "Medium Priority Alarm" },
+                { max: 100, classColor: "", identifier: "High Priority Alarm" },
+            ], false),
+            units: 'mt'
+        },
+        parentNode: 'boxLinearGauges'
+    },
+]
 
 export const PIDNodes: Node[] = [
-    ... dataTrends,
+    ...dataTrends,
     ...navButtons,
     ...controlCards,
     ...valves,
-    {
-        id: "lGauge",
-        type: "linearGauge",
-        position: { x: 100, y: 200 },
-        data: {}
-    },
+    ...gauges,
     {
         id: "tank",
         type: "tank",
-        position: { x: 200, y: 200 },
+        position: { x: 450, y: 40 },
         data: {}
     },
-
     {
         id: "motorFan",
         type: "motor",
-        position: { x: 500, y: 500 },
+        position: { x: 800, y: 480 },
         data: {},
     },
-
-    
-    
+    {
+        id: "boxLinearGauges",
+        type: "box",
+        position: { x: 400, y: 480 },
+        data: {},
+    },
 ]

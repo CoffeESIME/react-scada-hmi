@@ -1,13 +1,13 @@
 import {memo} from 'react'
-import { Node, NodeProps } from 'reactflow';
+import { NodeProps } from 'reactflow';
 import LinearGauge from './LinearGauge';
-type NodeData = {
+import { LinearGaugeProps } from './LinearGauge.type';
+
+type LinearGaugeNodeProps = NodeProps & {
+    data: LinearGaugeProps
 };
 
-type LinearGaugeNode = Node<NodeData>;
-//this should take in account that an alarm should appear in the app as an icon or similar 
-
-const LinearGaugeNode = ({ }: NodeProps<NodeData>) => {
-    return <LinearGauge value={50} alarmStatus={true}/>;
+const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
+    return <LinearGauge value={data.value} alarmStatus={data.alarmStatus} thresholds={data.thresholds} units={data.units}/>;
 }
 export default memo(LinearGaugeNode)

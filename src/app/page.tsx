@@ -1,15 +1,15 @@
 "use client"
 import ReactFlow, { Background, ReactFlowProvider, useNodesState, useEdgesState, Node, Edge, BackgroundVariant } from "reactflow";
 import { PIDNodes, nodeTypes } from "./Flows/nodes";
+import { initialEdges } from "./Flows/edges";
 import config from "tailwindConfig";
-import { ControlDataCard } from "./components/ControlDataCard/ControlDataCard";
 import "reactflow/dist/style.css";
 import "./globals.css";
 
 export default function Home() {
   
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>(PIDNodes);
-  const [edges, setEdges, onEdgeChange] = useEdgesState<Edge[]>([])
+  const [edges, setEdges, onEdgeChange] = useEdgesState<Edge[]>(initialEdges)
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-0 bg-slate-50">
       <ReactFlowProvider>
@@ -21,7 +21,7 @@ export default function Home() {
            background: `${(config.theme?.extend?.colors as any)['display-bg-tabs']}`
           }}
         >
-          <Background variant={BackgroundVariant.Cross} />
+          <Background/>
           <ReactFlow
             nodes={nodes}
             edges={edges}

@@ -12,7 +12,7 @@ type ControlDataCardProps = {
 
 export const ControlDataCard: React.FC<ControlDataCardProps> = ({ title, processVariable, processVariableValue, setPoint, output, mode }) => {
     return (
-        <Card className="bg-nav-button-fg  border border-nav-button-border rounded-none min-w-[120px] max-w-[180px] min-h-[80px] max-h-[230px]" radius="none">
+        <Card className="bg-nav-button-fg  border border-nav-button-border rounded-none min-w-[100px] max-w-[180px] min-h-[80px] max-h-[230px]" radius="none">
             <CardHeader className="flex gap-0 p-1">
                 <div className="flex flex-col">
                     <p className="text-xs">{title}</p>
