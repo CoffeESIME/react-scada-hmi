@@ -10,6 +10,8 @@ export type LinearGaugeProps = BaseProps & {
     fontFamily?: string;
     borderColor?: string;
     borderWidth?: string;
+    bottom?: number;
+    setPoint?: number;
     thresholds?: Threshold[];
 }
 

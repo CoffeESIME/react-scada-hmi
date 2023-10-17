@@ -2,40 +2,38 @@
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
-const LineChart: React.FC = () => {
+export const LineChart: React.FC = () => {
   const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    // Sample data
-    const data = [{x: 1, y: 2}, {x: 2, y: 3}, {x: 3, y: 5}, {x: 4, y: 4}, {x: 5, y: 6}];
+    // Sample data with 15 points
+    const data = [2, 3, 2, 4, 5, 4, 5, 6, 5, 6, 7, 8, 6, 7, 6];
 
-    // Select the SVG element
     const svg = d3.select(ref.current);
+    const width = 50;  // Width of SVG
+    const height = 30;  // Height of SVG
 
-    // Define scales
-    const xScale = d3.scaleLinear().domain([1, 5]).range([40, 460]);
-    const yScale = d3.scaleLinear().domain([1, 6]).range([260, 20]);
+    const xScale = d3.scaleLinear()
+      .domain([0, data.length - 1])
+      .range([0, width]);
 
-    // Define the line generator
-    const line = d3.line<{x: number, y: number}>()
-      .x(d => xScale(d.x))
-      .y(d => yScale(d.y));
+    const yScale = d3.scaleLinear()
+      .domain([d3.min(data)!, d3.max(data)!])
+      .range([height, 0]);
 
-    // Append the line to the SVG
+    const line = d3.line<number>()
+      .x((d, i) => xScale(i))
+      .y(d => yScale(d));
+
     svg.append("path")
       .datum(data)
       .attr("fill", "none")
       .attr("stroke", "blue")
       .attr("d", line);
 
-    // Append axes to the SVG
-    svg.append("g").attr("transform", "translate(0, 260)").call(d3.axisBottom(xScale));
-    svg.append("g").attr("transform", "translate(40, 0)").call(d3.axisLeft(yScale));
   }, []);
 
   return (
-    <svg ref={ref} width="500" height="300"></svg>
+    <svg ref={ref} width="150" height="40"></svg>
   );
 };
-
-export default LineChart;

@@ -15,3 +15,8 @@ export const calculateThresholdBackground = (thresholds: Threshold[]): string =>
     }).join(', ')
         })`;
 };
+
+export const calculateSetPointBottom = (setPoint: number, min: number, max: number): string => {
+    const percentage = Math.abs((setPoint - min)/(max - min))*100;
+    return `${percentage}%`
+}

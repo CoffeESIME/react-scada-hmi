@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { LinearGaugeProps } from "./LinearGauge.type";
-import { calculateThresholdBackground } from "./LinearGauge.utils";
+import { calculateThresholdBackground, calculateSetPointBottom } from "./LinearGauge.utils";
 import { needleStyle, thresholdsStyle } from "./LinearGauge.style";
 import tailwindConfig from 'tailwindConfig'
 import "./LinearGauge.css"
@@ -14,6 +14,8 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
   fontFamily = 'Arial, sans-serif',
   borderColor = 'black',
   borderWidth = '2px',
+  bottom = 30,
+  setPoint = calculateSetPointBottom(35, -30, 100),
   thresholds = thresholdsStyle([
     { max: -30, classColor: "", identifier: "Normal" },
     { max: -20, classColor: "", identifier: "High Priority Alarm" },
@@ -31,13 +33,12 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
     height: `${setPointSize}px`,
     backgroundColor: "black",
     position: "absolute" as "absolute",
-    bottom: "50%",
+    bottom: setPoint,
     left: "50%",
     transform: "translate(-50%, 50%) rotate(45deg)",
     zIndex: 2,
   };
   const thresholdBackground = calculateThresholdBackground(thresholds)
-
 
   return (
     <div className="relative flex flex-col-reverse justify-between border-solid"
@@ -69,7 +70,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
       <div
         className="absolute left-1/2 transform -translate-x-1/2 text-7xlxl text-black"
         style={{
-          bottom: "-30%",
+          bottom: `-${bottom}%`,
           fontSize: '12px',
         }}
       >

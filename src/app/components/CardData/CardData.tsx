@@ -5,9 +5,13 @@ type CardDataProps = {
     label: string[];
 }
 
+const handlePress = () => {
+    console.log("Pressed")
+}
+
 export const CardData: React.FC<CardDataProps> = ({ label }) => {
     return (
-        <Card className="bg-nav-button-fg border-2 border-nav-button-border min-w-[120px] max-w-[180px] min-h-[80px] max-h-[230px]">
+        <Card className="z-40 bg-nav-button-fg border-2 border-nav-button-border min-w-[120px] max-w-[180px] min-h-[80px] max-h-[230px]" onPress={handlePress} isPressable>
             <CardBody className="p-1 flex flex-col justify-center items-center">
                 <div className="flex flex-col gap-0">
                     {label.map((strEl, index) => (
