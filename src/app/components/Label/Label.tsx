@@ -8,21 +8,27 @@ interface LabelProps {
     borderColor?: string;
     textColor?: string;
     fontSize?: number;
+    triangleDirection?: "left" | "right";  
 }
 
 export const Label: React.FC<LabelProps> = ({
-    text= "Cooling System",
+    text = "Cooling System",
     width = 100,
     height = 40,
-    backgroundColor = "#f5f5f5",
+    backgroundColor = "#C6C6C6",
     borderColor = "gray",
     textColor = "black",
-    fontSize = 14
+    fontSize = 14,
+    triangleDirection = "right"  
 }) => {
+    const pathD = triangleDirection === "left"
+    ? `M0,${height/2} L10,0 L${width},0 L${width},${height} L10,${height} L0,${height/2}`
+    : `M0,0 L${width-10},0 L${width},${height/2} L${width-10},${height} L0,${height} L0,0`;
+
     return (
         <svg width={width} height={height} xmlns="http://www.w3.org/2000/svg">
             <path 
-                d={`M10,0 L${width},0 L${width},${height} L10,${height} L0,${height/2} L10,0`} 
+                d={pathD} 
                 fill={backgroundColor} 
                 stroke={borderColor}
             />
@@ -34,4 +40,4 @@ export const Label: React.FC<LabelProps> = ({
             </text>
         </svg>
     );
-}
+};

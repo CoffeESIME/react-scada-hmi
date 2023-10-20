@@ -8,6 +8,15 @@ type LinearGaugeNodeProps = NodeProps & {
 };
 
 const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
-    return <LinearGauge value={data.value} alarmStatus={data.alarmStatus} thresholds={data.thresholds} units={data.units} width={data.width} height={data.height} bottom={data.bottom} />;
+    return <LinearGauge
+        value={data.value}
+        alarmStatus={data.alarmStatus}
+        thresholds={data.thresholds} 
+        units={data.units} 
+        width={data.width} 
+        height={data.height} 
+        bottom={data.bottom} 
+        setPoint={data.setPoint} 
+        />;
 }
 export default memo(LinearGaugeNode)

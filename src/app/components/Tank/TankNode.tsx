@@ -1,14 +1,42 @@
-import { memo} from 'react'
-import { Node, NodeProps } from 'reactflow';
+import { memo } from 'react'
+import { Node, NodeProps, Handle, Position, } from 'reactflow';
 import { Tank } from './Tank';
-type NodeData = {
+type handleEl = {
+    type: 'source' | 'target',
+    position: Position;
+    id: string;
+    style: {
+        top?: number;
+        bottom?: number;
+        left?: number;
+        right?: number;
+    }
+}
+type TankNodeData = {
+    handles: handleEl[]
 };
 
-type TankNode = Node<NodeData>;
-//this should take in account that an alarm should appear in the app as an icon or similar 
+type TankNodeProps = NodeProps & {
+    data: TankNodeData
+};
 
-const TankNode = ({ }: NodeProps<NodeData>) => {
-    return(<Tank/>);
+const TankNode: React.FC<TankNodeProps> = ({ data }) => {
+
+    return (<>
+        {
+            data.handles.map((handle: handleEl) => (
+                <Handle
+                key={handle.id}
+                type={handle.type}
+                position={handle.position}
+                id={handle.id}
+                style={handle.style}
+                className='bg-process-connector border-0'
+                />
+            )
+            )
+        }
+        <Tank /></>);
 }
 
 export default memo(TankNode)

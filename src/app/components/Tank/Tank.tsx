@@ -9,13 +9,14 @@ interface TankProps {
 }
 
 export const Tank: React.FC<TankProps> = ({
-    width = 350,
-    height = 450,
+    width = 390,
+    height = 490,
     fillColor = "#808080",
-    strokeColor = "#000",
+    strokeColor = "#808080",
     strokeWidth = 1,
 }) => {
     return (
+        <div className=' bg-display-bg-tabs z-20'>
         <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
             width={`${width}px`}
             height={`${height}px`} viewBox="0 0 444.000000 544.000000"
@@ -33,5 +34,6 @@ export const Tank: React.FC<TankProps> = ({
                         0 2050 2165 0 2165 0 0 -2050z"/>
             </g>
         </svg>
+        </div>
     );
 };

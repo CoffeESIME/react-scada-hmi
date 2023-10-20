@@ -24,13 +24,15 @@ type DataTrendNodeProps = NodeProps & {
 //this should take in account that an alarm should appear in the app as an icon or similar 
 
 export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
-    return <DataTrend
-        dataPoints={data.dataPoints}
-        setPoint={data.setPoint} 
-        limitBottom={data.limitBottom} 
-        limitTop={data.limitTop}
-        xAxis={{min: data.xAxis.min, max: data.xAxis.max}}
-        yAxis={{min: data.yAxis.min, max: data.yAxis.max}} 
-        title = {data.title}
-        />;
+    return <div className="z-40">
+        <DataTrend
+            dataPoints={data.dataPoints}
+            setPoint={data.setPoint}
+            limitBottom={data.limitBottom}
+            limitTop={data.limitTop}
+            xAxis={{ min: data.xAxis.min, max: data.xAxis.max }}
+            yAxis={{ min: data.yAxis.min, max: data.yAxis.max }}
+            title={data.title}
+        />
+    </div>;
 }

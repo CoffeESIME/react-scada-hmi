@@ -2,21 +2,20 @@
 import ReactFlow, { Background, ReactFlowProvider, useNodesState, useEdgesState, Node, Edge, BackgroundVariant } from "reactflow";
 import { PIDNodes, nodeTypes } from "./Flows/nodes";
 import { initialEdges } from "./Flows/edges";
-import { Label } from "./components/Label/Label";
-import {LineChart} from "./components/Tank/DataTrendD3";
 import config from "tailwindConfig";
 import "reactflow/dist/style.css";
 import "./globals.css";
-import { useAlarmsStore } from "./store/alarm";
-import { CardData } from "./components/CardData/CardData";
-import { Alarm } from "./components/Alarm/Alarm";
+import { useNodeStore } from "./store/nodes";
+import { useEffect } from "react";
 export default function Home() {
-  const alarms = useAlarmsStore(state => state.alarms)
-  console.log(alarms)
-  const fetchState = useAlarmsStore(state => state.fetchAlarms)
-
+  const nodesOriginal = useNodeStore(state => state.nodes)
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>(PIDNodes);
-  const [edges, setEdges, onEdgeChange] = useEdgesState<Edge[]>(initialEdges)
+  const [edges, setEdges, onEdgeChange] = useEdgesState<Edge[]>(initialEdges);
+  useEffect(()=>{
+    if (nodesOriginal.length > 0) {
+      setNodes(nodesOriginal)
+    }
+  },[nodesOriginal, setNodes])
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-0 bg-slate-50">
 
@@ -39,9 +38,6 @@ export default function Home() {
           />
         </div>
       </ReactFlowProvider>
-      <Label text="texto"/>
-      <Alarm/>
-      <LineChart/>
     </main>
   )
 }

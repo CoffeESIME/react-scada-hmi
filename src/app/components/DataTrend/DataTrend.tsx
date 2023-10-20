@@ -111,10 +111,10 @@ export const DataTrend: React.FC<DataTrendProps> = ({ dataPoints, setPoint, limi
             }
         ]
         setSeries([...series, ...arraysData])
-        console.log('da series', series)
     }, [setPoint, limitBottom, limitTop])
 
     return (
-        <ApexCharts options={options} series={series} type="line" width={300} height={170} />
+        <ApexCharts options={options} series={series} type="line" width={300} height={190} />
+        
     );
 };
