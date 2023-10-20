@@ -1,7 +1,7 @@
 import React from 'react';
-import valveOpen1 from '../../assets/valveOpen1.png';
-import valveClosed1 from '../../assets/valveClosed1.png';
-import valveTransition1 from '../../assets/valveTransition1.png';
+import valveOpen1 from '../../assets/ValveOpen1.png';
+import valveClosed1 from '../../assets/ValveClosed1.png';
+import valveTransition1 from '../../assets/ValveTransition1.png';
 import Image from 'next/image';
 
 type ValveIconProps = {
