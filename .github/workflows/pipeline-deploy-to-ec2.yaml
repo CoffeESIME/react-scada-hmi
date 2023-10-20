@@ -57,8 +57,8 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          scp -i private_key.pem -r ./.next $EC2_USER@$EC2_IP:/home/ec2-user/webapp
-          ssh -i private_key.pem $EC2_USER@$EC2_IP 'cd /home/ec2-user/webapp && npm install && npm start'
+          scp -o StrictHostKeyChecking=no -i private_key.pem -r ./.next $EC2_USER@$EC2_IP:/home/ec2-user/webapp
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_IP 'cd /home/ec2-user/webapp && npm install && npm start'
           rm -f private_key.pem
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
