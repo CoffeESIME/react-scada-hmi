@@ -11,11 +11,11 @@ export default function Home() {
   const nodesOriginal = useNodeStore(state => state.nodes)
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>(PIDNodes);
   const [edges, setEdges, onEdgeChange] = useEdgesState<Edge[]>(initialEdges);
-  useEffect(()=>{
+  useEffect(() => {
     if (nodesOriginal.length > 0) {
       setNodes(nodesOriginal)
     }
-  },[nodesOriginal, setNodes])
+  }, [nodesOriginal, setNodes])
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-0 bg-slate-50">
 
@@ -25,10 +25,10 @@ export default function Home() {
           style={{
             width: "100vw",
             height: "100vw",
-           background: `${(config.theme?.extend?.colors as any)['display-bg-tabs']}`
+            background: `${(config.theme?.extend?.colors as any)['display-bg-tabs']}`
           }}
         >
-          <Background/>
+          <Background />
           <ReactFlow
             nodes={nodes}
             edges={edges}
