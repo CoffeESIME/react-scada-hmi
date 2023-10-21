@@ -58,7 +58,8 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
           scp -o StrictHostKeyChecking=no -i private_key.pem -r ./.next $EC2_USER@$EC2_IP:~/
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_IP 'cd ~/ && npm install && npm start'
+          scp -o StrictHostKeyChecking=no -i private_key.pem  ./package.json $EC2_USER@$EC2_IP:~/
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_IP 'cd ~/ && sudo su && npm install && sudo npm start'
           rm -f private_key.pem
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
