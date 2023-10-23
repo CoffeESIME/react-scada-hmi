@@ -1,11 +1,10 @@
 #!/bin/bash
-yum update -y
+sudo yum update -y
 
 # Install necessary tools
-yum install -y gcc-c++ make
-curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
-yum install -y nodejs
+sudo yum install -y nodejs
 
 # Install Nginx
-yum install -y epel-release
-yum install -y nginx
+sudo yum install -y epel-release
+sudo yum install -y nginx
+sudo npm global add pm2 
