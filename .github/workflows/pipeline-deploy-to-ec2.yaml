@@ -59,7 +59,7 @@ jobs:
           chmod 600 private_key.pem
           scp -o StrictHostKeyChecking=no -i private_key.pem -r ./.next ec2-user@$EC2_IP:~/
           scp -o StrictHostKeyChecking=no -i private_key.pem  ./package.json ec2-user@$EC2_IP:~/
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@$EC2_IP 'cd ~/ && sudo pm2 stop all && sudo npm install && sudo pm2 start npm --name hmi-creator -- start'
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@$EC2_IP 'cd ~/ && (pm2 list | grep online > /dev/null && sudo pm2 stop all || echo "No processes to stop") && sudo npm install && sudo pm2 start npm --name hmi-creator -- start'
           rm -f private_key.pem
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
