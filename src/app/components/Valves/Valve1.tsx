@@ -5,26 +5,29 @@ import valveTransition1 from '../../assets/ValveTransition1.png';
 import Image from 'next/image';
 
 type ValveIconProps = {
-    size?: number;
-    state: 'Open' | 'Closed' | 'Transition';
+  size?: number;
+  state: 'Open' | 'Closed' | 'Transition';
 };
 
-export const ValveIcon1: React.FC<ValveIconProps> = ({ size = 40, state = 'Open' }) => {
-    let valveEL;
-    switch (state) {
-        case 'Open':
-            valveEL = valveOpen1;
-            break;
-        case 'Closed':
-            valveEL = valveClosed1;
-            break;
-        case 'Transition':
-            valveEL = valveTransition1;
-            break;
-        default:
-            valveEL = valveClosed1;
-            break;
-    }
+export const ValveIcon1: React.FC<ValveIconProps> = ({
+  size = 40,
+  state = 'Open',
+}) => {
+  let valveEL;
+  switch (state) {
+    case 'Open':
+      valveEL = valveOpen1;
+      break;
+    case 'Closed':
+      valveEL = valveClosed1;
+      break;
+    case 'Transition':
+      valveEL = valveTransition1;
+      break;
+    default:
+      valveEL = valveClosed1;
+      break;
+  }
 
-    return <Image src={valveEL} alt='pump' width={size} height={size} />;
-}
+  return <Image src={valveEL} alt='pump' width={size} height={size} />;
+};

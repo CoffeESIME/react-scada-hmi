@@ -7,10 +7,9 @@ resource "aws_instance" "ec2-public-1" {
   user_data              = file("${path.module}/user-data-scripts/user-data-crud-front.tpl")
   vpc_security_group_ids = [aws_security_group.public.id]
   tags = {
-    Name        = "${local.prefix}-ec2-public-1"                    # Name tag for identifying the instance
+    Name        = "${local.prefix}-ec2-public"                    # Name tag for identifying the instance
     Environment = local.env                                         # Environment tag for categorization
     Path        = "${basename(abspath(path.module))}/ec2-public.tf" # Path tag for tracking the configuration file
-    Company     = local.tag_3pg                                     #Tag for upskilling program
   }
   depends_on = [
     aws_security_group.public, # Ensure security group is created before the instance

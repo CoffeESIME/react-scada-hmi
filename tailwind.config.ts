@@ -1,14 +1,13 @@
-import type { Config } from 'tailwindcss'
-import {nextui} from "@nextui-org/react";
+import type { Config } from 'tailwindcss';
+import { nextui } from '@nextui-org/react';
 const config: Config = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
-
+    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
-  darkMode: "class",
+  darkMode: 'class',
   theme: {
     extend: {
       backgroundImage: {
@@ -17,7 +16,6 @@ const config: Config = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       colors: {
-
         // Display Color Use
         'display-background': '#E0E0E0', // Display Background (no tabs)
         'tab-panel-background': '#E0E0E0', // Tab Panel Background
@@ -57,9 +55,9 @@ const config: Config = {
         // Element State Color
         'off-de-energized': '#F0F0F0',
         'on-energized': '#808080',
-        'disabled': '#808080',
+        disabled: '#808080',
         'manual-operations': '#93C2E4',
-        'transition': '#93C2E4',
+        transition: '#93C2E4',
 
         // Data Entry Color
         'label-fg': '#3F3F3F',
@@ -94,11 +92,9 @@ const config: Config = {
         'nav-button-fg': '#C6C6C6',
         'nav-button-border': '#AAAAAA',
         'nav-label': '#3F3F3F',
- 
       },
-      
     },
   },
-  plugins: [nextui()]
-}
-export default config
+  plugins: [nextui()],
+};
+export default config;

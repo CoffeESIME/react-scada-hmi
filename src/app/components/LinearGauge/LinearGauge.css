@@ -1,13 +1,11 @@
 .linear-gauge-background {
-    z-index: 1;
-  }
-  
-  .linear-gauge-text {
-    position: absolute;
-    bottom: -10%;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2rem;
-  }
-  
-  
+  z-index: 1;
+}
+
+.linear-gauge-text {
+  position: absolute;
+  bottom: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+}

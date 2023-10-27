@@ -1,4 +1,4 @@
 export type BaseProps = {
-    id?: string;
-    className?: string;
-}
+  id?: string;
+  className?: string;
+};

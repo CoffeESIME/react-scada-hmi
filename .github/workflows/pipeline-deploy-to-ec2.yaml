@@ -2,18 +2,18 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     paths:
-    - 'app/**'
-    branches: [ main ]
-  
+      - 'app/**'
+    branches: [main]
+
   pull_request:
     paths:
-    - 'app/**'
-    branches: [ main ]
+      - 'app/**'
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -26,16 +26,16 @@ jobs:
     runs-on: ubuntu-latest
 
     # This likely specifies a strategy or set of rules for performing a particular task or operation. It defines how a specific task should be executed.
-    strategy:      
-      matrix:        
+    strategy:
+      matrix:
         node-version: [18.17.1]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:      
-      # Use the node version specified in the strategy    
-      - name: Use Node.js ${{ matrix.node-version }}      
-        uses: actions/setup-node@v1      
-        with:        
+    steps:
+      # Use the node version specified in the strategy
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
           node-version: ${{ matrix.node-version }}
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -48,8 +48,8 @@ jobs:
           npm install --prefix ./
 
       # Build an optimized production build
-      - name: Production build      
-        run: |        
+      - name: Production build
+        run: |
           npm run build
 
       # Deploy the built app to the EC2 server

@@ -1,42 +1,41 @@
-import { memo } from 'react'
-import { Node, NodeProps, Handle, Position, } from 'reactflow';
+import { memo } from 'react';
+import { Node, NodeProps, Handle, Position } from 'reactflow';
 import { Tank } from './Tank';
 type handleEl = {
-    type: 'source' | 'target',
-    position: Position;
-    id: string;
-    style: {
-        top?: number;
-        bottom?: number;
-        left?: number;
-        right?: number;
-    }
-}
+  type: 'source' | 'target';
+  position: Position;
+  id: string;
+  style: {
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  };
+};
 type TankNodeData = {
-    handles: handleEl[]
+  handles: handleEl[];
 };
 
 type TankNodeProps = NodeProps & {
-    data: TankNodeData
+  data: TankNodeData;
 };
 
 const TankNode: React.FC<TankNodeProps> = ({ data }) => {
+  return (
+    <>
+      {data.handles.map((handle: handleEl) => (
+        <Handle
+          key={handle.id}
+          type={handle.type}
+          position={handle.position}
+          id={handle.id}
+          style={handle.style}
+          className='border-0 bg-process-connector'
+        />
+      ))}
+      <Tank />
+    </>
+  );
+};
 
-    return (<>
-        {
-            data.handles.map((handle: handleEl) => (
-                <Handle
-                key={handle.id}
-                type={handle.type}
-                position={handle.position}
-                id={handle.id}
-                style={handle.style}
-                className='bg-process-connector border-0'
-                />
-            )
-            )
-        }
-        <Tank /></>);
-}
-
-export default memo(TankNode)
+export default memo(TankNode);
