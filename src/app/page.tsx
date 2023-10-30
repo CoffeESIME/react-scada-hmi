@@ -15,6 +15,7 @@ import 'reactflow/dist/style.css';
 import './globals.css';
 import { useNodeStore } from './store/nodes';
 import { useEffect } from 'react';
+import MQTTReceiver from './components/mqtt/MQTTReceiver';
 export default function Home() {
   const nodesOriginal = useNodeStore((state) => state.nodes);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>(PIDNodes);
@@ -47,6 +48,7 @@ export default function Home() {
           />
         </div>
       </ReactFlowProvider>
+      <MQTTReceiver/>
     </main>
   );
 }
