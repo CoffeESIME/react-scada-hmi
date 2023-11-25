@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 import { ApexOptions } from 'apexcharts';
 import { createSeriesConstant } from './DataTrend.utils';
+const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type SeriesType = {
   name: string;
@@ -122,7 +122,7 @@ export const DataTrend: React.FC<DataTrendProps> = ({
     <ApexCharts
       options={options}
       series={series}
-      type='line'
+      type="line"
       width={300}
       height={190}
     />

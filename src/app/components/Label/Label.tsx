@@ -31,12 +31,12 @@ export const Label: React.FC<LabelProps> = ({
         },${height} L0,${height} L0,0`;
 
   return (
-    <svg width={width} height={height} xmlns='http://www.w3.org/2000/svg'>
+    <svg width={width} height={height} xmlns="http://www.w3.org/2000/svg">
       <path d={pathD} fill={backgroundColor} stroke={borderColor} />
       <text
-        x='20'
+        x="20"
         y={height / 2 + fontSize / 3}
-        fontFamily='Arial'
+        fontFamily="Arial"
         fontSize={fontSize}
         fill={textColor}
       >

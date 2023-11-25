@@ -31,7 +31,7 @@ const ValveNode: React.FC<ValveNodeProps> = (props) => {
           position={config.position}
           id={config.id}
           style={config.style}
-          className='border-0 bg-process-connector'
+          className="border-0 bg-process-connector"
         />
       ))}
       {valveType === 'round' && (

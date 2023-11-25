@@ -47,7 +47,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
 
   return (
     <div
-      className='relative flex flex-col-reverse justify-between border-solid'
+      className="relative flex flex-col-reverse justify-between border-solid"
       style={{
         width,
         height,
@@ -56,20 +56,20 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
       }}
     >
       <div
-        className='z-0 w-full flex-1'
+        className="z-0 w-full flex-1"
         style={{
           background: thresholdBackground,
         }}
       ></div>
 
       <div
-        className='absolute left-3/4 flex translate-x-3 translate-y-3 transform flex-col items-center'
+        className="absolute left-3/4 flex translate-x-3 translate-y-3 transform flex-col items-center"
         style={{
           bottom: `${value - 1}%`,
         }}
       >
         <div
-          className='font-mono text-xl text-black'
+          className="font-mono text-xl text-black"
           style={{
             fontSize,
           }}
@@ -79,7 +79,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
       </div>
 
       <div
-        className='text-7xlxl absolute left-1/2 -translate-x-1/2 transform text-center text-black'
+        className="text-7xlxl absolute left-1/2 -translate-x-1/2 transform text-center text-black"
         style={{
           bottom: `-${bottom}%`,
           fontSize: '12px',

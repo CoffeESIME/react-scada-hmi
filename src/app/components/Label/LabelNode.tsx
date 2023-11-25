@@ -26,7 +26,7 @@ export const LabelNode: React.FC<LabelNodeProps> = ({ data }) => {
       <Handle
         type={data.handle.type}
         position={data.handle.position}
-        className='border-0 bg-process-connector'
+        className="border-0 bg-process-connector"
       />
       <Label
         text={data.text}

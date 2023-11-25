@@ -29,5 +29,5 @@ export const ValveIcon1: React.FC<ValveIconProps> = ({
       break;
   }
 
-  return <Image src={valveEL} alt='pump' width={size} height={size} />;
+  return <Image src={valveEL} alt="pump" width={size} height={size} />;
 };

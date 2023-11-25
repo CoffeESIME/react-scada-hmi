@@ -10,7 +10,7 @@ export const CustomButton: React.FC<ButtonProps> = ({ label, handlePress }) => {
   return (
     <Button
       onPress={handlePress}
-      className='border-3 border-nav-button-border bg-nav-button-fg '
+      className="border-3 border-nav-button-border bg-nav-button-fg "
     >
       {label}
     </Button>

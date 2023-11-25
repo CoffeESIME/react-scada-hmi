@@ -40,18 +40,18 @@ export const ControlDataCardNode: React.FC<ControlDataCardNodeProps> = ({
   return (
     <>
       <Handle
-        type='source'
+        type="source"
         position={data.handleDataSource.position}
         id={data.handleDataSource.id}
         style={data.handleDataSource.style}
-        className='border-0 bg-process-connector'
+        className="border-0 bg-process-connector"
       />
       <Handle
-        type='target'
+        type="target"
         position={data.handleDataTarget.position}
         id={data.handleDataTarget.id}
         style={data.handleDataTarget.style}
-        className='border-0 bg-process-connector'
+        className="border-0 bg-process-connector"
       />
       <ControlDataCard
         title={data.title}

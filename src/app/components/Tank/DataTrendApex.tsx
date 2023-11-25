@@ -26,10 +26,10 @@ export const DataTrendApex: FC = () => {
   ]);
 
   return (
-    <div className='app'>
-      <div className='row'>
-        <div className='mixed-chart'>
-          <Chart options={options} series={series} type='line' width='100' />
+    <div className="app">
+      <div className="row">
+        <div className="mixed-chart">
+          <Chart options={options} series={series} type="line" width="100" />
         </div>
       </div>
     </div>

@@ -29,5 +29,5 @@ export const MotorIcon: React.FC<MotorIconProps> = ({
       break;
   }
 
-  return <Image src={pumpEL} alt='pump' width={size} height={size} />;
+  return <Image src={pumpEL} alt="pump" width={size} height={size} />;
 };

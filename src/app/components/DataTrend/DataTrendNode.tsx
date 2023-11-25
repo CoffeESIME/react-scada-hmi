@@ -24,7 +24,7 @@ type DataTrendNodeProps = NodeProps & {
 
 export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   return (
-    <div className='z-40'>
+    <div className="z-40">
       <DataTrend
         dataPoints={data.dataPoints}
         setPoint={data.setPoint}

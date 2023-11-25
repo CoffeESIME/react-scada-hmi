@@ -7,14 +7,14 @@ import {
   CardFooter,
 } from '@nextui-org/react';
 
-type ControlDataCardProps = {
+interface ControlDataCardProps {
   title: string;
   processVariableValue: number;
   processVariable: string;
   setPoint: number;
   output: number;
   mode: 'AUTO' | 'MANUAL' | 'JOGGING';
-};
+}
 
 export const ControlDataCard: React.FC<ControlDataCardProps> = ({
   title,
@@ -26,39 +26,39 @@ export const ControlDataCard: React.FC<ControlDataCardProps> = ({
 }) => {
   return (
     <Card
-      className='max-h-[230px]  min-h-[80px] min-w-[100px] max-w-[180px] rounded-none border border-nav-button-border bg-nav-button-fg'
-      radius='none'
+      className="max-h-[230px]  min-h-[80px] min-w-[100px] max-w-[180px] rounded-none border border-nav-button-border bg-nav-button-fg"
+      radius="none"
     >
-      <CardHeader className='flex gap-0 p-1'>
-        <div className='flex flex-col'>
-          <p className='text-xs'>{title}</p>
+      <CardHeader className="flex gap-0 p-1">
+        <div className="flex flex-col">
+          <p className="text-xs">{title}</p>
         </div>
       </CardHeader>
-      <Divider className='bg-separator-line' />
-      <CardBody className='p-1'>
-        <div className='flex flex-col gap-0'>
-          <p className='text-xs'>
+      <Divider className="bg-separator-line" />
+      <CardBody className="p-1">
+        <div className="flex flex-col gap-0">
+          <p className="text-xs">
             {' '}
             PV{' '}
-            <span className='font-bold text-data-fg'>
+            <span className="font-bold text-data-fg">
               {processVariableValue}
             </span>{' '}
             {processVariable}
           </p>
-          <p className='text-xs'>
+          <p className="text-xs">
             {' '}
-            SP <span className='font-bold text-label-fg'>{setPoint}</span>
+            SP <span className="font-bold text-label-fg">{setPoint}</span>
           </p>
-          <p className='text-xs'>
+          <p className="text-xs">
             {' '}
-            O <span className='font-bold text-data-fg'>{output}</span> %
+            O <span className="font-bold text-data-fg">{output}</span> %
           </p>
         </div>
       </CardBody>
-      <Divider className='bg-separator-line' />
-      <CardFooter className='p-1'>
-        <div className='flex flex-col'>
-          <p className='text-xs font-bold text-data-fg'>{mode}</p>
+      <Divider className="bg-separator-line" />
+      <CardFooter className="p-1">
+        <div className="flex flex-col">
+          <p className="text-xs font-bold text-data-fg">{mode}</p>
         </div>
       </CardFooter>
     </Card>

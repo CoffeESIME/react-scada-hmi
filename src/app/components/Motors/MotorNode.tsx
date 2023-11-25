@@ -32,7 +32,7 @@ const MotorNode: React.FC<MotorNodeProps> = ({ data }) => {
           type={handle.type}
           id={handle.id}
           style={handle.style}
-          className='border-0 bg-process-connector'
+          className="border-0 bg-process-connector"
         />
       ))}
 

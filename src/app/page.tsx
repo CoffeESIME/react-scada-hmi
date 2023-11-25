@@ -2,9 +2,7 @@
 import ReactFlow, {
   Background,
   ReactFlowProvider,
-  useNodesState,
   useEdgesState,
-  Node,
   Edge,
 } from 'reactflow';
 import { PIDNodes, nodeTypes } from './Flows/nodes';
@@ -14,41 +12,38 @@ import 'reactflow/dist/style.css';
 import './globals.css';
 import { useNodeStore } from './store/nodes';
 import React, { useEffect } from 'react';
-import MQTTReceiver from './components/mqtt/MQTTReceiver';
+// import MQTTReceiver from './components/mqtt/MQTTReceiver';
 export default function Home(): React.ReactElement {
-  const nodesOriginal = useNodeStore((state) => state.nodes);
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>(PIDNodes);
-  const [edges, setEdges, onEdgeChange] = useEdgesState<Edge[]>(initialEdges);
+  const [edges, setEdges] = useEdgesState<Edge[]>(initialEdges);
+  const { connectMQTT, disconnectMQTT, nodes, setNodes } = useNodeStore();
+
   useEffect(() => {
-    if (nodesOriginal.length > 0) {
-      setNodes(nodesOriginal);
-    }
-  }, [nodesOriginal, setNodes]);
-  console.log('Process variables ',process.env.NEXT_PUBLIC_MQTT_URL)
+    setNodes(nodes);
+  }, [nodes, setNodes]);
+
+  useEffect(() => {
+    setNodes(PIDNodes);
+    connectMQTT();
+    return () => disconnectMQTT();
+  }, [connectMQTT, disconnectMQTT, setNodes]);
   return (
-    <main className='flex min-h-screen flex-col items-center justify-between bg-slate-50 p-0'>
+    <main className="flex min-h-screen flex-col items-center justify-between bg-slate-50 p-0">
       <ReactFlowProvider>
         <div
-          className='flowContainer'
+          className="flowContainer"
           style={{
             width: '100vw',
             height: '100vw',
             background: `${
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
               (config.theme?.extend?.colors as any)['display-bg-tabs']
             }`,
           }}
         >
           <Background />
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgeChange}
-          />
+          <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} />
         </div>
       </ReactFlowProvider>
-      <MQTTReceiver />
     </main>
   );
 }

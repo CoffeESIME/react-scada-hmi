@@ -6,7 +6,7 @@
   ],
   "parserOptions": {
     "project": "tsconfig.json",
-    "tsconfigRootDir": "./hmi-creator",
+    //"tsconfigRootDir": "./hmi-creator",
     "sourceType": "module"
-}
+  }
 }

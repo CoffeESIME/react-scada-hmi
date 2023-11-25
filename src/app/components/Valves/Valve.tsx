@@ -34,7 +34,7 @@ export const ValveIcon: React.FC<ValveIconProps> = ({
   return (
     <Image
       src={valveEL}
-      alt='pump'
+      alt="pump"
       width={size}
       height={size}
       style={{ transform: `rotate(${rotation}deg)` }}

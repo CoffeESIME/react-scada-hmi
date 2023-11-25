@@ -30,7 +30,7 @@ const TankNode: React.FC<TankNodeProps> = ({ data }) => {
           position={handle.position}
           id={handle.id}
           style={handle.style}
-          className='border-0 bg-process-connector'
+          className="border-0 bg-process-connector"
         />
       ))}
       <Tank />
