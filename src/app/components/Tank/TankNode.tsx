@@ -12,9 +12,9 @@ type handleEl = {
     right?: number;
   };
 };
-type TankNodeData = {
+interface TankNodeData {
   handles: handleEl[];
-};
+}
 
 type TankNodeProps = NodeProps & {
   data: TankNodeData;

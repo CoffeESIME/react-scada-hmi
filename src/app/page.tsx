@@ -6,7 +6,6 @@ import ReactFlow, {
   useEdgesState,
   Node,
   Edge,
-  BackgroundVariant,
 } from 'reactflow';
 import { PIDNodes, nodeTypes } from './Flows/nodes';
 import { initialEdges } from './Flows/edges';
@@ -14,9 +13,9 @@ import config from 'tailwindConfig';
 import 'reactflow/dist/style.css';
 import './globals.css';
 import { useNodeStore } from './store/nodes';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import MQTTReceiver from './components/mqtt/MQTTReceiver';
-export default function Home() {
+export default function Home(): React.ReactElement {
   const nodesOriginal = useNodeStore((state) => state.nodes);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>(PIDNodes);
   const [edges, setEdges, onEdgeChange] = useEdgesState<Edge[]>(initialEdges);
@@ -25,6 +24,7 @@ export default function Home() {
       setNodes(nodesOriginal);
     }
   }, [nodesOriginal, setNodes]);
+  console.log('Process variables ',process.env.NEXT_PUBLIC_MQTT_URL)
   return (
     <main className='flex min-h-screen flex-col items-center justify-between bg-slate-50 p-0'>
       <ReactFlowProvider>
@@ -48,7 +48,7 @@ export default function Home() {
           />
         </div>
       </ReactFlowProvider>
-      <MQTTReceiver/>
+      <MQTTReceiver />
     </main>
   );
 }

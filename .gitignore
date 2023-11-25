@@ -60,3 +60,4 @@ terraform.rc
 
 # key pair
 *.pem
+.env
