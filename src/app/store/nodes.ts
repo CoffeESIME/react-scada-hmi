@@ -1,14 +1,11 @@
 import { create } from 'zustand';
 import { Node } from 'reactflow';
-import { PIDNodes, PIDNodesAlarm } from '../Flows/nodes';
 import * as mqtt from 'mqtt';
 interface State {
   nodes: Node[];
 }
 
 interface Actions {
-  updateAlarmsOn: () => void;
-  updateAlarmsOff: () => void;
   updateNode: (id: string, data: any) => void;
   setNodes: (nodes: Node[]) => void;
   mqttClient: any;
@@ -21,6 +18,7 @@ export const useNodeStore = create<State & Actions>((set, get) => {
     mqttClient: null,
     connectMQTT: () => {
       const client = mqtt.connect(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `mqtt://${process.env.NEXT_PUBLIC_MQTT_URL}`,
         { protocol: 'ws' }
       );
@@ -48,9 +46,7 @@ export const useNodeStore = create<State & Actions>((set, get) => {
       get().mqttClient?.end();
       set({ mqttClient: null });
     },
-    updateAlarmsOn: () => set(() => ({ nodes: PIDNodesAlarm })),
-    updateAlarmsOff: () => set(() => ({ nodes: PIDNodes })),
-    setNodes: (nodes) => set(() => ({ nodes: nodes })),
+    setNodes: (nodes) => set(() => ({ nodes })),
     updateNode: (nodeId, newData) =>
       set((state) => ({
         nodes: state.nodes.map((node) =>

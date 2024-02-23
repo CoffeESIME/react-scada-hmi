@@ -12,7 +12,7 @@ import 'reactflow/dist/style.css';
 import './globals.css';
 import { useNodeStore } from './store/nodes';
 import React, { useEffect } from 'react';
-// import MQTTReceiver from './components/mqtt/MQTTReceiver';
+// eslint-disable-next-line react/function-component-definition
 export default function Home(): React.ReactElement {
   const [edges, setEdges] = useEdgesState<Edge[]>(initialEdges);
   const { connectMQTT, disconnectMQTT, nodes, setNodes } = useNodeStore();
@@ -41,7 +41,7 @@ export default function Home(): React.ReactElement {
           }}
         >
           <Background />
-          <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} />
+          <ReactFlow edges={edges} nodeTypes={nodeTypes} nodes={nodes} />
         </div>
       </ReactFlowProvider>
     </main>
