@@ -1,31 +1,31 @@
 import React, { memo } from 'react';
-import { Node, NodeProps, Position, Handle } from 'reactflow';
+import { NodeProps, Handle, Position } from 'reactflow';
 import { MotorIcon } from './MotorOne';
-type handleEl = {
+
+type HandleEl = {
   type: 'source' | 'target';
   position: Position;
   id: string;
-  style: {
-    top?: number;
-    bottom?: number;
-    left?: number;
-    right?: number;
-  };
-};
-type MotorNodeData = {
-  handles: handleEl[];
-  state: 'On' | 'Off' | 'Transition';
+  style?: React.CSSProperties;
 };
 
-type MotorNodeProps = NodeProps & {
-  data: MotorNodeData;
+type MotorNodeData = {
+  handles?: HandleEl[];
+  state?: 'On' | 'Off' | 'Transition';
+  size?: number;
 };
-//this should take in account that an alarm should appear in the app as an icon or similar
+
+type MotorNodeProps = NodeProps<MotorNodeData>;
 
 const MotorNode: React.FC<MotorNodeProps> = ({ data }) => {
+  // Usamos valores por defecto para no romper si `data` es parcial
+  const handles = data?.handles ?? [];
+  const state = data?.state ?? 'Off';
+  const size = data?.size ?? 80;
+
   return (
     <>
-      {data.handles.map((handle: handleEl) => (
+      {handles.map((handle) => (
         <Handle
           key={handle.id}
           position={handle.position}
@@ -36,8 +36,9 @@ const MotorNode: React.FC<MotorNodeProps> = ({ data }) => {
         />
       ))}
 
-      <MotorIcon size={80} state={data.state} />
+      <MotorIcon size={size} state={state} />
     </>
   );
 };
+
 export default memo(MotorNode);

@@ -1,130 +1,101 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+// components/DataTrend.tsx
+import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { ApexOptions } from 'apexcharts';
-import { createSeriesConstant } from './DataTrend.utils';
-const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
-type SeriesType = {
-  name: string;
-  data: number[];
-}[];
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
-interface DataTrendProps {
-  dataPoints: number[];
-  yAxis: {
-    max: number;
-    min: number;
-  };
-  setPoint: number;
-  limitBottom: number;
-  limitTop: number;
-  xAxis: {
-    max: number;
-    min: number;
-  };
-  title: string;
+interface DataPoint {
+  x: string;
+  y: number;
 }
 
-export const DataTrend: React.FC<DataTrendProps> = ({
-  dataPoints,
-  setPoint,
-  limitBottom,
-  limitTop,
-  xAxis,
-  yAxis,
-  title,
-}) => {
-  const [options, setOptions] = useState<ApexOptions>({
+function generateMockData(numPoints: number): DataPoint[] {
+  const now = new Date();
+  const data: DataPoint[] = [];
+
+  for (let i = 0; i < numPoints; i++) {
+    // Genera puntos en un intervalo de 1 segundo entre cada uno (por ejemplo)
+    const time = new Date(now.getTime() - (numPoints - i) * 1000);
+    data.push({
+      x: time.toISOString(),
+      y: Math.floor(Math.random() * 100), // valor aleatorio entre 0 y 100
+    });
+  }
+  return data;
+}
+
+export default function DataTrend() {
+  // State para guardar los datos del gráfico
+  const [seriesData, setSeriesData] = useState<DataPoint[]>([]);
+
+  // Config del gráfico
+  const [chartOptions, setChartOptions] = useState<any>({
     chart: {
-      id: 'basic-bar',
+      id: 'dataTrendChart',
       toolbar: {
         show: false,
       },
-      animations: {
-        enabled: false,
-      },
-    },
-    colors: ['#475CA7', '#23903D', '#888888', '#888888'],
-    legend: {
-      show: false,
-    },
-
-    yaxis: {
-      max: yAxis.max + 2,
-      min: yAxis.min - 2,
-      tickAmount: 2,
-      decimalsInFloat: 1,
     },
     xaxis: {
-      tickAmount: 4,
-      axisTicks: {
-        show: false,
+      type: 'datetime',
+      labels: {
+        format: 'HH:mm:ss',
       },
-    },
-
-    tooltip: {
-      enabled: false,
-    },
-    dataLabels: {
-      enabled: false,
     },
     stroke: {
-      dashArray: [0, 3, 4, 4],
-      width: 1,
+      curve: 'smooth',
     },
-    title: {
-      text: title,
-      margin: 0,
-      offsetY: 25,
-      offsetX: 35,
-      style: {
-        fontSize: '11',
-        fontWeight: 1,
+    yaxis: {
+      min: 0,
+      max: 100,
+    },
+    tooltip: {
+      x: {
+        format: 'HH:mm:ss',
       },
-    },
-    grid: {
-      show: false,
     },
   });
 
-  const [series, setSeries] = useState<SeriesType>([
-    {
-      name: 'series-1',
-      data: dataPoints,
-    },
-  ]);
-
   useEffect(() => {
-    const arraySetPoint = createSeriesConstant(setPoint, dataPoints.length);
+    // Generamos datos mock al montar el componente
+    const initialData = generateMockData(20); // 20 puntos iniciales
+    setSeriesData(initialData);
 
-    const arrayLimMin = createSeriesConstant(limitBottom, dataPoints.length);
+    // Si quieres simular datos en tiempo real, puedes usar un setInterval
+    // para agregar nuevos puntos de forma periódica.
+    const interval = setInterval(() => {
+      setSeriesData(prevData => {
+        const newData = [...prevData];
+        const nextPoint = {
+          x: new Date().toISOString(),
+          y: Math.floor(Math.random() * 100),
+        };
+        // Agrega al final y elimina el primer dato para que se mantenga la longitud
+        newData.push(nextPoint);
+        newData.shift();
+        return newData;
+      });
+    }, 3000); // cada 3 segundos
 
-    const arrayLimMax = createSeriesConstant(limitTop, dataPoints.length);
+    return () => clearInterval(interval);
+  }, []);
 
-    const arraysData = [
-      {
-        name: 'setpoint',
-        data: arraySetPoint,
-      },
-      {
-        name: 'limMax',
-        data: arrayLimMax,
-      },
-      {
-        name: 'limMin',
-        data: arrayLimMin,
-      },
-    ];
-    setSeries([...series, ...arraysData]);
-  }, [setPoint, limitBottom, limitTop]);
+  const series = [
+    {
+      name: 'MyDataTrend',
+      data: seriesData,
+    },
+  ];
 
   return (
-    <ApexCharts
-      options={options}
-      series={series}
-      type="line"
-      width={300}
-      height={190}
-    />
+    <div style={{ width: '100%', height: '400px' }}>
+      <Chart
+        options={chartOptions}
+        series={series}
+        type="line"
+        width="100%"
+        height="100%"
+      />
+    </div>
   );
-};
+}

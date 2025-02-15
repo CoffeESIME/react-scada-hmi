@@ -37,6 +37,13 @@ const alarms = [
     data: { isActive: false, type: 'MEDIUM' },
     parentNode: 'lGauge2',
   },
+  {
+    id: 'alarm2',
+    type: 'alarm',
+    position: { x: -15, y: -5 },
+    data: { isActive: false, type: 'MEDIUM' },
+    parentNode: 'lGauge1',
+  },
 ];
 
 const dataTrends: Node[] = [
@@ -858,7 +865,7 @@ const gauges = [
     type: 'linearGauge',
     position: { x: 15, y: 20 },
     data: {
-      value: 40,
+      value: -1,
       setPoint: calculateSetPointBottom(35, -20, 90),
       alarmStatus: false,
       thresholds: thresholdsStyle(
@@ -881,7 +888,7 @@ const gauges = [
     type: 'linearGauge',
     position: { x: 80, y: 20 },
     data: {
-      value: 50,
+      value: 0,
       setPoint: calculateSetPointBottom(50, 0, 100),
       alarmStatus: false,
       thresholds: thresholdsStyle(

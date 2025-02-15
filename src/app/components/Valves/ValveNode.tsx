@@ -1,26 +1,31 @@
-import { memo } from 'react';
-import { Node, NodeProps, Handle, Position } from 'reactflow';
+import React, { memo } from 'react';
+import { NodeProps, Handle, Position } from 'reactflow';
 import { ValveIcon } from './Valve';
 import { ValveIcon1 } from './Valve1';
-
-interface NodeData {
-  valveType: 'round' | 'rect';
-  rotation: number;
-  handles: HandleConfig[];
-  state: 'Open' | 'Closed' | 'Transition';
-}
-
-type ValveNodeProps = NodeProps<NodeData>;
 
 type HandleConfig = {
   type: 'source' | 'target';
   position: Position;
   id: string;
-  style: { top?: number; bottom?: number; left?: number };
+  style?: React.CSSProperties;
 };
 
-const ValveNode: React.FC<ValveNodeProps> = (props) => {
-  const { valveType, rotation, handles, state } = props.data;
+type ValveNodeData = {
+  valveType?: 'round' | 'rect';
+  rotation?: number;
+  handles?: HandleConfig[];
+  state?: 'Open' | 'Closed' | 'Transition';
+  size?: number;
+};
+
+type ValveNodeProps = NodeProps<ValveNodeData>;
+
+const ValveNode: React.FC<ValveNodeProps> = ({ data }) => {
+  const valveType = data?.valveType ?? 'round';
+  const rotation = data?.rotation ?? 0;
+  const handles = data?.handles ?? [];
+  const state = data?.state ?? 'Closed';
+  const size = data?.size ?? 50;
 
   return (
     <>
@@ -34,10 +39,11 @@ const ValveNode: React.FC<ValveNodeProps> = (props) => {
           className="border-0 bg-process-connector"
         />
       ))}
-      {valveType === 'round' && (
-        <ValveIcon state={state} size={50} rotation={rotation} />
+      {valveType === 'round' ? (
+        <ValveIcon state={state} size={size} rotation={rotation} />
+      ) : (
+        <ValveIcon1 state={state} size={size - 5} />
       )}
-      {valveType === 'rect' && <ValveIcon1 state={state} size={45} />}
     </>
   );
 };
