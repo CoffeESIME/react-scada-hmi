@@ -1,8 +1,10 @@
-import { Node, NodeProps } from 'reactflow';
+import { NodeProps } from 'reactflow';
 import { CardData } from './CardData';
 
 type CardDataNodeData = {
   label: string[];
+  href?: string; // Navigation path
+  onPress?: () => void; // Custom action
 };
 
 type CardDataNodeProps = NodeProps & {
@@ -10,5 +12,11 @@ type CardDataNodeProps = NodeProps & {
 };
 
 export const CardDataNode: React.FC<CardDataNodeProps> = ({ data }) => {
-  return <CardData label={data.label} />;
+  return (
+    <CardData
+      label={data.label}
+      href={data.href}
+      onPress={data.onPress}
+    />
+  );
 };

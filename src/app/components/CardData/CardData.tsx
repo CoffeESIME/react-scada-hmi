@@ -1,18 +1,38 @@
+'use client';
+
 import React from 'react';
 import { Card, CardBody } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 
 type CardDataProps = {
   label: string[];
+  href?: string; // Optional navigation path
+  onPress?: () => void; // Optional custom action
 };
 
-const handlePress = () => {
-  console.log('Pressed');
-};
+export const CardData: React.FC<CardDataProps> = ({ label, href, onPress }) => {
+  const router = useRouter();
 
-export const CardData: React.FC<CardDataProps> = ({ label }) => {
+  const handlePress = () => {
+    // Custom action takes priority
+    if (onPress) {
+      onPress();
+      return;
+    }
+
+    // Navigate if href is provided
+    if (href) {
+      router.push(href);
+      return;
+    }
+
+    // Default fallback
+    console.log('Card pressed:', label.join(' '));
+  };
+
   return (
     <Card
-      className="z-40 max-h-[230px] min-h-[80px] min-w-[120px] max-w-[180px] border-2 border-nav-button-border bg-nav-button-fg"
+      className="z-40 max-h-[230px] min-h-[80px] min-w-[120px] max-w-[180px] border-2 border-nav-button-border bg-nav-button-fg hover:bg-nav-button-fg/80 transition-colors cursor-pointer"
       onPress={handlePress}
       isPressable
     >
