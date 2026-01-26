@@ -47,14 +47,24 @@ export const SmallDataTrend: React.FC<smallLineChart> = ({
       .range([0, width]);
 
     // Escala vertical (y)
-    // Si deseas que min y max manden 100% (forzando el rango),
-    // no uses d3.min() ni d3.max(). En caso contrario, combina:
-    const yDomainMin = (min !== undefined) ? min : d3.min(finalData) ?? 0;
-    const yDomainMax = (max !== undefined) ? max : d3.max(finalData) ?? 100;
+    // Calculemos el rango de datos y de la banda
+    const dataMin = d3.min(finalData) ?? 0;
+    const dataMax = d3.max(finalData) ?? 100;
+
+    // El dominio debe incluir tanto los datos como la banda (min/max props)
+    // Si min/max no están definidos, usamos los de los datos
+    const bandMin = min ?? dataMin;
+    const bandMax = max ?? dataMax;
+
+    const viewMin = Math.min(dataMin, bandMin);
+    const viewMax = Math.max(dataMax, bandMax);
+
+    // Agregamos un poco de padding (10%) para que no toque los bordes
+    const padding = (viewMax - viewMin) * 0.1 || 1; // fallback si son iguales
 
     const yScale = d3
       .scaleLinear()
-      .domain([yDomainMin, yDomainMax])
+      .domain([viewMin - padding, viewMax + padding])
       .range([height, 0]);
 
     // Generador de línea
@@ -67,11 +77,11 @@ export const SmallDataTrend: React.FC<smallLineChart> = ({
     svg
       .append('rect')
       .attr('x', 0)
-      // yScale(yDomainMax) => parte superior
-      .attr('y', yScale(yDomainMax))
+      // yScale(bandMax) => parte superior
+      .attr('y', yScale(bandMax))
       .attr('width', width)
       // altura = diferencia entre la parte baja y alta de la banda en el svg
-      .attr('height', yScale(yDomainMin) - yScale(yDomainMax))
+      .attr('height', yScale(bandMin) - yScale(bandMax))
       .attr('fill', 'rgba(100, 150, 240, 0.3)');
 
     // Dibujamos la línea con los datos

@@ -70,6 +70,8 @@ const dataTrends: Node[] = [
       setPoint: 36,
       limitBottom: 32,
       limitTop: 40,
+      width: 280,
+      height: 170,
       yAxis: {
         min: 32,
         max: 40,
@@ -105,6 +107,8 @@ const dataTrends: Node[] = [
       setPoint: 5,
       limitBottom: 4,
       limitTop: 6,
+      width: 280,
+      height: 170,
       yAxis: {
         min: 4,
         max: 6,
@@ -145,6 +149,8 @@ const dataTrends: Node[] = [
         min: 0,
         max: 100,
       },
+      width: 280,
+      height: 170,
       title: 'Main Feed MPH',
     },
   },
@@ -168,6 +174,8 @@ const dataTrends: Node[] = [
       setPoint: 12,
       limitBottom: 11,
       limitTop: 13,
+      width: 280,
+      height: 170,
       yAxis: {
         min: 10,
         max: 14,
@@ -199,6 +207,8 @@ const dataTrends: Node[] = [
       setPoint: 4,
       limitBottom: 2.9,
       limitTop: 5.5,
+      width: 280,
+      height: 170,
       yAxis: {
         min: 2,
         max: 6,
@@ -230,6 +240,8 @@ const dataTrends: Node[] = [
       setPoint: 45.5,
       limitBottom: 42,
       limitTop: 47,
+      width: 280,
+      height: 170,
       yAxis: {
         min: 40,
         max: 48,
