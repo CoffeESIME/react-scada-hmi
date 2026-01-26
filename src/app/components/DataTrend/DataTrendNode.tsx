@@ -1,6 +1,7 @@
 import { Node, NodeProps } from 'reactflow';
-import  DataTrend  from './DataTrend';
+import DataTrend from './DataTrend';
 import React from 'react';
+
 type DataTrendNodeData = {
   dataPoints: number[];
   yAxis?: {
@@ -15,6 +16,8 @@ type DataTrendNodeData = {
     min: number;
   };
   title: string;
+  width?: number;
+  height?: number;
 };
 
 type DataTrendNodeProps = NodeProps & {
@@ -26,6 +29,8 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   return (
     <div className="z-40">
       <DataTrend
+        width={data.width}
+        height={data.height}
       />
     </div>
   );

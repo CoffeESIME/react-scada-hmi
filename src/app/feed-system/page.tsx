@@ -151,6 +151,8 @@ const feedSystemNodes: Node[] = [
             yAxis: { min: 1350, max: 150 },
             xAxis: { min: 0, max: 10 },
             title: 'Motor Speed (RPM)',
+            width: 230,
+            height: 200,
         },
     },
 

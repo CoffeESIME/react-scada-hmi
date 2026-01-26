@@ -9,26 +9,28 @@ interface DataPoint {
   y: number;
 }
 
+interface DataTrendProps {
+  width?: number | string;
+  height?: number | string;
+}
+
 function generateMockData(numPoints: number): DataPoint[] {
   const now = new Date();
   const data: DataPoint[] = [];
 
   for (let i = 0; i < numPoints; i++) {
-    // Genera puntos en un intervalo de 1 segundo entre cada uno (por ejemplo)
     const time = new Date(now.getTime() - (numPoints - i) * 1000);
     data.push({
       x: time.toISOString(),
-      y: Math.floor(Math.random() * 100), // valor aleatorio entre 0 y 100
+      y: Math.floor(Math.random() * 100),
     });
   }
   return data;
 }
 
-export default function DataTrend() {
-  // State para guardar los datos del gráfico
+export default function DataTrend({ width = '100%', height = 400 }: DataTrendProps) {
   const [seriesData, setSeriesData] = useState<DataPoint[]>([]);
 
-  // Config del gráfico
   const [chartOptions, setChartOptions] = useState<any>({
     chart: {
       id: 'dataTrendChart',
@@ -57,12 +59,9 @@ export default function DataTrend() {
   });
 
   useEffect(() => {
-    // Generamos datos mock al montar el componente
-    const initialData = generateMockData(20); // 20 puntos iniciales
+    const initialData = generateMockData(20);
     setSeriesData(initialData);
 
-    // Si quieres simular datos en tiempo real, puedes usar un setInterval
-    // para agregar nuevos puntos de forma periódica.
     const interval = setInterval(() => {
       setSeriesData(prevData => {
         const newData = [...prevData];
@@ -70,12 +69,11 @@ export default function DataTrend() {
           x: new Date().toISOString(),
           y: Math.floor(Math.random() * 100),
         };
-        // Agrega al final y elimina el primer dato para que se mantenga la longitud
         newData.push(nextPoint);
         newData.shift();
         return newData;
       });
-    }, 3000); // cada 3 segundos
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
@@ -88,7 +86,7 @@ export default function DataTrend() {
   ];
 
   return (
-    <div style={{ width: '100%', height: '400px' }}>
+    <div style={{ width: width, height: height }}>
       <Chart
         options={chartOptions}
         series={series}
