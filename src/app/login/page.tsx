@@ -3,96 +3,102 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../store/useAuthStore';
+import Link from 'next/link';
 
 export default function LoginPage(): React.ReactElement {
-    const router = useRouter();
-    const { login, isLoading, error, setError } = useAuthStore();
+  const router = useRouter();
+  const { login, isLoading, error, setError } = useAuthStore();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError(null);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
 
-        if (!email || !password) {
-            setError('Por favor ingresa email y contraseña');
-            return;
-        }
+    if (!email || !password) {
+      setError('Por favor ingresa email y contraseña');
+      return;
+    }
 
-        const success = await login(email, password);
-        if (success) {
-            router.push('/scada');
-        }
-    };
+    const success = await login(email, password);
+    if (success) {
+      router.push('/scada');
+    }
+  };
 
-    return (
-        <div className="login-container">
-            <div className="login-card">
-                {/* Logo/Header */}
-                <div className="login-header">
-                    <div className="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                        </svg>
-                    </div>
-                    <h1>SCADA HMI</h1>
-                    <p>Sistema de Control y Monitoreo</p>
-                </div>
+  return (
+    <div className="login-container">
+      <div className="login-card">
+        {/* Logo/Header */}
+        <div className="login-header">
+          <div className="logo-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+            </svg>
+          </div>
+          <h1>SCADA HMI</h1>
+          <p>Sistema de Control y Monitoreo</p>
+        </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="login-form">
-                    {error && (
-                        <div className="error-message">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                            </svg>
-                            <span>{error}</span>
-                        </div>
-                    )}
-
-                    <div className="input-group">
-                        <label htmlFor="email">Correo Electrónico</label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="admin@scada.com"
-                            autoComplete="email"
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    <div className="input-group">
-                        <label htmlFor="password">Contraseña</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            autoComplete="current-password"
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    <button type="submit" className="login-button" disabled={isLoading}>
-                        {isLoading ? (
-                            <span className="loading-spinner"></span>
-                        ) : (
-                            'Iniciar Sesión'
-                        )}
-                    </button>
-                </form>
-
-                {/* Footer */}
-                <div className="login-footer">
-                    <p>¿Problemas para acceder? Contacta al administrador</p>
-                </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="login-form">
+          {error && (
+            <div className="error-message">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+              </svg>
+              <span>{error}</span>
             </div>
+          )}
 
-            <style jsx>{`
+          <div className="input-group">
+            <label htmlFor="email">Correo Electrónico</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@scada.com"
+              autoComplete="email"
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              disabled={isLoading}
+            />
+          </div>
+
+          <button type="submit" className="login-button" disabled={isLoading}>
+            {isLoading ? (
+              <span className="loading-spinner"></span>
+            ) : (
+              'Iniciar Sesión'
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <div className="login-footer">
+          <p>
+            ¿No tienes cuenta?{' '}
+            <Link href="/register" className="text-blue-400 hover:text-blue-300 font-semibold no-underline hover:underline transition-all">
+              Regístrate aquí
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      <style jsx>{`
         .login-container {
           min-height: 100vh;
           display: flex;
@@ -254,6 +260,6 @@ export default function LoginPage(): React.ReactElement {
           margin: 0;
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 }

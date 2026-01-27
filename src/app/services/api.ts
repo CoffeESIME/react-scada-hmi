@@ -65,10 +65,10 @@ export const authApi = {
 
     getCurrentUser: () => apiFetch('/auth/me'),
 
-    register: async (email: string, password: string, fullName?: string) => {
+    register: async (email: string, username: string, password: string, fullName?: string) => {
         return apiFetch('/auth/register', {
             method: 'POST',
-            body: JSON.stringify({ email, password, full_name: fullName }),
+            body: JSON.stringify({ email, username, password, full_name: fullName }),
         });
     },
 };
