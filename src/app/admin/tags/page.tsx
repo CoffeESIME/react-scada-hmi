@@ -17,8 +17,7 @@ import {
 import { Toaster, toast } from 'sonner';
 import TagFormModal from '@/app/components/tags/TagFormModal';
 import { Tag, TagListResponse } from '@/app/components/tags/schemas';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888';
+import { api } from '@/lib/api';
 
 const protocolColors: Record<string, 'primary' | 'secondary' | 'success' | 'warning'> = {
     modbus: 'primary',
@@ -37,12 +36,11 @@ export default function TagsPage() {
     const fetchTags = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${API_URL}/api/tags/?page_size=100`);
-            if (!response.ok) throw new Error('Error al cargar tags');
-            const data: TagListResponse = await response.json();
-            setTags(data.items);
+            const response = await api.get<TagListResponse>('/tags/?page_size=100');
+            setTags(response.data.items);
         } catch (error: any) {
-            toast.error(error.message || 'Error al cargar tags');
+            const message = error.response?.data?.detail || error.message || 'Error al cargar tags';
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -66,14 +64,12 @@ export default function TagsPage() {
         if (!confirm(`¿Eliminar el tag "${tag.name}"?`)) return;
 
         try {
-            const response = await fetch(`${API_URL}/api/tags/${tag.id}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) throw new Error('Error al eliminar');
+            await api.delete(`/tags/${tag.id}`);
             toast.success('Tag eliminado');
             fetchTags();
         } catch (error: any) {
-            toast.error(error.message || 'Error al eliminar');
+            const message = error.response?.data?.detail || error.message || 'Error al eliminar';
+            toast.error(message);
         }
     };
 

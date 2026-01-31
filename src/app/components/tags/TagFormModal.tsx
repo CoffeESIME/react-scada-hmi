@@ -19,6 +19,7 @@ import {
 } from '@nextui-org/react';
 import { toast } from 'sonner';
 import { TagFormSchema, TagFormData, TagFormInput, Tag, ProtocolType } from './schemas';
+import { api } from '@/lib/api';
 
 interface TagFormModalProps {
     isOpen: boolean;
@@ -26,8 +27,6 @@ interface TagFormModalProps {
     onSuccess: () => void;
     editTag?: Tag | null;
 }
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888';
 
 export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: TagFormModalProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -136,21 +135,10 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                 };
             }
 
-            const url = isEditing
-                ? `${API_URL}/api/tags/${editTag.id}`
-                : `${API_URL}/api/tags/`;
-
-            const method = isEditing ? 'PUT' : 'POST';
-
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Error al guardar');
+            if (isEditing) {
+                await api.put(`/tags/${editTag.id}`, payload);
+            } else {
+                await api.post('/tags/', payload);
             }
 
             toast.success(isEditing ? 'Tag actualizado' : 'Tag creado');
@@ -158,7 +146,8 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
             onSuccess();
             onClose();
         } catch (error: any) {
-            toast.error(error.message || 'Error al guardar el tag');
+            const message = error.response?.data?.detail || error.message || 'Error al guardar el tag';
+            toast.error(message);
         } finally {
             setIsSubmitting(false);
         }

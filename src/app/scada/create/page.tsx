@@ -28,6 +28,14 @@ import MotorNode from '@/app/components/Motors/MotorNode';
 import ValveNode from '@/app/components/Valves/ValveNode';
 import LinearGaugeNode from '@/app/components/LinearGauge/LinearGaugeNode';
 import { AlarmNode } from '@/app/components/Alarm/AlarmNode';
+import TankNode from '@/app/components/Tank/TankNode';
+import { LabelNode } from '@/app/components/Label/LabelNode';
+import { ButtonNode } from '@/app/components/Button/ButtonNode';
+import { BoxCardNode } from '@/app/components/Boxes/BoxNode';
+import { CardDataNode } from '@/app/components/CardData/CardDataNode';
+import { ControlDataCardNode } from '@/app/components/ControlDataCard/ControlDataCardNode';
+import { DataTrendNode } from '@/app/components/DataTrend/DataTrendNode';
+import { SmallDataTrendNode } from '@/app/components/SmallDataTrend/SmallDataTrendNode';
 
 // ---------------------------------------------------------------------
 // 2) DEFINE NODETYPES FUERA DEL COMPONENTE (o usa useMemo())
@@ -38,6 +46,14 @@ const nodeTypes: NodeTypes = {
   valve: ValveNode,
   gauge: LinearGaugeNode,
   alarm: AlarmNode,
+  tank: TankNode,
+  label: LabelNode,
+  button: ButtonNode,
+  box: BoxCardNode,
+  cardData: CardDataNode,
+  controlDataCard: ControlDataCardNode,
+  dataTrend: DataTrendNode,
+  smallDataTrend: SmallDataTrendNode,
 };
 
 // Si en algún momento necesitas edgeTypes custom, también defínelo afuera:
@@ -45,12 +61,24 @@ const nodeTypes: NodeTypes = {
 //   customEdge: MyCustomEdge,
 // };
 
-// 1) DEFINE O IMPORTA AQUI
+// Lista de nodos disponibles en el sidebar
 const availableNodeTypes = [
+  // Equipos
   { label: 'Motor', type: 'motor' },
   { label: 'Valve', type: 'valve' },
+  { label: 'Tank', type: 'tank' },
+  // Indicadores
   { label: 'Gauge', type: 'gauge' },
   { label: 'Alarm', type: 'alarm' },
+  // UI Elements
+  { label: 'Label', type: 'label' },
+  { label: 'Button', type: 'button' },
+  { label: 'Box', type: 'box' },
+  // Data Display
+  { label: 'Card Data', type: 'cardData' },
+  { label: 'Control Card', type: 'controlDataCard' },
+  { label: 'Data Trend', type: 'dataTrend' },
+  { label: 'Mini Trend', type: 'smallDataTrend' },
 ];
 // ---------------------------------------------------------------------
 // 3) ESTILOS (usando paleta Admin de Tailwind)
@@ -183,6 +211,83 @@ function getDefaultDataForNode(nodeType: string) {
         isActive: true,
         type: 'HIGH',
         handles: [],
+      };
+    case 'tank':
+      return {
+        handles: [
+          {
+            type: 'target' as const,
+            position: Position.Top,
+            id: 'tankInput',
+            style: { left: 30 },
+          },
+          {
+            type: 'source' as const,
+            position: Position.Bottom,
+            id: 'tankOutput',
+            style: { left: 30 },
+          },
+        ],
+      };
+    case 'label':
+      return {
+        text: 'Etiqueta',
+        width: 100,
+        height: 30,
+        triangleDirection: 'right' as const,
+        handle: {
+          type: 'source' as const,
+          position: Position.Right,
+        },
+      };
+    case 'button':
+      return {
+        label: 'Botón',
+      };
+    case 'box':
+      return {};
+    case 'cardData':
+      return {
+        label: ['Título', 'Subtítulo'],
+        href: '#',
+      };
+    case 'controlDataCard':
+      return {
+        title: 'PID Controller',
+        processVariable: 'PV',
+        processVariableValue: 50,
+        setPoint: 60,
+        output: 45,
+        mode: 'AUTO' as const,
+        handleDataSource: {
+          position: Position.Right,
+          id: 'controlSource',
+          style: { top: 50 },
+        },
+        handleDataTarget: {
+          position: Position.Left,
+          id: 'controlTarget',
+          style: { top: 50 },
+        },
+      };
+    case 'dataTrend':
+      return {
+        title: 'Trend Chart',
+        dataPoints: [20, 35, 45, 50, 55, 60, 58, 62, 65],
+        setPoint: 50,
+        limitTop: 80,
+        limitBottom: 20,
+        yAxis: { min: 0, max: 100 },
+        width: 300,
+        height: 200,
+      };
+    case 'smallDataTrend':
+      return {
+        data: [20, 25, 22, 30, 28, 35, 40, 38],
+        width: 120,
+        height: 60,
+        min: 0,
+        max: 50,
       };
     default:
       return { label: 'Custom Node', handles: [] };
