@@ -92,6 +92,24 @@ const config: Config = {
         'nav-button-fg': '#C6C6C6',
         'nav-button-border': '#AAAAAA',
         'nav-label': '#3F3F3F',
+
+        // Admin/Engineering UI Colors (separate from SCADA HMI visuals)
+        'admin-bg': '#1a1a2e',           // Dark background for admin panels
+        'admin-bg-secondary': '#16213e', // Secondary dark background
+        'admin-bg-tertiary': '#0f3460',  // Tertiary background (cards, modals)
+        'admin-surface': '#1f1f38',      // Surface color for inputs, cards
+        'admin-surface-hover': '#2a2a4a', // Hover state for surfaces
+        'admin-border': '#3a3a5c',       // Border color
+        'admin-border-focus': '#6366f1', // Focus border (indigo)
+        'admin-text': '#e2e8f0',         // Primary text (light)
+        'admin-text-secondary': '#94a3b8', // Secondary text (muted)
+        'admin-text-muted': '#64748b',   // Muted text
+        'admin-primary': '#6366f1',      // Primary action color (indigo)
+        'admin-primary-hover': '#818cf8', // Primary hover
+        'admin-success': '#22c55e',      // Success state (green)
+        'admin-warning': '#f59e0b',      // Warning state (amber)
+        'admin-danger': '#ef4444',       // Danger state (red)
+        'admin-info': '#3b82f6',         // Info state (blue)
       },
     },
   },

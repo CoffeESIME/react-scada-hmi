@@ -47,65 +47,68 @@ const nodeTypes: NodeTypes = {
 
 // 1) DEFINE O IMPORTA AQUI
 const availableNodeTypes = [
-    { label: 'Motor', type: 'motor' },
-    { label: 'Valve', type: 'valve' },
-    { label: 'Gauge', type: 'gauge' },
-    { label: 'Alarm', type: 'alarm' },
-  ];
+  { label: 'Motor', type: 'motor' },
+  { label: 'Valve', type: 'valve' },
+  { label: 'Gauge', type: 'gauge' },
+  { label: 'Alarm', type: 'alarm' },
+];
 // ---------------------------------------------------------------------
-// 3) ESTILOS (CON ALTO CONTRASTE O COMO PREFIERAS)
+// 3) ESTILOS (usando paleta Admin de Tailwind)
 // ---------------------------------------------------------------------
 const containerStyle: CSSProperties = {
   width: '100%',
   height: '80vh',
-  border: '2px solid #444',
+  border: '2px solid #3a3a5c', // admin-border
   display: 'flex',
-  backgroundColor: '#222',
-  color: '#f1f1f1',
+  backgroundColor: '#1a1a2e', // admin-bg
+  color: '#e2e8f0', // admin-text
   fontFamily: 'sans-serif',
 };
 
 const sideMenuStyle: CSSProperties = {
   width: '160px',
-  backgroundColor: '#333',
+  backgroundColor: '#16213e', // admin-bg-secondary
   padding: '10px',
-  borderRight: '2px solid #444',
+  borderRight: '2px solid #3a3a5c', // admin-border
 };
 
 const menuItemStyle: CSSProperties = {
   cursor: 'move',
-  backgroundColor: '#444',
+  backgroundColor: '#1f1f38', // admin-surface
   marginBottom: '6px',
   padding: '8px',
   textAlign: 'center',
-  border: '1px solid #666',
-  color: '#fff',
+  border: '1px solid #3a3a5c', // admin-border
+  color: '#e2e8f0', // admin-text
+  borderRadius: '4px',
 };
 
 const canvasStyle: CSSProperties = {
   flex: 1,
-  backgroundColor: '#555',
+  backgroundColor: '#0f3460', // admin-bg-tertiary
 };
 
 const propertiesPanelStyle: CSSProperties = {
   width: '320px',
-  backgroundColor: '#333',
+  backgroundColor: '#16213e', // admin-bg-secondary
   padding: '10px',
-  borderLeft: '2px solid #444',
+  borderLeft: '2px solid #3a3a5c', // admin-border
 };
 
 const headingStyle: CSSProperties = {
   fontSize: '1.2rem',
   marginBottom: '0.5rem',
+  color: '#e2e8f0', // admin-text
 };
 
 const inputStyle: CSSProperties = {
-  backgroundColor: '#444',
-  color: '#fff',
-  border: '1px solid #666',
+  backgroundColor: '#1f1f38', // admin-surface
+  color: '#e2e8f0', // admin-text
+  border: '1px solid #3a3a5c', // admin-border
   padding: '6px',
   marginBottom: '6px',
   width: '100%',
+  borderRadius: '4px',
 };
 
 const selectStyle: CSSProperties = {
@@ -114,77 +117,77 @@ const selectStyle: CSSProperties = {
 };
 
 function getDefaultDataForNode(nodeType: string) {
-    switch (nodeType) {
-      case 'motor':
-        return {
-          label: 'Motor Node',
-          state: 'On',
-          handles: [
-            {
-              type: 'target' as const,
-              position: Position.Left,
-              id: 'motorTarget1',
-              style: { top: 20 },
-            },
-            {
-              type: 'source' as const,
-              position: Position.Right,
-              id: 'motorSource1',
-              style: { top: 20 },
-            },
-          ],
-        };
-      case 'valve':
-        return {
-          label: 'Valve Node',
-          state: 'Open',
-          rotation: 0,
-          handles: [
-            {
-              type: 'target' as const,
-              position: Position.Left,
-              id: 'valve_1_target_1',
-              style: { top: 30 },
-            },
-            {
-              type: 'source' as const,
-              position: Position.Right,
-              id: 'valve_1_source_1',
-              style: { top: 30 },
-            },
-            {
-              type: 'source' as const,
-              position: Position.Top,
-              id: 'valve_1_source_2',
-              style: { left: 10 },
-            },
-          ],
-        };
-      case 'gauge':
-        return {
-          label: 'Gauge Node',
-          value: 50,
-          setPoint: 60,
-          handles: [
-            {
-              type: 'target' as const,
-              position: Position.Left,
-              id: 'gaugeTarget1',
-              style: { top: 40 },
-            },
-          ],
-        };
-      case 'alarm':
-        return {
-          label: 'Alarm Node',
-          isActive: true,
-          type: 'HIGH',
-          handles: [],
-        };
-      default:
-        return { label: 'Custom Node', handles: [] };
-    }
+  switch (nodeType) {
+    case 'motor':
+      return {
+        label: 'Motor Node',
+        state: 'On',
+        handles: [
+          {
+            type: 'target' as const,
+            position: Position.Left,
+            id: 'motorTarget1',
+            style: { top: 20 },
+          },
+          {
+            type: 'source' as const,
+            position: Position.Right,
+            id: 'motorSource1',
+            style: { top: 20 },
+          },
+        ],
+      };
+    case 'valve':
+      return {
+        label: 'Valve Node',
+        state: 'Open',
+        rotation: 0,
+        handles: [
+          {
+            type: 'target' as const,
+            position: Position.Left,
+            id: 'valve_1_target_1',
+            style: { top: 30 },
+          },
+          {
+            type: 'source' as const,
+            position: Position.Right,
+            id: 'valve_1_source_1',
+            style: { top: 30 },
+          },
+          {
+            type: 'source' as const,
+            position: Position.Top,
+            id: 'valve_1_source_2',
+            style: { left: 10 },
+          },
+        ],
+      };
+    case 'gauge':
+      return {
+        label: 'Gauge Node',
+        value: 50,
+        setPoint: 60,
+        handles: [
+          {
+            type: 'target' as const,
+            position: Position.Left,
+            id: 'gaugeTarget1',
+            style: { top: 40 },
+          },
+        ],
+      };
+    case 'alarm':
+      return {
+        label: 'Alarm Node',
+        isActive: true,
+        type: 'HIGH',
+        handles: [],
+      };
+    default:
+      return { label: 'Custom Node', handles: [] };
   }
+}
 
 // ---------------------------------------------------------------------
 // 4) COMPONENTE PRINCIPAL
@@ -269,20 +272,20 @@ export default function CreateHmiScreen(): React.ReactElement {
   // ---------------------------------------------------------------------
   // 5) getDefaultDataForNode: setea props iniciales según el tipo
   // ---------------------------------------------------------------------
-//   function getDefaultDataForNode(nodeType: string) {
-//     switch (nodeType) {
-//       case 'motor':
-//         return { label: 'Motor Node', state: 'On' };
-//       case 'valve':
-//         return { label: 'Valve Node', state: 'Open', rotation: 0 };
-//       case 'gauge':
-//         return { label: 'Gauge Node', value: 50, setPoint: 60 };
-//       case 'alarm':
-//         return { label: 'Alarm Node', isActive: true, type: 'HIGH' };
-//       default:
-//         return { label: 'Custom Node' };
-//     }
-//   }
+  //   function getDefaultDataForNode(nodeType: string) {
+  //     switch (nodeType) {
+  //       case 'motor':
+  //         return { label: 'Motor Node', state: 'On' };
+  //       case 'valve':
+  //         return { label: 'Valve Node', state: 'Open', rotation: 0 };
+  //       case 'gauge':
+  //         return { label: 'Gauge Node', value: 50, setPoint: 60 };
+  //       case 'alarm':
+  //         return { label: 'Alarm Node', isActive: true, type: 'HIGH' };
+  //       default:
+  //         return { label: 'Custom Node' };
+  //     }
+  //   }
 
   // ---------------------------------------------------------------------
   // 6) Funciones para editar el nodo seleccionado
@@ -420,9 +423,9 @@ export default function CreateHmiScreen(): React.ReactElement {
     // Maneja el cambio de data
     const handleChangeDataField =
       (field: string) =>
-      (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        updateSelectedNodeData(field, e.target.value);
-      };
+        (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+          updateSelectedNodeData(field, e.target.value);
+        };
 
     return (
       <div>
@@ -542,7 +545,7 @@ export default function CreateHmiScreen(): React.ReactElement {
                 style={{
                   marginLeft: '8px',
                   padding: '2px 6px',
-                  backgroundColor: '#e54e4e',
+                  backgroundColor: '#ef4444', // admin-danger
                   color: '#fff',
                   border: 'none',
                   borderRadius: '3px',
@@ -568,7 +571,7 @@ export default function CreateHmiScreen(): React.ReactElement {
           <button
             style={{
               padding: '6px 10px',
-              backgroundColor: '#1c6dd0',
+              backgroundColor: '#6366f1', // admin-primary
               color: '#fff',
               border: 'none',
               borderRadius: '4px',
@@ -621,11 +624,11 @@ export default function CreateHmiScreen(): React.ReactElement {
   // 11) RENDER PRINCIPAL
   // ---------------------------------------------------------------------
   return (
-    <div>
-      <h2 style={{ fontSize: '1.5rem', margin: '0 0 0.5rem 0' }}>
+    <div className="bg-admin-bg min-h-screen p-4">
+      <h2 className="text-2xl font-bold text-admin-text mb-2">
         Creador de Pantallas SCADA
       </h2>
-      <p style={{ marginBottom: '1rem' }}>
+      <p className="text-admin-text-secondary mb-4">
         Arrastra elementos, haz clic en nodos para editar propiedades e ID, etc.
       </p>
 
@@ -651,7 +654,7 @@ export default function CreateHmiScreen(): React.ReactElement {
             style={{
               marginTop: '12px',
               padding: '8px 12px',
-              backgroundColor: '#1c6dd0',
+              backgroundColor: '#6366f1', // admin-primary
               color: '#fff',
               border: 'none',
               borderRadius: '4px',

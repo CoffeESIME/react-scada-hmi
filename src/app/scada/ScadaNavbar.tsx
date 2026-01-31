@@ -15,33 +15,51 @@ export default function ScadaNavbar(): React.ReactElement {
     };
 
     return (
-        <nav className="flex items-center justify-between bg-gray-200 p-4">
+        <nav className="flex items-center justify-between bg-admin-bg-secondary border-b border-admin-border px-6 py-3">
             {/* Enlaces principales */}
-            <div className="flex items-center gap-4">
-                <Link href="/scada/create" className="hover:underline">
+            <div className="flex items-center gap-6">
+                <Link
+                    href="/scada/create"
+                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
+                >
                     Crear
                 </Link>
-                <Link href="/scada/edit" className="hover:underline">
+                <Link
+                    href="/scada/edit"
+                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
+                >
                     Editar
                 </Link>
-                <Link href="/scada/organize" className="hover:underline">
+                <Link
+                    href="/scada/organize"
+                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
+                >
                     Organizar Flujo
                 </Link>
-                <Link href="/scada/settings" className="hover:underline">
+                <Link
+                    href="/scada/settings"
+                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
+                >
                     Ajustes
+                </Link>
+                <Link
+                    href="/scada/tags"
+                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
+                >
+                    Tags
                 </Link>
             </div>
 
             {/* Usuario y Logout */}
             <div className="flex items-center gap-4">
                 {user && (
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-admin-text-muted">
                         {user.email}
                     </span>
                 )}
                 <button
                     onClick={handleLogout}
-                    className="rounded bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600 transition-colors"
+                    className="rounded bg-admin-danger px-3 py-1.5 text-sm text-white hover:bg-red-600 transition-colors"
                 >
                     Cerrar Sesión
                 </button>

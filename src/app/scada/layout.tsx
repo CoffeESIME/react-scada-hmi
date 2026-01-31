@@ -21,7 +21,7 @@ export default function ScadaLayout({
             <ScadaNavbar />
 
             {/* CONTENIDO DINÁMICO */}
-            <main className="flex-1 bg-white p-4">{children}</main>
+            <main className="flex-1  p-4">{children}</main>
           </div>
         </ScadaAuthWrapper>
       </Providers>
