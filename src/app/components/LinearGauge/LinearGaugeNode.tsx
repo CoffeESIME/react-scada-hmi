@@ -2,15 +2,30 @@ import { memo } from 'react';
 import { NodeProps } from 'reactflow';
 import LinearGauge from './LinearGauge';
 import { LinearGaugeProps } from './LinearGauge.type';
+import { useTagValue } from '@/app/store/tagStore';
+
+interface LinearGaugeNodeData extends LinearGaugeProps {
+  /** Tag ID for live data binding */
+  tagId?: number;
+}
 
 type LinearGaugeNodeProps = NodeProps & {
-  data: LinearGaugeProps;
+  data: LinearGaugeNodeData;
 };
 
+/**
+ * LinearGaugeNode - React Flow wrapper for LinearGauge component
+ * 
+ * If tagId is provided, reads live value from tagStore.
+ * Otherwise falls back to static data.value prop.
+ */
 const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
+  // Get live value from tagStore if tagId is set, otherwise use static value
+  const liveValue = useTagValue(data.tagId, data.value ?? 0);
+
   return (
     <LinearGauge
-      value={data.value}
+      value={liveValue}
       alarmStatus={data.alarmStatus}
       thresholds={data.thresholds}
       units={data.units}
@@ -21,4 +36,5 @@ const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
     />
   );
 };
+
 export default memo(LinearGaugeNode);
