@@ -36,6 +36,10 @@ import { CardDataNode } from '@/app/components/CardData/CardDataNode';
 import { ControlDataCardNode } from '@/app/components/ControlDataCard/ControlDataCardNode';
 import { DataTrendNode } from '@/app/components/DataTrend/DataTrendNode';
 import { SmallDataTrendNode } from '@/app/components/SmallDataTrend/SmallDataTrendNode';
+import { TagSelector } from '@/app/components/tags/TagSelector';
+import { SaveScreenModal } from '@/app/components/screens/SaveScreenModal';
+import { ConfirmationModal } from '@/app/components/common/ConfirmationModal';
+import { useRouter } from 'next/navigation';
 
 // ---------------------------------------------------------------------
 // 2) DEFINE NODETYPES FUERA DEL COMPONENTE (o usa useMemo())
@@ -297,10 +301,13 @@ function getDefaultDataForNode(nodeType: string) {
 // ---------------------------------------------------------------------
 // 4) COMPONENTE PRINCIPAL
 // ---------------------------------------------------------------------
-export default function CreateHmiScreen(): React.ReactElement {
+function CreateHmiScreenContent(): React.ReactElement {
+  const router = useRouter();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // OPCIONAL: si tuvieras edgeTypes custom:
   // const edgeTypes = useMemo(() => ({ customEdge: MyCustomEdge }), []);
@@ -532,9 +539,52 @@ export default function CreateHmiScreen(): React.ReactElement {
           updateSelectedNodeData(field, e.target.value);
         };
 
+    // Solicitar confirmación de eliminación
+    const handleDeleteNode = () => {
+      if (!selectedNode) return;
+      setIsDeleteModalOpen(true);
+    };
+
+    // Ejecutar eliminación confirmada (se pasa al modal)
+    const confirmDeleteNode = () => {
+      if (!selectedNode) return;
+      const id = selectedNode.id;
+      setNodes((nds) => nds.filter((n) => n.id !== id));
+      setEdges((eds) => eds.filter((e) => e.source !== id && e.target !== id));
+      setSelectedNode(null);
+    };
+
     return (
       <div>
-        <h3 style={{ ...headingStyle }}>Editar Nodo</h3>
+        {/* Modal de confirmación (Portal) */}
+        <ConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={confirmDeleteNode}
+          title="Eliminar Nodo"
+          message={`¿Estás seguro de que deseas eliminar el nodo "${selectedNode.id}"? Esta acción no se puede deshacer.`}
+          confirmLabel="Eliminar"
+          isDanger
+        />
+
+        <div className="flex justify-between items-center mb-2">
+          <h3 style={{ ...headingStyle, margin: 0 }}>Editar Nodo</h3>
+          <button
+            onClick={handleDeleteNode}
+            style={{
+              padding: '4px 8px',
+              backgroundColor: '#ef4444',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '12px',
+            }}
+            title="Eliminar nodo"
+          >
+            🗑 Eliminar
+          </button>
+        </div>
 
         {/* ID del nodo */}
         <label className="mb-1 block">ID del nodo:</label>
@@ -636,6 +686,61 @@ export default function CreateHmiScreen(): React.ReactElement {
           </>
         )}
 
+        {/* ============================================================ */}
+        {/* TAG BINDING SECTION - Solo para nodos con datos en vivo */}
+        {/* ============================================================ */}
+        {['motor', 'valve', 'gauge', 'tank', 'alarm', 'dataTrend', 'controlDataCard', 'smallDataTrend'].includes(type ?? '') && (
+          <>
+            <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-semibold text-admin-text">Vinculación de Tag</h4>
+                {data?.tagId ? (
+                  <span className="flex items-center gap-1 text-xs text-green-400">
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    Vinculado
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-xs text-gray-400">
+                    <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+                    Sin vínculo
+                  </span>
+                )}
+              </div>
+
+              <TagSelector
+                value={data?.tagId ?? null}
+                onChange={(tagId) => {
+                  updateSelectedNodeData('tagId', tagId);
+                }}
+                label="Tag de datos"
+                placeholder="Seleccionar tag..."
+                size="sm"
+                className="w-full"
+              />
+
+              {data?.tagId && (
+                <button
+                  style={{
+                    marginTop: '8px',
+                    padding: '4px 8px',
+                    backgroundColor: '#ef4444',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                  onClick={() => updateSelectedNodeData('tagId', null)}
+                >
+                  Desvincular Tag
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
         <hr style={{ margin: '12px 0', borderColor: '#666' }} />
 
         <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Edges para este nodo</h4>
@@ -730,12 +835,45 @@ export default function CreateHmiScreen(): React.ReactElement {
   // ---------------------------------------------------------------------
   return (
     <div className="bg-admin-bg min-h-screen p-4">
-      <h2 className="text-2xl font-bold text-admin-text mb-2">
-        Creador de Pantallas SCADA
-      </h2>
-      <p className="text-admin-text-secondary mb-4">
-        Arrastra elementos, haz clic en nodos para editar propiedades e ID, etc.
-      </p>
+      {/* Header con botones */}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="text-2xl font-bold text-admin-text">
+            Creador de Pantallas SCADA
+          </h2>
+          <p className="text-admin-text-secondary text-sm">
+            Arrastra elementos, haz clic en nodos para editar propiedades.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.push('/scada/organize')}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#3a3a5c',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            📋 Ver Pantallas
+          </button>
+          <button
+            onClick={() => setIsSaveModalOpen(true)}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#10b981',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            💾 Guardar Pantalla
+          </button>
+        </div>
+      </div>
 
       <div style={containerStyle}>
         {/* Menú de nodos (izquierda) */}
@@ -772,23 +910,21 @@ export default function CreateHmiScreen(): React.ReactElement {
 
         {/* Canvas React Flow (centro) */}
         <div style={canvasStyle}>
-          <ReactFlowProvider>
-            <ReactFlow
-              // nodeTypes y edgeTypes definidas fuera/memoizadas
-              nodeTypes={nodeTypes}
-              // edgeTypes={edgeTypes} // si usas un edgeTypes custom
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              onNodeClick={onNodeClick}
-              onNodesDelete={onNodesDelete}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              fitView
-            />
-          </ReactFlowProvider>
+          <ReactFlow
+            // nodeTypes y edgeTypes definidas fuera/memoizadas
+            nodeTypes={nodeTypes}
+            // edgeTypes={edgeTypes} // si usas un edgeTypes custom
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onNodeClick={onNodeClick}
+            onNodesDelete={onNodesDelete}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            fitView
+          />
         </div>
 
         {/* Panel de propiedades (derecha) */}
@@ -797,6 +933,24 @@ export default function CreateHmiScreen(): React.ReactElement {
           <PropertiesPanel />
         </aside>
       </div>
+
+      {/* Modal de Guardar */}
+      <SaveScreenModal
+        isOpen={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        onSaved={(id) => {
+          router.push(`/scada/edit/${id}`);
+        }}
+      />
     </div>
+  );
+}
+
+// Wrapper con ReactFlowProvider para que SaveScreenModal pueda usar useReactFlow
+export default function CreateHmiScreen(): React.ReactElement {
+  return (
+    <ReactFlowProvider>
+      <CreateHmiScreenContent />
+    </ReactFlowProvider>
   );
 }

@@ -66,7 +66,7 @@ export function TagSelector({
             setError(null);
             try {
                 const params = new URLSearchParams({
-                    page_size: '200',
+                    page_size: '100',
                     is_enabled: 'true',
                 });
 

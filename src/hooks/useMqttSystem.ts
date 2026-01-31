@@ -8,9 +8,11 @@
  * 
  * Usage: Call this hook once in the SCADA layout to establish connection.
  */
-import { useEffect, useRef, useCallback } from 'react';
-import mqtt, { MqttClient } from 'mqtt';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTagStore, TagValue } from '@/app/store/tagStore';
+
+// Use dynamic import for MQTT to avoid SSR issues
+import type { MqttClient, IClientOptions } from 'mqtt';
 
 const MQTT_URL = process.env.NEXT_PUBLIC_MQTT_WS_URL || 'ws://localhost:9001';
 const RECONNECT_DELAY_BASE = 1000; // 1 second
@@ -29,6 +31,7 @@ export function useMqttSystem() {
     const clientRef = useRef<MqttClient | null>(null);
     const reconnectAttemptRef = useRef(0);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [isConnected, setIsConnected] = useState(false);
 
     const updateTag = useTagStore((state) => state.updateTag);
 
@@ -73,24 +76,49 @@ export function useMqttSystem() {
         }
     }, [updateTag]);
 
+    // Schedule reconnection with exponential backoff
+    const scheduleReconnect = useCallback((connectFn: () => void) => {
+        if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+        }
+
+        const delay = Math.min(
+            RECONNECT_DELAY_BASE * Math.pow(2, reconnectAttemptRef.current),
+            RECONNECT_DELAY_MAX
+        );
+
+        console.log(`[MQTT] Scheduling reconnect in ${delay}ms (attempt ${reconnectAttemptRef.current + 1})`);
+
+        reconnectTimeoutRef.current = setTimeout(() => {
+            reconnectAttemptRef.current++;
+            connectFn();
+        }, delay);
+    }, []);
+
     // Connect to MQTT broker
-    const connect = useCallback(() => {
+    const connect = useCallback(async () => {
         if (clientRef.current?.connected) {
             return;
         }
 
+        // Dynamic import of mqtt for browser environment
+        const mqtt = await import('mqtt');
+
         console.log(`[MQTT] Connecting to ${MQTT_URL}...`);
 
-        const client = mqtt.connect(MQTT_URL, {
+        const options: IClientOptions = {
             protocol: 'ws',
             reconnectPeriod: 0, // We handle reconnection manually
             connectTimeout: 10000,
             clientId: `scada-hmi-${Math.random().toString(16).slice(2, 10)}`,
-        });
+        };
+
+        const client = mqtt.connect(MQTT_URL, options);
 
         client.on('connect', () => {
             console.log('[MQTT] Connected to broker');
             reconnectAttemptRef.current = 0;
+            setIsConnected(true);
 
             // Subscribe to tag updates
             client.subscribe(TAG_TOPIC, { qos: 0 }, (err) => {
@@ -112,34 +140,17 @@ export function useMqttSystem() {
 
         client.on('close', () => {
             console.log('[MQTT] Connection closed');
-            scheduleReconnect();
+            setIsConnected(false);
+            scheduleReconnect(() => connect());
         });
 
         client.on('offline', () => {
             console.log('[MQTT] Client offline');
+            setIsConnected(false);
         });
 
         clientRef.current = client;
-    }, [parseMessage]);
-
-    // Schedule reconnection with exponential backoff
-    const scheduleReconnect = useCallback(() => {
-        if (reconnectTimeoutRef.current) {
-            clearTimeout(reconnectTimeoutRef.current);
-        }
-
-        const delay = Math.min(
-            RECONNECT_DELAY_BASE * Math.pow(2, reconnectAttemptRef.current),
-            RECONNECT_DELAY_MAX
-        );
-
-        console.log(`[MQTT] Scheduling reconnect in ${delay}ms (attempt ${reconnectAttemptRef.current + 1})`);
-
-        reconnectTimeoutRef.current = setTimeout(() => {
-            reconnectAttemptRef.current++;
-            connect();
-        }, delay);
-    }, [connect]);
+    }, [parseMessage, scheduleReconnect]);
 
     // Disconnect from MQTT broker
     const disconnect = useCallback(() => {
@@ -151,6 +162,7 @@ export function useMqttSystem() {
         if (clientRef.current) {
             clientRef.current.end(true);
             clientRef.current = null;
+            setIsConnected(false);
             console.log('[MQTT] Disconnected');
         }
     }, []);
@@ -168,8 +180,9 @@ export function useMqttSystem() {
     return {
         connect,
         disconnect,
-        isConnected: () => clientRef.current?.connected ?? false,
+        isConnected,
     };
 }
 
 export default useMqttSystem;
+
