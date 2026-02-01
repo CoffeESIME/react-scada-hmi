@@ -3,6 +3,7 @@ import { NodeProps } from 'reactflow';
 import LinearGauge from './LinearGauge';
 import { LinearGaugeProps } from './LinearGauge.type';
 import { useNodeLiveData } from '@/hooks/useNodeLiveData';
+import { useAlarmStore } from '@/app/store/alarmStore';
 import { thresholdsStyle } from './LinearGauge.style';
 
 interface LinearGaugeNodeData extends Omit<LinearGaugeProps, 'value'> {
@@ -35,11 +36,16 @@ const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
   // Get live value from tagStore if tagId is set
   const { value: liveValue } = useNodeLiveData(data.tagId, data.initialValue ?? 0);
 
+  // Check for active alarm on this tag
+  const isAlarmActive = useAlarmStore((state) =>
+    data.tagId ? !!state.activeAlarms[data.tagId] : false
+  );
+
   // Auto-calculate thresholds based on limits if provided
   const calculatedThresholds = (() => {
     // If specific thresholds array is provided manually (legacy/advanced), use it.
     if (data.thresholds && data.thresholds.length > 0 && !data.scaleMax) {
-      return data.thresholds;
+      return thresholdsStyle(data.thresholds, isAlarmActive);
     }
 
     const rawThresholds = [];
@@ -76,13 +82,13 @@ const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
     rawThresholds.push({ max: max, classColor: '', identifier: 'High Priority Alarm' });
 
     // Apply standard styling logic to resolve identifiers to classColors
-    return thresholdsStyle(rawThresholds, data.alarmStatus ?? false);
+    return thresholdsStyle(rawThresholds, isAlarmActive);
   })();
 
   return (
     <LinearGauge
       value={liveValue}
-      alarmStatus={true}
+      alarmStatus={isAlarmActive}
       thresholds={calculatedThresholds}
       units={data.units}
       width={data.width}

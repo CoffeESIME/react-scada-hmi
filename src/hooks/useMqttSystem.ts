@@ -10,6 +10,7 @@
  */
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTagStore, TagValue } from '@/app/store/tagStore';
+import { useAlarmStore } from '@/app/store/alarmStore';
 
 // Use dynamic import for MQTT to avoid SSR issues
 import type { MqttClient, IClientOptions } from 'mqtt';
@@ -18,6 +19,7 @@ const MQTT_URL = process.env.NEXT_PUBLIC_MQTT_WS_URL || 'ws://localhost:9001';
 const RECONNECT_DELAY_BASE = 1000; // 1 second
 const RECONNECT_DELAY_MAX = 30000; // 30 seconds
 const TAG_TOPIC = 'scada/tags/#';
+const ALARM_TOPIC = 'scada/alarms/#';
 
 interface MqttMessage {
     tagId?: number;
@@ -34,11 +36,37 @@ export function useMqttSystem() {
     const [isConnected, setIsConnected] = useState(false);
 
     const updateTag = useTagStore((state) => state.updateTag);
+    const addAlarm = useAlarmStore((state) => state.addAlarm);
+    const removeAlarmByTag = useAlarmStore((state) => state.removeAlarmByTag);
 
     // Parse incoming MQTT message
     const parseMessage = useCallback((topic: string, payload: Buffer): void => {
         try {
             const message = payload.toString();
+
+            // Check for alarms
+            if (topic.startsWith('scada/alarms/')) {
+                try {
+                    const alarmData = JSON.parse(message);
+                    const tagId = parseInt(alarmData.alarm_id, 10);
+
+                    if (['RESOLVED', 'NORMAL', 'CLEARED'].includes(alarmData.status)) {
+                        removeAlarmByTag(tagId);
+                    } else {
+                        addAlarm({
+                            id: alarmData.alarm_id,
+                            tagId: tagId, // Assuming alarm_id is tag_id
+                            severity: alarmData.severity,
+                            message: alarmData.message,
+                            timestamp: alarmData.timestamp,
+                            ack: false
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error parsing alarm:', e);
+                }
+                return;
+            }
 
             // Try JSON parse first
             try {
@@ -74,7 +102,7 @@ export function useMqttSystem() {
         } catch (error) {
             console.error('[MQTT] Error parsing message:', error);
         }
-    }, [updateTag]);
+    }, [updateTag, addAlarm, removeAlarmByTag]);
 
     // Schedule reconnection with exponential backoff
     const scheduleReconnect = useCallback((connectFn: () => void) => {
@@ -121,11 +149,12 @@ export function useMqttSystem() {
             setIsConnected(true);
 
             // Subscribe to tag updates
-            client.subscribe(TAG_TOPIC, { qos: 0 }, (err) => {
+            const topics = [TAG_TOPIC, ALARM_TOPIC];
+            client.subscribe(topics, { qos: 0 }, (err) => {
                 if (err) {
                     console.error('[MQTT] Subscribe error:', err);
                 } else {
-                    console.log(`[MQTT] Subscribed to ${TAG_TOPIC}`);
+                    console.log(`[MQTT] Subscribed to ${topics.join(', ')}`);
                 }
             });
         });
