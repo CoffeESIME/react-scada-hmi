@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { NodeProps, Handle, Position } from 'reactflow';
 import { MotorIcon } from './MotorOne';
-import { useTagValue } from '@/app/store/tagStore';
+import { useNodeLiveData } from '@/hooks/useNodeLiveData';
 
 type HandleEl = {
   type: 'source' | 'target';
@@ -57,7 +57,7 @@ function parseMotorState(value: any, fallback: MotorState): MotorState {
 /**
  * MotorNode - React Flow wrapper for Motor component
  * 
- * If tagId is provided, reads live state from tagStore.
+ * If tagId is provided, reads live state from tagStore via Safe Mode hook.
  * Otherwise falls back to static data.state prop.
  */
 const MotorNode: React.FC<MotorNodeProps> = ({ data }) => {
@@ -66,7 +66,7 @@ const MotorNode: React.FC<MotorNodeProps> = ({ data }) => {
   const fallbackState = data?.state ?? 'Off';
 
   // Get live value from tagStore if tagId is set
-  const liveValue = useTagValue(data?.tagId, undefined);
+  const { value: liveValue } = useNodeLiveData(data?.tagId, undefined);
   const state = parseMotorState(liveValue, fallbackState);
 
   return (

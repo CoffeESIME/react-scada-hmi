@@ -128,7 +128,25 @@ export function TagSelector({
             className={className}
             classNames={{
                 base: "dark",
-                listboxWrapper: "dark",
+                trigger: "bg-[#1f1f38] data-[hover=true]:bg-[#2d2d50] border border-[#3a3a5c]",
+                value: "text-gray-200 font-medium",
+                popover: "bg-[#16213e] border border-[#3a3a5c]",
+                listbox: "bg-[#16213e]",
+                listboxWrapper: "bg-[#16213e]",
+            }}
+            listboxProps={{
+                itemClasses: {
+                    base: [
+                        "rounded-md",
+                        "text-gray-300",
+                        "transition-opacity",
+                        "data-[hover=true]:text-white",
+                        "data-[hover=true]:bg-[#2d2d50]",
+                        "data-[selectable=true]:focus:bg-[#2d2d50]",
+                        "data-[pressed=true]:opacity-70",
+                        "data-[focus-visible=true]:ring-[#3a3a5c]",
+                    ],
+                }
             }}
             description={selectedTag ? `${selectedTag.source_protocol.toUpperCase()} • ${selectedTag.mqtt_topic}` : undefined}
         >
@@ -136,10 +154,10 @@ export function TagSelector({
                 <SelectItem
                     key={tag.id.toString()}
                     textValue={tag.name}
-                    className="dark"
+                    className="flex flex-col gap-1 py-1"
                 >
                     <div className="flex flex-col">
-                        <span className="font-medium">{tag.name}</span>
+                        <span className="font-medium text-gray-200">{tag.name}</span>
                         <span className="text-xs text-gray-400">
                             {tag.source_protocol.toUpperCase()}
                             {tag.unit && ` • ${tag.unit}`}

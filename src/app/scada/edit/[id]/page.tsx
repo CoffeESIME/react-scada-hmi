@@ -4,6 +4,7 @@ import React, {
     useCallback,
     useState,
     useEffect,
+    useMemo,
     CSSProperties,
     ChangeEvent,
 } from 'react';
@@ -27,51 +28,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { SaveScreenModal } from '@/app/components/screens/SaveScreenModal';
 import { TagSelector } from '@/app/components/tags/TagSelector';
-
-// Node Components
-import MotorNode from '@/app/components/Motors/MotorNode';
-import ValveNode from '@/app/components/Valves/ValveNode';
-import LinearGaugeNode from '@/app/components/LinearGauge/LinearGaugeNode';
-import { AlarmNode } from '@/app/components/Alarm/AlarmNode';
-import TankNode from '@/app/components/Tank/TankNode';
-import { LabelNode } from '@/app/components/Label/LabelNode';
-import { ButtonNode } from '@/app/components/Button/ButtonNode';
-import { BoxCardNode } from '@/app/components/Boxes/BoxNode';
-import { CardDataNode } from '@/app/components/CardData/CardDataNode';
-import { ControlDataCardNode } from '@/app/components/ControlDataCard/ControlDataCardNode';
-import { DataTrendNode } from '@/app/components/DataTrend/DataTrendNode';
-import { SmallDataTrendNode } from '@/app/components/SmallDataTrend/SmallDataTrendNode';
-
-// Node types (definido fuera para evitar re-renders)
-const nodeTypes: NodeTypes = {
-    motor: MotorNode,
-    valve: ValveNode,
-    gauge: LinearGaugeNode,
-    alarm: AlarmNode,
-    tank: TankNode,
-    label: LabelNode,
-    button: ButtonNode,
-    box: BoxCardNode,
-    cardData: CardDataNode,
-    controlDataCard: ControlDataCardNode,
-    dataTrend: DataTrendNode,
-    smallDataTrend: SmallDataTrendNode,
-};
-
-const availableNodeTypes = [
-    { label: 'Motor', type: 'motor' },
-    { label: 'Valve', type: 'valve' },
-    { label: 'Tank', type: 'tank' },
-    { label: 'Gauge', type: 'gauge' },
-    { label: 'Alarm', type: 'alarm' },
-    { label: 'Label', type: 'label' },
-    { label: 'Button', type: 'button' },
-    { label: 'Box', type: 'box' },
-    { label: 'Card Data', type: 'cardData' },
-    { label: 'Control Card', type: 'controlDataCard' },
-    { label: 'Data Trend', type: 'dataTrend' },
-    { label: 'Mini Trend', type: 'smallDataTrend' },
-];
+import { nodeTypes, availableNodeTypes } from '../../nodeTypes';
 
 // Estilos
 const containerStyle: CSSProperties = {
@@ -150,10 +107,13 @@ interface ScreenData {
     };
 }
 
+import { ScadaModeProvider } from '@/contexts/ScadaModeContext';
+
 function EditScreenContent({ screenId }: { screenId: string }) {
     const router = useRouter();
     const { setViewport } = useReactFlow();
 
+    // ... existing hooks ...
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -281,6 +241,28 @@ function EditScreenContent({ screenId }: { screenId: string }) {
                 <label className="mb-1 block">ID del nodo:</label>
                 <input style={inputStyle} value={id} disabled />
 
+                <div className="flex justify-between items-center mb-2">
+                    <button
+                        onClick={() => {
+                            if (confirm(`¿Eliminar el nodo "${id}"?`)) {
+                                setNodes((nds) => nds.filter((n) => n.id !== id));
+                                setSelectedNode(null);
+                            }
+                        }}
+                        style={{
+                            padding: '4px 8px',
+                            backgroundColor: '#ef4444',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                        }}
+                    >
+                        🗑 Eliminar
+                    </button>
+                </div>
+
                 <label className="mb-1 block">Etiqueta (data.label):</label>
                 <input
                     style={inputStyle}
@@ -332,7 +314,7 @@ function EditScreenContent({ screenId }: { screenId: string }) {
                 )}
 
                 {/* Tag Binding */}
-                {['motor', 'valve', 'gauge', 'tank', 'alarm', 'dataTrend', 'controlDataCard', 'smallDataTrend'].includes(type ?? '') && (
+                {['motor', 'valve', 'gauge', 'alarm', 'dataTrend', 'controlDataCard', 'smallDataTrend'].includes(type ?? '') && (
                     <>
                         <hr style={{ margin: '12px 0', borderColor: '#666' }} />
                         <div className="mb-4">
@@ -374,91 +356,94 @@ function EditScreenContent({ screenId }: { screenId: string }) {
     }
 
     return (
-        <div className="bg-admin-bg min-h-screen p-4">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4">
-                <div>
-                    <h2 className="text-2xl font-bold text-admin-text">
-                        Editando: {screenData?.name}
-                    </h2>
-                    <p className="text-admin-text-secondary text-sm">
-                        Slug: {screenData?.slug}
-                    </p>
-                </div>
-                <div className="flex gap-2">
-                    <Button
-                        variant="flat"
-                        onPress={() => router.push('/scada/organize')}
-                    >
-                        ← Volver
-                    </Button>
-                    <Button
-                        color="primary"
-                        onPress={() => setIsSaveModalOpen(true)}
-                    >
-                        💾 Guardar Cambios
-                    </Button>
-                </div>
-            </div>
-
-            <div style={containerStyle}>
-                {/* Sidebar izquierda - Elementos */}
-                <aside style={sideMenuStyle}>
-                    <h3 style={headingStyle}>Elementos</h3>
-                    {availableNodeTypes.map((item) => (
-                        <div
-                            key={item.type}
-                            onDragStart={(e) => {
-                                e.dataTransfer.setData('application/reactflow', item.type);
-                                e.dataTransfer.effectAllowed = 'move';
-                            }}
-                            draggable
-                            style={menuItemStyle}
+        <ScadaModeProvider isEditMode={true}>
+            <div className="bg-admin-bg min-h-screen p-4">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 className="text-2xl font-bold text-admin-text">
+                            Editando: {screenData?.name}
+                        </h2>
+                        <p className="text-admin-text-secondary text-sm">
+                            Slug: {screenData?.slug}
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="flat"
+                            onPress={() => router.push('/scada/organize')}
                         >
-                            {item.label}
-                        </div>
-                    ))}
-                </aside>
-
-                {/* Canvas React Flow */}
-                <div style={canvasStyle}>
-                    <ReactFlow
-                        nodeTypes={nodeTypes}
-                        nodes={nodes}
-                        edges={edges}
-                        onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
-                        onConnect={onConnect}
-                        onNodeClick={onNodeClick}
-                        onNodesDelete={onNodesDelete}
-                        onDrop={onDrop}
-                        onDragOver={onDragOver}
-                        fitView
-                    />
+                            ← Volver
+                        </Button>
+                        <Button
+                            color="primary"
+                            onPress={() => setIsSaveModalOpen(true)}
+                        >
+                            💾 Guardar Cambios
+                        </Button>
+                    </div>
                 </div>
 
-                {/* Panel de propiedades */}
-                <aside style={propertiesPanelStyle}>
-                    <h3 style={headingStyle}>Propiedades</h3>
-                    <PropertiesPanel />
-                </aside>
-            </div>
+                <div style={containerStyle}>
+                    {/* Sidebar izquierda - Elementos */}
+                    <aside style={sideMenuStyle}>
+                        <h3 style={headingStyle}>Elementos</h3>
+                        {availableNodeTypes.map((item) => (
+                            <div
+                                key={item.type}
+                                onDragStart={(e) => {
+                                    e.dataTransfer.setData('application/reactflow', item.type);
+                                    e.dataTransfer.effectAllowed = 'move';
+                                }}
+                                draggable
+                                style={menuItemStyle}
+                            >
+                                {item.label}
+                            </div>
+                        ))}
+                    </aside>
 
-            {/* Modal de Guardar */}
-            <SaveScreenModal
-                isOpen={isSaveModalOpen}
-                onClose={() => setIsSaveModalOpen(false)}
-                editScreenId={screenData?.id}
-                initialValues={{
-                    name: screenData?.name,
-                    description: screenData?.description || '',
-                    isHome: screenData?.is_home,
-                }}
-                onSaved={() => {
-                    toast.success('Cambios guardados');
-                }}
-            />
-        </div>
+                    {/* Canvas React Flow */}
+                    <div style={canvasStyle}>
+                        <ReactFlow
+                            nodeTypes={nodeTypes}
+                            nodes={nodes}
+                            edges={edges}
+                            onNodesChange={onNodesChange}
+                            onEdgesChange={onEdgesChange}
+
+                            onConnect={onConnect}
+                            onNodeClick={onNodeClick}
+                            onNodesDelete={onNodesDelete}
+                            onDrop={onDrop}
+                            onDragOver={onDragOver}
+                            fitView
+                        />
+                    </div>
+
+                    {/* Panel de propiedades */}
+                    <aside style={propertiesPanelStyle}>
+                        <h3 style={headingStyle}>Propiedades</h3>
+                        <PropertiesPanel />
+                    </aside>
+                </div>
+
+                {/* Modal de Guardar */}
+                <SaveScreenModal
+                    isOpen={isSaveModalOpen}
+                    onClose={() => setIsSaveModalOpen(false)}
+                    editScreenId={screenData?.id}
+                    initialValues={{
+                        name: screenData?.name,
+                        description: screenData?.description || '',
+                        isHome: screenData?.is_home,
+                    }}
+                    onSaved={() => {
+                        toast.success('Cambios guardados');
+                    }}
+                />
+            </div>
+        </ScadaModeProvider>
     );
 }
 

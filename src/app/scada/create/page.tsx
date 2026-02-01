@@ -24,66 +24,12 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 // 1) IMPORTA TUS COMPONENTES CUSTOM
-import MotorNode from '@/app/components/Motors/MotorNode';
-import ValveNode from '@/app/components/Valves/ValveNode';
-import LinearGaugeNode from '@/app/components/LinearGauge/LinearGaugeNode';
-import { AlarmNode } from '@/app/components/Alarm/AlarmNode';
-import TankNode from '@/app/components/Tank/TankNode';
-import { LabelNode } from '@/app/components/Label/LabelNode';
-import { ButtonNode } from '@/app/components/Button/ButtonNode';
-import { BoxCardNode } from '@/app/components/Boxes/BoxNode';
-import { CardDataNode } from '@/app/components/CardData/CardDataNode';
-import { ControlDataCardNode } from '@/app/components/ControlDataCard/ControlDataCardNode';
-import { DataTrendNode } from '@/app/components/DataTrend/DataTrendNode';
-import { SmallDataTrendNode } from '@/app/components/SmallDataTrend/SmallDataTrendNode';
 import { TagSelector } from '@/app/components/tags/TagSelector';
 import { SaveScreenModal } from '@/app/components/screens/SaveScreenModal';
 import { ConfirmationModal } from '@/app/components/common/ConfirmationModal';
 import { useRouter } from 'next/navigation';
-
-// ---------------------------------------------------------------------
-// 2) DEFINE NODETYPES FUERA DEL COMPONENTE (o usa useMemo())
-//    para evitar el warning de React Flow
-// ---------------------------------------------------------------------
-const nodeTypes: NodeTypes = {
-  motor: MotorNode,
-  valve: ValveNode,
-  gauge: LinearGaugeNode,
-  alarm: AlarmNode,
-  tank: TankNode,
-  label: LabelNode,
-  button: ButtonNode,
-  box: BoxCardNode,
-  cardData: CardDataNode,
-  controlDataCard: ControlDataCardNode,
-  dataTrend: DataTrendNode,
-  smallDataTrend: SmallDataTrendNode,
-};
-
-// Si en algún momento necesitas edgeTypes custom, también defínelo afuera:
-// const edgeTypes = {
-//   customEdge: MyCustomEdge,
-// };
-
-// Lista de nodos disponibles en el sidebar
-const availableNodeTypes = [
-  // Equipos
-  { label: 'Motor', type: 'motor' },
-  { label: 'Valve', type: 'valve' },
-  { label: 'Tank', type: 'tank' },
-  // Indicadores
-  { label: 'Gauge', type: 'gauge' },
-  { label: 'Alarm', type: 'alarm' },
-  // UI Elements
-  { label: 'Label', type: 'label' },
-  { label: 'Button', type: 'button' },
-  { label: 'Box', type: 'box' },
-  // Data Display
-  { label: 'Card Data', type: 'cardData' },
-  { label: 'Control Card', type: 'controlDataCard' },
-  { label: 'Data Trend', type: 'dataTrend' },
-  { label: 'Mini Trend', type: 'smallDataTrend' },
-];
+import { nodeTypes, availableNodeTypes } from '../nodeTypes';
+import { ScadaModeProvider } from '@/contexts/ScadaModeContext';
 // ---------------------------------------------------------------------
 // 3) ESTILOS (usando paleta Admin de Tailwind)
 // ---------------------------------------------------------------------
@@ -302,6 +248,14 @@ function getDefaultDataForNode(nodeType: string) {
 // 4) COMPONENTE PRINCIPAL
 // ---------------------------------------------------------------------
 function CreateHmiScreenContent(): React.ReactElement {
+  return (
+    <ScadaModeProvider isEditMode={true}>
+      <CreateHmiScreenContentInner />
+    </ScadaModeProvider>
+  );
+}
+
+function CreateHmiScreenContentInner(): React.ReactElement {
   const router = useRouter();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -689,7 +643,7 @@ function CreateHmiScreenContent(): React.ReactElement {
         {/* ============================================================ */}
         {/* TAG BINDING SECTION - Solo para nodos con datos en vivo */}
         {/* ============================================================ */}
-        {['motor', 'valve', 'gauge', 'tank', 'alarm', 'dataTrend', 'controlDataCard', 'smallDataTrend'].includes(type ?? '') && (
+        {['motor', 'valve', 'gauge', 'alarm', 'dataTrend', 'controlDataCard', 'smallDataTrend'].includes(type ?? '') && (
           <>
             <hr style={{ margin: '12px 0', borderColor: '#666' }} />
 

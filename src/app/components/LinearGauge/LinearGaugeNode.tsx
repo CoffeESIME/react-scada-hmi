@@ -2,26 +2,26 @@ import { memo } from 'react';
 import { NodeProps } from 'reactflow';
 import LinearGauge from './LinearGauge';
 import { LinearGaugeProps } from './LinearGauge.type';
-import { useTagValue } from '@/app/store/tagStore';
+import { useNodeLiveData } from '@/hooks/useNodeLiveData';
 
-interface LinearGaugeNodeData extends LinearGaugeProps {
+interface LinearGaugeNodeData extends Omit<LinearGaugeProps, 'value'> {
   /** Tag ID for live data binding */
   tagId?: number;
+  /** Initial value if tag is not yet available */
+  initialValue?: number;
 }
 
-type LinearGaugeNodeProps = NodeProps & {
-  data: LinearGaugeNodeData;
-};
+type LinearGaugeNodeProps = NodeProps<LinearGaugeNodeData>;
 
 /**
  * LinearGaugeNode - React Flow wrapper for LinearGauge component
  * 
- * If tagId is provided, reads live value from tagStore.
- * Otherwise falls back to static data.value prop.
+ * If tagId is provided, reads live value from tagStore via Safe Mode hook.
+ * Falls back to initialValue or 0.
  */
 const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
-  // Get live value from tagStore if tagId is set, otherwise use static value
-  const liveValue = useTagValue(data.tagId, data.value ?? 0);
+  // Get live value from tagStore if tagId is set
+  const { value: liveValue } = useNodeLiveData(data.tagId, data.initialValue ?? 0);
 
   return (
     <LinearGauge

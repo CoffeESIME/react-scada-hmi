@@ -74,7 +74,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
             fontSize,
           }}
         >
-          {value}
+          {typeof value === 'number' ? value.toFixed(2) : value}
         </div>
       </div>
 
@@ -94,7 +94,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
         style={needleStyle(
           needleSize,
           (tailwindConfig.theme?.extend?.colors as any)[
-            'primary-indicator-fg'
+          'primary-indicator-fg'
           ] || '#defaultColorValue',
           value
         )}

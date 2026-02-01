@@ -16,36 +16,7 @@ import { Spinner, Button, Chip } from '@nextui-org/react';
 import { toast } from 'sonner';
 
 import { api } from '@/lib/api';
-
-// Node Components
-import MotorNode from '@/app/components/Motors/MotorNode';
-import ValveNode from '@/app/components/Valves/ValveNode';
-import LinearGaugeNode from '@/app/components/LinearGauge/LinearGaugeNode';
-import { AlarmNode } from '@/app/components/Alarm/AlarmNode';
-import TankNode from '@/app/components/Tank/TankNode';
-import { LabelNode } from '@/app/components/Label/LabelNode';
-import { ButtonNode } from '@/app/components/Button/ButtonNode';
-import { BoxCardNode } from '@/app/components/Boxes/BoxNode';
-import { CardDataNode } from '@/app/components/CardData/CardDataNode';
-import { ControlDataCardNode } from '@/app/components/ControlDataCard/ControlDataCardNode';
-import { DataTrendNode } from '@/app/components/DataTrend/DataTrendNode';
-import { SmallDataTrendNode } from '@/app/components/SmallDataTrend/SmallDataTrendNode';
-
-// Node types (definido fuera para evitar re-renders)
-const nodeTypes: NodeTypes = {
-    motor: MotorNode,
-    valve: ValveNode,
-    gauge: LinearGaugeNode,
-    alarm: AlarmNode,
-    tank: TankNode,
-    label: LabelNode,
-    button: ButtonNode,
-    box: BoxCardNode,
-    cardData: CardDataNode,
-    controlDataCard: ControlDataCardNode,
-    dataTrend: DataTrendNode,
-    smallDataTrend: SmallDataTrendNode,
-};
+import { nodeTypes } from '../../nodeTypes';
 
 interface ScreenData {
     id: number;
@@ -60,6 +31,8 @@ interface ScreenData {
     };
 }
 
+import { ScadaModeProvider } from '@/contexts/ScadaModeContext';
+
 function ViewScreenContent({ screenId }: { screenId: string }) {
     const router = useRouter();
     const { setViewport, fitView } = useReactFlow();
@@ -72,6 +45,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
     // Cargar pantalla al montar
     useEffect(() => {
         const loadScreen = async () => {
+            // ... existing loading logic ...
             setIsLoading(true);
             try {
                 const response = await api.get<ScreenData>(`/screens/${screenId}`);
@@ -106,6 +80,11 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
         loadScreen();
     }, [screenId, setViewport, fitView, router]);
 
+    // Memoize imported nodeTypes to satisfy React Flow stability check (especially for HMR)
+    const nodeTypesMemo = React.useMemo(() => nodeTypes, []);
+
+    // ... (rest of useEffect)
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-admin-bg flex items-center justify-center">
@@ -118,76 +97,78 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
     }
 
     return (
-        <div className="bg-admin-bg min-h-screen flex flex-col">
-            {/* Header minimalista */}
-            <header className="bg-admin-surface border-b border-admin-border px-4 py-2 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-lg font-semibold text-admin-text">
-                        {screenData?.name}
-                    </h1>
-                    {screenData?.is_home && (
-                        <Chip color="success" size="sm" variant="flat">
-                            🏠 Principal
+        <ScadaModeProvider isEditMode={false}>
+            <div className="bg-admin-bg h-screen flex flex-col overflow-hidden">
+                {/* Header minimalista */}
+                <header className="bg-admin-surface border-b border-admin-border px-4 py-2 flex justify-between items-center h-[50px] shrink-0">
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-lg font-semibold text-admin-text">
+                            {screenData?.name}
+                        </h1>
+                        {screenData?.is_home && (
+                            <Chip color="success" size="sm" variant="flat">
+                                🏠 Principal
+                            </Chip>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Chip color="primary" size="sm" variant="flat">
+                            🔴 RUNTIME
                         </Chip>
-                    )}
-                </div>
-                <div className="flex items-center gap-2">
-                    <Chip color="primary" size="sm" variant="flat">
-                        🔴 RUNTIME
-                    </Chip>
-                    <Button
-                        size="sm"
-                        variant="flat"
-                        onPress={() => router.push(`/scada/edit/${screenData?.id}`)}
-                    >
-                        ✏️ Editar
-                    </Button>
-                    <Button
-                        size="sm"
-                        variant="flat"
-                        onPress={() => router.push('/scada/organize')}
-                    >
-                        ← Pantallas
-                    </Button>
-                </div>
-            </header>
+                        <Button
+                            size="sm"
+                            variant="flat"
+                            onPress={() => router.push(`/scada/edit/${screenData?.id}`)}
+                        >
+                            ✏️ Editar
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="flat"
+                            onPress={() => router.push('/scada/organize')}
+                        >
+                            ← Pantallas
+                        </Button>
+                    </div>
+                </header>
 
-            {/* Canvas en modo lectura */}
-            <div className="flex-1 bg-[#0f3460]">
-                <ReactFlow
-                    nodeTypes={nodeTypes}
-                    nodes={nodes}
-                    edges={edges}
-                    // ===== MODO LECTURA =====
-                    nodesDraggable={false}
-                    nodesConnectable={false}
-                    elementsSelectable={false}
-                    panOnDrag={true}
-                    zoomOnScroll={true}
-                    zoomOnPinch={true}
-                    // ========================
-                    fitView
-                    fitViewOptions={{ padding: 0.1 }}
-                >
-                    <Background
-                        variant={BackgroundVariant.Dots}
-                        gap={20}
-                        size={1}
-                        color="#1a365d"
-                    />
-                </ReactFlow>
+                {/* Canvas en modo lectura */}
+                <div className="flex-1 bg-[#0f3460] w-full" style={{ height: 'calc(100vh - 50px)' }}>
+                    <ReactFlow
+                        nodeTypes={nodeTypesMemo}
+                        nodes={nodes}
+                        edges={edges}
+                        // ===== MODO LECTURA =====
+                        nodesDraggable={false}
+                        nodesConnectable={false}
+                        elementsSelectable={false}
+                        panOnDrag={true}
+                        zoomOnScroll={true}
+                        zoomOnPinch={true}
+                        // ========================
+                        fitView
+                        fitViewOptions={{ padding: 0.1 }}
+                    >
+                        <Background
+                            variant={BackgroundVariant.Dots}
+                            gap={20}
+                            size={1}
+                            color="#1a365d"
+                        />
+                    </ReactFlow>
+                </div>
+
+                {/* Footer con info */}
+                <footer className="bg-admin-surface border-t border-admin-border px-4 py-1 text-xs text-gray-400 flex justify-between">
+                    <span>
+                        Nodos: {nodes.length} | Conexiones: {edges.length}
+                    </span>
+                    <span>
+                        Pantalla: {screenData?.slug}
+                    </span>
+                </footer>
             </div>
-
-            {/* Footer con info */}
-            <footer className="bg-admin-surface border-t border-admin-border px-4 py-1 text-xs text-gray-400 flex justify-between">
-                <span>
-                    Nodos: {nodes.length} | Conexiones: {edges.length}
-                </span>
-                <span>
-                    Pantalla: {screenData?.slug}
-                </span>
-            </footer>
-        </div>
+        </ScadaModeProvider>
     );
 }
 
