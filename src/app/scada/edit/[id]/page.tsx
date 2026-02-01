@@ -402,8 +402,10 @@ function EditScreenContent({ screenId }: { screenId: string }) {
                     </>
                 )}
 
-                {/* Tag Binding */}
-                {['motor', 'valve', 'gauge', 'alarm', 'dataTrend', 'controlDataCard', 'smallDataTrend'].includes(type ?? '') && (
+                {/* ============================================================ */}
+                {/* TAG BINDING SECTION - Solo para nodos con datos en vivo */}
+                {/* ============================================================ */}
+                {['motor', 'valve', 'gauge', 'alarm', 'dataTrend', 'smallDataTrend'].includes(type ?? '') && (
                     <>
                         <hr style={{ margin: '12px 0', borderColor: '#666' }} />
                         <div className="mb-4">
@@ -432,6 +434,63 @@ function EditScreenContent({ screenId }: { screenId: string }) {
                         </div>
                     </>
                 )}
+
+
+                {/* ============================================================ */}
+                {/* MULTI-BINDING SECTION - Solo para ControlDataCard (PID)    */}
+                {/* ============================================================ */}
+                {
+                    type === 'controlDataCard' && (
+                        <>
+                            <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+                            <h4 className="text-sm font-semibold text-admin-text mb-3">Vinculación PID</h4>
+
+                            {/* 1. PV */}
+                            <div className="mb-3">
+                                <TagSelector
+                                    value={data?.pvTagId ?? null}
+                                    onChange={(tagId) => updateSelectedNodeData('pvTagId', tagId)}
+                                    label="Variable de Proceso (PV)"
+                                    placeholder="Tag PV..."
+                                    size="sm"
+                                />
+                            </div>
+
+                            {/* 2. SP */}
+                            <div className="mb-3">
+                                <TagSelector
+                                    value={data?.spTagId ?? null}
+                                    onChange={(tagId) => updateSelectedNodeData('spTagId', tagId)}
+                                    label="Set Point (SP)"
+                                    placeholder="Tag SP..."
+                                    size="sm"
+                                />
+                            </div>
+
+                            {/* 3. Output */}
+                            <div className="mb-3">
+                                <TagSelector
+                                    value={data?.outTagId ?? null}
+                                    onChange={(tagId) => updateSelectedNodeData('outTagId', tagId)}
+                                    label="Salida (Output)"
+                                    placeholder="Tag Out..."
+                                    size="sm"
+                                />
+                            </div>
+
+                            {/* 4. Mode */}
+                            <div className="mb-3">
+                                <TagSelector
+                                    value={data?.modeTagId ?? null}
+                                    onChange={(tagId) => updateSelectedNodeData('modeTagId', tagId)}
+                                    label="Modo (Auto/Man)"
+                                    placeholder="Tag Mode..."
+                                    size="sm"
+                                />
+                            </div>
+                        </>
+                    )
+                }
             </div>
         );
     };
