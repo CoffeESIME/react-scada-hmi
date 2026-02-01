@@ -9,6 +9,8 @@ import React, {
   useMemo,
 } from 'react';
 import ReactFlow, {
+  Background,
+  BackgroundVariant,
   ReactFlowProvider,
   addEdge,
   useEdgesState,
@@ -63,7 +65,7 @@ const menuItemStyle: CSSProperties = {
 
 const canvasStyle: CSSProperties = {
   flex: 1,
-  backgroundColor: '#0f3460', // admin-bg-tertiary
+  backgroundColor: '#C0C0C0', // admin-bg-tertiary
 };
 
 const propertiesPanelStyle: CSSProperties = {
@@ -878,7 +880,14 @@ function CreateHmiScreenContentInner(): React.ReactElement {
             onDrop={onDrop}
             onDragOver={onDragOver}
             fitView
-          />
+          >
+            <Background
+              variant={BackgroundVariant.Dots}
+              gap={20}
+              size={1}
+              color="#555"
+            />
+          </ReactFlow>
         </div>
 
         {/* Panel de propiedades (derecha) */}

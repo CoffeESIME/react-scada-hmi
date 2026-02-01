@@ -3,6 +3,7 @@
 import React from 'react';
 import { Card, CardBody } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
+import { useScadaMode } from '@/contexts/ScadaModeContext';
 
 type CardDataProps = {
   label: string[];
@@ -12,6 +13,7 @@ type CardDataProps = {
 
 export const CardData: React.FC<CardDataProps> = ({ label, href, onPress }) => {
   const router = useRouter();
+  const { isEditMode } = useScadaMode();
 
   const handlePress = () => {
     // Custom action takes priority
@@ -32,7 +34,7 @@ export const CardData: React.FC<CardDataProps> = ({ label, href, onPress }) => {
 
   return (
     <Card
-      className="z-40 max-h-[230px] min-h-[80px] min-w-[120px] max-w-[180px] border-2 border-nav-button-border bg-nav-button-fg hover:bg-nav-button-fg/80 transition-colors cursor-pointer"
+      className={`z-40 max-h-[230px] min-h-[80px] min-w-[120px] max-w-[180px] border-2 border-nav-button-border bg-nav-button-fg hover:bg-nav-button-fg/80 transition-colors cursor-pointer ${isEditMode ? 'pointer-events-none' : ''}`}
       onPress={handlePress}
       isPressable
     >

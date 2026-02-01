@@ -1,44 +1,48 @@
 import { NodeTypes } from 'reactflow';
 
-// Import Custom Node Components (Commented out for Debug Mode)
-// import MotorNode from '@/app/components/Motors/MotorNode';
-// import ValveNode from '@/app/components/Valves/ValveNode';
-// import LinearGaugeNode from '@/app/components/LinearGauge/LinearGaugeNode';
-// import { AlarmNode } from '@/app/components/Alarm/AlarmNode';
-// import TankNode from '@/app/components/Tank/TankNode';
-// import { LabelNode } from '@/app/components/Label/LabelNode';
-// import { ButtonNode } from '@/app/components/Button/ButtonNode';
-// import { BoxCardNode } from '@/app/components/Boxes/BoxNode';
-// import { CardDataNode } from '@/app/components/CardData/CardDataNode';
-// import { ControlDataCardNode } from '@/app/components/ControlDataCard/ControlDataCardNode';
-// import { DataTrendNode } from '@/app/components/DataTrend/DataTrendNode';
-// import { SmallDataTrendNode } from '@/app/components/SmallDataTrend/SmallDataTrendNode';
+// Import Custom Node Components
+import MotorNode from '@/app/components/Motors/MotorNode';
+import ValveNode from '@/app/components/Valves/ValveNode';
+import LinearGaugeNode from '@/app/components/LinearGauge/LinearGaugeNode';
+import { AlarmNode } from '@/app/components/Alarm/AlarmNode';
+import TankNode from '@/app/components/Tank/TankNode';
+import { LabelNode } from '@/app/components/Label/LabelNode';
+import { ButtonNode } from '@/app/components/Button/ButtonNode';
+import { BoxCardNode } from '@/app/components/Boxes/BoxNode';
+import { CardDataNode } from '@/app/components/CardData/CardDataNode';
+import { ControlDataCardNode } from '@/app/components/ControlDataCard/ControlDataCardNode';
+import { DataTrendNode } from '@/app/components/DataTrend/DataTrendNode';
+import { SmallDataTrendNode } from '@/app/components/SmallDataTrend/SmallDataTrendNode';
 
-import { DebugCircleNode, DebugRectNode, DebugTriangleNode } from './DebugNodes';
+// import { DebugCircleNode, DebugRectNode, DebugTriangleNode } from './DebugNodes';
 
 /**
  * nodeTypes: Shared definition of React Flow node types.
  * Must be stable across re-renders to prevent infinite loops.
  */
 export const nodeTypes: NodeTypes = {
-    // Round things
-    motor: DebugCircleNode,
-    valve: DebugCircleNode,
+    // Equipos
+    motor: MotorNode,
+    valve: ValveNode,
+    tank: TankNode,
 
-    // Rectangular things
-    gauge: DebugRectNode,
-    tank: DebugRectNode,
-    label: DebugRectNode,
-    button: DebugRectNode,
-    box: DebugRectNode,
-    cardData: DebugRectNode,
-    controlDataCard: DebugRectNode,
-    dataTrend: DebugRectNode,
-    smallDataTrend: DebugRectNode,
+    // Indicadores
+    gauge: LinearGaugeNode,
+    alarm: AlarmNode,
 
-    // Triangle things
-    alarm: DebugTriangleNode,
+    // UI Elements
+    label: LabelNode,
+    button: ButtonNode,
+    box: BoxCardNode,
+
+    // Data Display
+    cardData: CardDataNode,
+    controlDataCard: ControlDataCardNode,
+    dataTrend: DataTrendNode,
+    smallDataTrend: SmallDataTrendNode,
 };
+
+export const debugNodeTypes = nodeTypes;
 
 /**
  * availableNodeTypes: List of nodes available in the sidebar

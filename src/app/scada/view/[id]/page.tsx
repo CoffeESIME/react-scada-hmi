@@ -16,7 +16,7 @@ import { Spinner, Button, Chip } from '@nextui-org/react';
 import { toast } from 'sonner';
 
 import { api } from '@/lib/api';
-import { nodeTypes } from '../../nodeTypes';
+import { nodeTypes, debugNodeTypes } from '../../nodeTypes';
 
 interface ScreenData {
     id: number;
@@ -78,10 +78,10 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
         };
 
         loadScreen();
-    }, [screenId, setViewport, fitView, router]);
+    }, [screenId]);
 
     // Memoize imported nodeTypes to satisfy React Flow stability check (especially for HMR)
-    const nodeTypesMemo = React.useMemo(() => nodeTypes, []);
+    const nodeTypesMemo = React.useMemo(() => debugNodeTypes, []);
 
     // ... (rest of useEffect)
 
@@ -133,7 +133,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                 </header>
 
                 {/* Canvas en modo lectura */}
-                <div className="flex-1 bg-[#0f3460] w-full" style={{ height: 'calc(100vh - 50px)' }}>
+                <div className="flex-1 bg-[#C0C0C0] w-full" style={{ height: 'calc(100vh - 50px)' }}>
                     <ReactFlow
                         nodeTypes={nodeTypesMemo}
                         nodes={nodes}
@@ -153,7 +153,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                             variant={BackgroundVariant.Dots}
                             gap={20}
                             size={1}
-                            color="#1a365d"
+                            color="#555"
                         />
                     </ReactFlow>
                 </div>

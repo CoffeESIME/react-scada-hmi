@@ -28,7 +28,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { SaveScreenModal } from '@/app/components/screens/SaveScreenModal';
 import { TagSelector } from '@/app/components/tags/TagSelector';
-import { nodeTypes, availableNodeTypes } from '../../nodeTypes';
+import { nodeTypes, debugNodeTypes, availableNodeTypes } from '../../nodeTypes';
 
 // Estilos
 const containerStyle: CSSProperties = {
@@ -51,7 +51,7 @@ const sideMenuStyle: CSSProperties = {
 
 const canvasStyle: CSSProperties = {
     flex: 1,
-    backgroundColor: '#0f3460',
+    backgroundColor: '#C0C0C0',
 };
 
 const propertiesPanelStyle: CSSProperties = {
@@ -109,6 +109,14 @@ interface ScreenData {
 
 import { ScadaModeProvider } from '@/contexts/ScadaModeContext';
 
+// --- DEBUG CONSTANTS ---
+const DEBUG_MODE = false; // Set to TRUE to force dummy data
+const DUMMY_NODES: Node[] = [
+    { id: '1', type: 'valve', position: { x: 100, y: 100 }, data: { label: 'Dummy Valve' } },
+    { id: '2', type: 'gauge', position: { x: 300, y: 100 }, data: { label: 'Dummy Gauge' } },
+];
+// -----------------------
+
 function EditScreenContent({ screenId }: { screenId: string }) {
     const router = useRouter();
     const { setViewport } = useReactFlow();
@@ -122,17 +130,31 @@ function EditScreenContent({ screenId }: { screenId: string }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
+
+
+
+
     // Cargar pantalla al montar
     useEffect(() => {
         const loadScreen = async () => {
             setIsLoading(true);
             try {
+                if (DEBUG_MODE) {
+
+                    setScreenData({ id: 0, name: 'Debug Screen', slug: 'debug', is_home: false, description: '', layout_data: { nodes: [], edges: [] } });
+                    setNodes(DUMMY_NODES);
+                    setEdges([]);
+                    setIsLoading(false);
+                    return;
+                }
+
                 const response = await api.get<ScreenData>(`/screens/${screenId}`);
                 const data = response.data;
                 setScreenData(data);
 
                 // Cargar nodes y edges
                 if (data.layout_data) {
+
                     setNodes(data.layout_data.nodes || []);
                     setEdges(data.layout_data.edges || []);
 
@@ -155,7 +177,7 @@ function EditScreenContent({ screenId }: { screenId: string }) {
         };
 
         loadScreen();
-    }, [screenId, setNodes, setEdges, setViewport, router]);
+    }, [screenId]);
 
     // Handlers de React Flow
     const onConnect = useCallback(
@@ -406,7 +428,7 @@ function EditScreenContent({ screenId }: { screenId: string }) {
                     {/* Canvas React Flow */}
                     <div style={canvasStyle}>
                         <ReactFlow
-                            nodeTypes={nodeTypes}
+                            nodeTypes={debugNodeTypes}
                             nodes={nodes}
                             edges={edges}
                             onNodesChange={onNodesChange}

@@ -159,7 +159,7 @@ export default function OrganizeScreensPage() {
                         🏠 Principal
                       </Chip>
                     ) : (
-                      <Tooltip content="Establecer como principal">
+                      <Tooltip content="Establecer como principal" className="text-black">
                         <Chip
                           size="sm"
                           variant="flat"
@@ -173,30 +173,30 @@ export default function OrganizeScreensPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-center gap-2">
-                      <Tooltip content="Ver en Runtime">
+                      <Tooltip content="Ver en Runtime" className="text-black">
                         <Button
                           size="sm"
-                          variant="flat"
+                          variant="solid"
                           color="success"
                           onPress={() => router.push(`/scada/view/${screen.id}`)}
                         >
                           👁 Ver
                         </Button>
                       </Tooltip>
-                      <Tooltip content="Editar en Canvas">
+                      <Tooltip content="Editar en Canvas" className="text-black">
                         <Button
                           size="sm"
-                          variant="flat"
+                          variant="solid"
                           color="primary"
                           onPress={() => router.push(`/scada/edit/${screen.id}`)}
                         >
                           ✏️ Editar
                         </Button>
                       </Tooltip>
-                      <Tooltip content="Eliminar pantalla">
+                      <Tooltip content="Eliminar pantalla" className="text-black">
                         <Button
                           size="sm"
-                          variant="flat"
+                          variant="solid"
                           color="danger"
                           isLoading={deletingId === screen.id}
                           onPress={() => handleDelete(screen.id, screen.name)}

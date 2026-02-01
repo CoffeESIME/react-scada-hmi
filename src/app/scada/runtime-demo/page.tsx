@@ -70,7 +70,7 @@ export default function RuntimeDemoPage() {
 
     return (
         <ScadaModeProvider isEditMode={false}>
-            <div className="w-full h-screen bg-slate-50 text-white">
+            <div className="w-full h-screen bg-[#C0C0C0] text-white">
                 <div className="absolute top-4 left-4 z-10 bg-black/50 p-4 rounded backdrop-blur-sm">
                     <h1 className="text-xl font-bold mb-2">SCADA Runtime Demo</h1>
                     <p className="text-sm opacity-80">
@@ -90,7 +90,7 @@ export default function RuntimeDemoPage() {
                     nodesConnectable={false}
                     zoomOnScroll={false}
                 >
-                    <Background />
+                    <Background color="#555" />
                     <Controls showInteractive={false} />
                 </ReactFlow>
             </div>
