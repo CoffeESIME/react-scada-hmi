@@ -436,7 +436,6 @@ function CreateHmiScreenContentInner(): React.ReactElement {
     setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
   };
 
-  const [newEdgeTarget, setNewEdgeTarget] = useState('');
 
   const handleAddEdge = (targetId: string) => {
     if (!selectedNode) return;
@@ -468,420 +467,6 @@ function CreateHmiScreenContentInner(): React.ReactElement {
     setEdges((eds) => [...eds, newEdge]);
   };
 
-  // ---------------------------------------------------------------------
-  // 9) PANEL DE PROPIEDADES
-  // ---------------------------------------------------------------------
-  const PropertiesPanel = () => {
-    if (!selectedNode) {
-      return <p style={{ margin: 0 }}>Selecciona un nodo para editar sus propiedades.</p>;
-    }
-
-    const { id, type, data } = selectedNode;
-    const edgesForNode = getEdgesForSelectedNode();
-
-    // Maneja el cambio de ID
-    const handleNodeIdChange = (e: ChangeEvent<HTMLInputElement>) => {
-      renameSelectedNodeId(e.target.value);
-    };
-
-    // Maneja el cambio de data
-    const handleChangeDataField =
-      (field: string) =>
-        (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-          updateSelectedNodeData(field, e.target.value);
-        };
-
-    // Solicitar confirmación de eliminación
-    const handleDeleteNode = () => {
-      if (!selectedNode) return;
-      setIsDeleteModalOpen(true);
-    };
-
-    // Ejecutar eliminación confirmada (se pasa al modal)
-    const confirmDeleteNode = () => {
-      if (!selectedNode) return;
-      const id = selectedNode.id;
-      setNodes((nds) => nds.filter((n) => n.id !== id));
-      setEdges((eds) => eds.filter((e) => e.source !== id && e.target !== id));
-      setSelectedNode(null);
-    };
-
-    return (
-      <div>
-        {/* Modal de confirmación (Portal) */}
-        <ConfirmationModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={confirmDeleteNode}
-          title="Eliminar Nodo"
-          message={`¿Estás seguro de que deseas eliminar el nodo "${selectedNode.id}"? Esta acción no se puede deshacer.`}
-          confirmLabel="Eliminar"
-          isDanger
-        />
-
-        <div className="flex justify-between items-center mb-2">
-          <h3 style={{ ...headingStyle, margin: 0 }}>Editar Nodo</h3>
-          <button
-            onClick={handleDeleteNode}
-            style={{
-              padding: '4px 8px',
-              backgroundColor: '#ef4444',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '12px',
-            }}
-            title="Eliminar nodo"
-          >
-            🗑 Eliminar
-          </button>
-        </div>
-
-        {/* ID del nodo */}
-        <label className="mb-1 block">ID del nodo:</label>
-        <input
-          style={inputStyle}
-          value={id}
-          onChange={handleNodeIdChange}
-        />
-
-        {/* data.label */}
-        <label className="mb-1 block">Etiqueta (data.label):</label>
-        <input
-          style={inputStyle}
-          value={data?.label ?? ''}
-          onChange={handleChangeDataField('label')}
-        />
-
-        {/* Props segun el type */}
-        {type === 'motor' && (
-          <>
-            <label className="mb-1 block">Estado (data.state):</label>
-            <select
-              style={selectStyle}
-              value={data?.state ?? 'Off'}
-              onChange={handleChangeDataField('state')}
-            >
-              <option value="On">On</option>
-              <option value="Off">Off</option>
-              <option value="Transition">Transition</option>
-            </select>
-          </>
-        )}
-
-        {type === 'valve' && (
-          <>
-            <label className="mb-1 block">Estado (data.state):</label>
-            <select
-              style={selectStyle}
-              value={data?.state ?? 'Closed'}
-              onChange={handleChangeDataField('state')}
-            >
-              <option value="Open">Open</option>
-              <option value="Closed">Closed</option>
-              <option value="Transition">Transition</option>
-            </select>
-
-            <label className="mb-1 block">Rotación (data.rotation):</label>
-            <input
-              type="number"
-              style={inputStyle}
-              value={data?.rotation ?? 0}
-              onChange={(e) => updateSelectedNodeData('rotation', Number(e.target.value))}
-            />
-          </>
-        )}
-
-        {type === 'gauge' && (
-          <>
-            <label className="mb-1 block">Valor (data.value):</label>
-            <input
-              type="number"
-              style={inputStyle}
-              value={data?.value ?? 0}
-              onChange={(e) => updateSelectedNodeData('value', Number(e.target.value))}
-            />
-            <label className="mb-1 block">SetPoint (data.setPoint):</label>
-            <input
-              type="number"
-              style={inputStyle}
-              value={data?.setPoint ?? 0}
-              onChange={(e) => updateSelectedNodeData('setPoint', Number(e.target.value))}
-            />
-          </>
-        )}
-
-        {type === 'alarm' && (
-          <>
-            <label className="mb-1 block">Activo (data.isActive):</label>
-            <select
-              style={selectStyle}
-              value={data?.isActive ? 'true' : 'false'}
-              onChange={(e) => updateSelectedNodeData('isActive', e.target.value === 'true')}
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </select>
-
-            <label className="mb-1 block">Tipo (data.type):</label>
-            <select
-              style={selectStyle}
-              value={data?.type ?? 'LOW'}
-              onChange={handleChangeDataField('type')}
-            >
-              <option value="LOW">LOW</option>
-              <option value="MEDIUM">MEDIUM</option>
-              <option value="HIGH">HIGH</option>
-              <option value="URGENT">URGENT</option>
-            </select>
-          </>
-        )}
-
-        {/* ============================================================ */}
-        {/* INTERACTIVIDAD (COMPARTIDO: BUTTON & CARD) */}
-        {/* ============================================================ */}
-        {/* ============================================================ */}
-        {/* INTERACTIVIDAD (COMPARTIDO: BUTTON & CARD) */}
-        {/* ============================================================ */}
-        {['button', 'cardData'].includes(type ?? '') && (
-          <>
-            <hr style={{ margin: '12px 0', borderColor: '#666' }} />
-            <h4 className="text-sm font-semibold text-admin-text mb-2">Interactividad</h4>
-
-            <label className="mb-1 block">Tipo de Acción:</label>
-            <select
-              style={selectStyle}
-              value={data?.actionType ?? 'NONE'}
-              onChange={handleChangeDataField('actionType')}
-            >
-              <option value="NONE">Ninguna</option>
-              <option value="NAVIGATE">Navegación</option>
-              <option value="WRITE_TAG">Comando (Write Tag)</option>
-              <option value="SETPOINT_DIALOG">Setpoint (Popup)</option>
-              {/* SETPOINT_INPUT solo tiene sentido si el componente tiene input visual (ButtonNode lo tiene) */}
-              {type === 'button' && <option value="SETPOINT_INPUT">Input de Setpoint (Inline)</option>}
-            </select>
-
-            {/* 1. NAVIGATE CONFIG */}
-            {data?.actionType === 'NAVIGATE' && (
-              <>
-                <label className="mb-1 block mt-2">ID Pantalla Destino:</label>
-                <input
-                  style={inputStyle}
-                  type="number"
-                  placeholder="Ej: 12"
-                  value={data?.targetScreenId ?? ''}
-                  onChange={handleChangeDataField('targetScreenId')}
-                />
-              </>
-            )}
-
-            {/* 2. WRITE_TAG CONFIG */}
-            {data?.actionType === 'WRITE_TAG' && (
-              <>
-                <div className="mb-4 mt-2">
-                  <TagSelector
-                    value={data?.targetTagId ?? null}
-                    onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
-                    label="Tag de Comando"
-                    placeholder="Selecciona Tag..."
-                    size="sm"
-                  />
-                </div>
-                <label className="mb-1 block">Valor a Escribir:</label>
-                <input
-                  style={inputStyle}
-                  placeholder="Ej: 1, true, 50.5"
-                  value={data?.writeValue ?? ''}
-                  onChange={handleChangeDataField('writeValue')}
-                />
-              </>
-            )}
-
-            {/* 3. SETPOINT CONFIG (DIALOG OR INPUT) */}
-            {(data?.actionType === 'SETPOINT_DIALOG' || data?.actionType === 'SETPOINT_INPUT') && (
-              <>
-                <div className="mb-4 mt-2">
-                  <TagSelector
-                    value={data?.targetTagId ?? null}
-                    onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
-                    label="Tag Setpoint"
-                    placeholder="Selecciona Tag..."
-                    size="sm"
-                  />
-                </div>
-              </>
-            )}
-          </>
-        )}
-
-        {/* ============================================================ */}
-        {/* TAG BINDING SECTION - Solo para nodos con datos en vivo */}
-        {/* ============================================================ */}
-        {['motor', 'valve', 'gauge', 'alarm', 'dataTrend', 'smallDataTrend'].includes(type ?? '') && (
-          <>
-            <hr style={{ margin: '12px 0', borderColor: '#666' }} />
-
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-semibold text-admin-text">Vinculación de Tag</h4>
-                {data?.tagId ? (
-                  <span className="flex items-center gap-1 text-xs text-green-400">
-                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                    Vinculado
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 text-xs text-gray-400">
-                    <span className="w-2 h-2 rounded-full bg-gray-400"></span>
-                    Sin vínculo
-                  </span>
-                )}
-              </div>
-
-              <TagSelector
-                value={data?.tagId ?? null}
-                onChange={(tagId) => {
-                  updateSelectedNodeData('tagId', tagId);
-                }}
-                label="Tag de datos"
-                placeholder="Seleccionar tag..."
-                size="sm"
-                className="w-full"
-              />
-
-              {data?.tagId && (
-                <button
-                  style={{
-                    marginTop: '8px',
-                    padding: '4px 8px',
-                    backgroundColor: '#ef4444',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                  onClick={() => updateSelectedNodeData('tagId', null)}
-                >
-                  Desvincular Tag
-                </button>
-              )}
-            </div>
-          </>
-        )}
-
-        {/* ============================================================ */}
-        {/* MULTI-BINDING SECTION - Solo para ControlDataCard (PID)    */}
-        {/* ============================================================ */}
-        {type === 'controlDataCard' && (
-          <>
-            <hr style={{ margin: '12px 0', borderColor: '#666' }} />
-            <h4 className="text-sm font-semibold text-admin-text mb-3">Vinculación PID</h4>
-
-            {/* 1. PV */}
-            <div className="mb-3">
-              <TagSelector
-                value={data?.pvTagId ?? null}
-                onChange={(tagId) => updateSelectedNodeData('pvTagId', tagId)}
-                label="Variable de Proceso (PV)"
-                placeholder="Tag PV..."
-                size="sm"
-              />
-            </div>
-
-            {/* 2. SP */}
-            <div className="mb-3">
-              <TagSelector
-                value={data?.spTagId ?? null}
-                onChange={(tagId) => updateSelectedNodeData('spTagId', tagId)}
-                label="Set Point (SP)"
-                placeholder="Tag SP..."
-                size="sm"
-              />
-            </div>
-
-            {/* 3. Output */}
-            <div className="mb-3">
-              <TagSelector
-                value={data?.outTagId ?? null}
-                onChange={(tagId) => updateSelectedNodeData('outTagId', tagId)}
-                label="Salida (Output)"
-                placeholder="Tag Out..."
-                size="sm"
-              />
-            </div>
-
-            {/* 4. Mode */}
-            <div className="mb-3">
-              <TagSelector
-                value={data?.modeTagId ?? null}
-                onChange={(tagId) => updateSelectedNodeData('modeTagId', tagId)}
-                label="Modo (Auto/Man)"
-                placeholder="Tag Mode..."
-                size="sm"
-              />
-            </div>
-          </>
-        )}
-
-        <hr style={{ margin: '12px 0', borderColor: '#666' }} />
-
-        <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Edges para este nodo</h4>
-        {edgesForNode.length === 0 && <p style={{ margin: 0 }}>Ninguna Edge</p>}
-        <ul style={{ margin: 0, paddingLeft: '14px', marginBottom: '1rem' }}>
-          {edgesForNode.map((edge) => (
-            <li key={edge.id} style={{ marginBottom: '6px' }}>
-              <span>
-                {edge.source} → {edge.target} (id: {edge.id})
-              </span>
-              <button
-                style={{
-                  marginLeft: '8px',
-                  padding: '2px 6px',
-                  backgroundColor: '#ef4444', // admin-danger
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '3px',
-                  cursor: 'pointer',
-                }}
-                onClick={() => removeEdgeById(edge.id)}
-              >
-                Eliminar
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        {/* Crear edge */}
-        <label className="mb-1 block">Crear edge hacia nodeId:</label>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <input
-            style={{ ...inputStyle, marginBottom: 0 }}
-            placeholder="nodeId destino"
-            value={newEdgeTarget}
-            onChange={(e) => setNewEdgeTarget(e.target.value)}
-          />
-          <button
-            style={{
-              padding: '6px 10px',
-              backgroundColor: '#6366f1', // admin-primary
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              handleAddEdge(newEdgeTarget.trim());
-              setNewEdgeTarget('');
-            }}
-          >
-            Agregar
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   // ---------------------------------------------------------------------
   // 10) Generar JSON
@@ -939,6 +524,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
+              fontSize: '12px',
             }}
           >
             📋 Ver Pantallas
@@ -952,6 +538,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
+              fontSize: '12px',
             }}
           >
             💾 Guardar Pantalla
@@ -986,6 +573,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
+              fontSize: '12px',
             }}
           >
             Generar JSON
@@ -1021,9 +609,37 @@ function CreateHmiScreenContentInner(): React.ReactElement {
         {/* Panel de propiedades (derecha) */}
         <aside style={propertiesPanelStyle}>
           <h3 style={headingStyle}>Propiedades</h3>
-          <PropertiesPanel />
+          <PropertiesPanel
+            selectedNode={selectedNode}
+            updateSelectedNodeData={updateSelectedNodeData}
+            renameSelectedNodeId={renameSelectedNodeId}
+            onDeleteRequest={() => {
+              if (selectedNode) setIsDeleteModalOpen(true);
+            }}
+            edgesForNode={getEdgesForSelectedNode()}
+            removeEdgeById={removeEdgeById}
+            handleAddEdge={handleAddEdge}
+          />
         </aside>
       </div>
+
+      {/* Modal de confirmación (Movido al scope principal) */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => {
+          if (!selectedNode) return;
+          const id = selectedNode.id;
+          setNodes((nds) => nds.filter((n) => n.id !== id));
+          setEdges((eds) => eds.filter((e) => e.source !== id && e.target !== id));
+          setSelectedNode(null);
+          setIsDeleteModalOpen(false);
+        }}
+        title="Eliminar Nodo"
+        message={`¿Estás seguro de que deseas eliminar el nodo "${selectedNode?.id}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        isDanger
+      />
 
       {/* Modal de Guardar */}
       <SaveScreenModal
@@ -1045,3 +661,456 @@ export default function CreateHmiScreen(): React.ReactElement {
     </ReactFlowProvider>
   );
 }
+
+// ---------------------------------------------------------------------
+// 12) PROPERTIES PANEL (Extracted for stability)
+// ---------------------------------------------------------------------
+interface PropertiesPanelProps {
+  selectedNode: Node | null;
+  updateSelectedNodeData: (field: string, value: any) => void;
+  renameSelectedNodeId: (newId: string) => void;
+  onDeleteRequest: () => void;
+  edgesForNode: Edge[];
+  removeEdgeById: (id: string) => void;
+  handleAddEdge: (targetId: string) => void;
+}
+
+function PropertiesPanel({
+  selectedNode,
+  updateSelectedNodeData,
+  renameSelectedNodeId,
+  onDeleteRequest,
+  edgesForNode,
+  removeEdgeById,
+  handleAddEdge,
+}: PropertiesPanelProps) {
+  // Local state for the "New Edge" input
+  const [newEdgeTarget, setNewEdgeTarget] = useState('');
+
+  if (!selectedNode) {
+    return <p style={{ margin: 0 }}>Selecciona un nodo para editar sus propiedades.</p>;
+  }
+
+  const { id, type, data } = selectedNode;
+
+  // Maneja el cambio de ID
+  const handleNodeIdChange = (e: ChangeEvent<HTMLInputElement>) => {
+    renameSelectedNodeId(e.target.value);
+  };
+
+  // Maneja el cambio de data (curried for selects)
+  const handleChangeDataField =
+    (field: string) =>
+      (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        updateSelectedNodeData(field, e.target.value);
+      };
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-2">
+        <h3 style={{ ...headingStyle, margin: 0 }}>Editar Nodo</h3>
+        <button
+          onClick={onDeleteRequest}
+          style={{
+            padding: '4px 8px',
+            backgroundColor: '#ef4444', // admin-danger
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '12px',
+          }}
+          title="Eliminar nodo"
+        >
+          🗑 Eliminar
+        </button>
+      </div>
+
+      {/* ID del nodo */}
+      <label className="mb-1 block">ID del nodo:</label>
+      <input
+        style={inputStyle}
+        value={id}
+        onChange={handleNodeIdChange}
+      />
+
+      {/* data.label */}
+      <label className="mb-1 block">Etiqueta (data.label):</label>
+      <input
+        style={inputStyle}
+        value={data?.label ?? ''}
+        onChange={handleChangeDataField('label')}
+      />
+
+      {/* Props segun el type */}
+      {type === 'motor' && (
+        <>
+          <label className="mb-1 block">Estado (data.state):</label>
+          <select
+            style={selectStyle}
+            value={data?.state ?? 'Off'}
+            onChange={handleChangeDataField('state')}
+          >
+            <option value="On">On</option>
+            <option value="Off">Off</option>
+            <option value="Transition">Transition</option>
+          </select>
+        </>
+      )}
+
+      {type === 'valve' && (
+        <>
+          <label className="mb-1 block">Estado (data.state):</label>
+          <select
+            style={selectStyle}
+            value={data?.state ?? 'Closed'}
+            onChange={handleChangeDataField('state')}
+          >
+            <option value="Open">Open</option>
+            <option value="Closed">Closed</option>
+            <option value="Transition">Transition</option>
+          </select>
+
+          <label className="mb-1 block">Rotación (data.rotation):</label>
+          <input
+            type="number"
+            style={inputStyle}
+            value={data?.rotation ?? 0}
+            onChange={(e) => updateSelectedNodeData('rotation', Number(e.target.value))}
+          />
+        </>
+      )}
+
+      {type === 'gauge' && (
+        <>
+          <label className="mb-1 block">Valor Inicial (data.initialValue):</label>
+          <input
+            type="number"
+            style={inputStyle}
+            value={data?.initialValue ?? 0}
+            onChange={(e) => updateSelectedNodeData('initialValue', Number(e.target.value))}
+          />
+          <label className="mb-1 block">SetPoint (data.setPoint):</label>
+          <input
+            type="number"
+            style={inputStyle}
+            value={data?.setPoint ?? 0}
+            onChange={(e) => updateSelectedNodeData('setPoint', Number(e.target.value))}
+          />
+
+          <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+          <h4 className="text-sm font-semibold text-admin-text mb-2">Límites Industriales</h4>
+
+          {/* Scale Min/Max */}
+          <div className="flex gap-2 mb-2">
+            <div className="flex-1">
+              <label className="text-xs mb-1 block">Min (Escala)</label>
+              <input
+                type="number"
+                style={inputStyle}
+                value={data?.scaleMin ?? 0}
+                onChange={(e) => updateSelectedNodeData('scaleMin', Number(e.target.value))}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-xs mb-1 block">Max (Escala)</label>
+              <input
+                type="number"
+                style={inputStyle}
+                value={data?.scaleMax ?? 100}
+                onChange={(e) => updateSelectedNodeData('scaleMax', Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          {/* HH / H */}
+          <div className="flex gap-2 mb-2">
+            <div className="flex-1">
+              <label className="text-xs mb-1 block text-red-400">HH (Crítico)</label>
+              <input
+                type="number"
+                placeholder="High High"
+                style={inputStyle}
+                value={data?.limitHH ?? ''}
+                onChange={(e) => updateSelectedNodeData('limitHH', e.target.value === '' ? undefined : Number(e.target.value))}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-xs mb-1 block text-yellow-400">H (Alarma)</label>
+              <input
+                type="number"
+                placeholder="High"
+                style={inputStyle}
+                value={data?.limitH ?? ''}
+                onChange={(e) => updateSelectedNodeData('limitH', e.target.value === '' ? undefined : Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          {/* L / LL */}
+          <div className="flex gap-2 mb-2">
+            <div className="flex-1">
+              <label className="text-xs mb-1 block text-yellow-400">L (Alarma)</label>
+              <input
+                type="number"
+                placeholder="Low"
+                style={inputStyle}
+                value={data?.limitL ?? ''}
+                onChange={(e) => updateSelectedNodeData('limitL', e.target.value === '' ? undefined : Number(e.target.value))}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-xs mb-1 block text-red-400">LL (Crítico)</label>
+              <input
+                type="number"
+                placeholder="Low Low"
+                style={inputStyle}
+                value={data?.limitLL ?? ''}
+                onChange={(e) => updateSelectedNodeData('limitLL', e.target.value === '' ? undefined : Number(e.target.value))}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {type === 'alarm' && (
+        <>
+          <label className="mb-1 block">Activo (data.isActive):</label>
+          <select
+            style={selectStyle}
+            value={data?.isActive ? 'true' : 'false'}
+            onChange={(e) => updateSelectedNodeData('isActive', e.target.value === 'true')}
+          >
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+
+          <label className="mb-1 block">Tipo (data.type):</label>
+          <select
+            style={selectStyle}
+            value={data?.type ?? 'LOW'}
+            onChange={handleChangeDataField('type')}
+          >
+            <option value="LOW">LOW</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="HIGH">HIGH</option>
+            <option value="URGENT">URGENT</option>
+          </select>
+        </>
+      )}
+
+      {/* ============================================================ */}
+      {/* INTERACTIVIDAD (COMPARTIDO: BUTTON & CARD) */}
+      {/* ============================================================ */}
+      {['button', 'cardData'].includes(type ?? '') && (
+        <>
+          <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+          <h4 className="text-sm font-semibold text-admin-text mb-2">Interactividad</h4>
+
+          {/* Selector de Tipo de Acción */}
+          <div className="mb-3">
+            <label className="text-xs text-gray-400 mb-1 block">Tipo de Acción</label>
+            <select
+              style={selectStyle}
+              value={data?.actionType ?? 'NONE'}
+              onChange={(e) => updateSelectedNodeData('actionType', e.target.value)}
+            >
+              <option value="NONE">Ninguna</option>
+              <option value="NAVIGATE">Navegar a Pantalla</option>
+              <option value="WRITE_TAG">Escribir Valor a Tag</option>
+              <option value="SETPOINT_INPUT">Input de Setpoint</option>
+              <option value="SETPOINT_DIALOG">Diálogo de Setpoint</option>
+            </select>
+          </div>
+
+          {/* Configuración NAVIGATE */}
+          {data?.actionType === 'NAVIGATE' && (
+            <div className="mb-3 p-2 bg-gray-800 rounded border border-gray-700">
+              <label className="text-xs text-gray-400 mb-1 block">ID Pantalla Destino</label>
+              <input
+                style={inputStyle}
+                placeholder="Ej: screen-123"
+                value={data?.targetScreenId ?? ''}
+                onChange={(e) => updateSelectedNodeData('targetScreenId', e.target.value)}
+              />
+            </div>
+          )}
+
+          {/* Configuración WRITE_TAG */}
+          {data?.actionType === 'WRITE_TAG' && (
+            <div className="mb-3 p-2 bg-gray-800 rounded border border-gray-700">
+              <label className="text-xs text-gray-400 mb-1 block">Tag a Escribir</label>
+              <TagSelector
+                value={data?.targetTagId ?? null}
+                onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
+                placeholder="Selecciona Tag..."
+                size="sm"
+              />
+              <label className="text-xs text-gray-400 mt-2 mb-1 block">Valor a Escribir</label>
+              <input
+                style={inputStyle}
+                placeholder="Valor constante (ej: 1, true)"
+                value={data?.writeValue ?? ''}
+                onChange={(e) => updateSelectedNodeData('writeValue', e.target.value)}
+              />
+              <p className="text-[10px] text-gray-500 mt-1">Si dejas vacío, usará toggle (bool) o prompt (num).</p>
+            </div>
+          )}
+
+          {/* Configuración SETPOINT_INPUT / DIALOG */}
+          {(data?.actionType === 'SETPOINT_INPUT' || data?.actionType === 'SETPOINT_DIALOG') && (
+            <div className="mb-3 p-2 bg-gray-800 rounded border border-gray-700">
+              <label className="text-xs text-gray-400 mb-1 block">Tag de Setpoint</label>
+              <TagSelector
+                value={data?.targetTagId ?? null}
+                onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
+                placeholder="Tag SP..."
+                size="sm"
+              />
+            </div>
+          )}
+
+          {/* Configuración Específica de Button */}
+          {type === 'button' && (
+            <div className="mt-3">
+              <label className="mb-1 block">Texto del Botón</label>
+              <input
+                style={inputStyle}
+                value={data?.label ?? ''}
+                onChange={handleChangeDataField('label')}
+              />
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ============================================================ */}
+      {/* MULTI-BINDING SECTION - Solo para ControlDataCard (PID)    */}
+      {/* ============================================================ */}
+      {type === 'controlDataCard' && (
+        <>
+          <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+          <h4 className="text-sm font-semibold text-admin-text mb-3">Vinculación PID</h4>
+
+          {/* 1. PV */}
+          <div className="mb-3">
+            <TagSelector
+              value={data?.pvTagId ?? null}
+              onChange={(tagId) => updateSelectedNodeData('pvTagId', tagId)}
+              label="Variable de Proceso (PV)"
+              placeholder="Tag PV..."
+              size="sm"
+            />
+          </div>
+
+          {/* 2. SP */}
+          <div className="mb-3">
+            <TagSelector
+              value={data?.spTagId ?? null}
+              onChange={(tagId) => updateSelectedNodeData('spTagId', tagId)}
+              label="Set Point (SP)"
+              placeholder="Tag SP..."
+              size="sm"
+            />
+          </div>
+
+          {/* 3. Output */}
+          <div className="mb-3">
+            <TagSelector
+              value={data?.outTagId ?? null}
+              onChange={(tagId) => updateSelectedNodeData('outTagId', tagId)}
+              label="Salida (Output)"
+              placeholder="Tag Out..."
+              size="sm"
+            />
+          </div>
+
+          {/* 4. Mode */}
+          <div className="mb-3">
+            <TagSelector
+              value={data?.modeTagId ?? null}
+              onChange={(tagId) => updateSelectedNodeData('modeTagId', tagId)}
+              label="Modo (Auto/Man)"
+              placeholder="Tag Mode..."
+              size="sm"
+            />
+          </div>
+        </>
+      )}
+
+      {/* ============================================================ */}
+      {/* TAG BINDING SECTION - Solo para nodos con datos en vivo */}
+      {/* ============================================================ */}
+      {['motor', 'valve', 'gauge', 'alarm', 'dataTrend', 'smallDataTrend'].includes(type ?? '') && (
+        <>
+          <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+          <div className="mb-4">
+            <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Edges para este nodo</h4>
+            {edgesForNode.length === 0 && <p style={{ margin: 0 }}>Ninguna Edge</p>}
+            <ul style={{ margin: 0, paddingLeft: '14px', marginBottom: '1rem' }}>
+              {edgesForNode.map((edge) => (
+                <li key={edge.id} style={{ marginBottom: '6px' }}>
+                  <span>
+                    {edge.source} → {edge.target} (id: {edge.id})
+                  </span>
+                  <button
+                    style={{
+                      marginLeft: '8px',
+                      padding: '2px 6px',
+                      backgroundColor: '#ef4444', // admin-danger
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '3px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => removeEdgeById(edge.id)}
+                  >
+                    Eliminar
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            <h4 className="text-sm font-semibold text-admin-text mb-2">Vinculación de Tag</h4>
+            <TagSelector
+              value={data?.tagId ?? null}
+              onChange={(tagId) => updateSelectedNodeData('tagId', tagId)}
+              label="Tag de datos"
+              placeholder="Seleccionar tag..."
+              size="sm"
+              className="w-full"
+            />
+
+            {/* Crear edge */}
+            <label className="mb-1 block mt-4">Crear edge hacia nodeId:</label>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <input
+                style={{ ...inputStyle, marginBottom: 0 }}
+                placeholder="nodeId destino"
+                value={newEdgeTarget}
+                onChange={(e) => setNewEdgeTarget(e.target.value)}
+              />
+              <button
+                style={{
+                  padding: '6px 10px',
+                  backgroundColor: '#6366f1', // admin-primary
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                }}
+                onClick={() => {
+                  handleAddEdge(newEdgeTarget.trim());
+                  setNewEdgeTarget('');
+                }}
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};

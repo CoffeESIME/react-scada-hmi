@@ -128,7 +128,7 @@ export interface Tag {
     is_enabled: boolean;
     alarm_definition?: {
         id: number;
-        severity: string;
+        severity: number;
         message: string;
         limits: Record<string, number>;
         deadband: number;

@@ -48,7 +48,7 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                 ? {
                     enabled: true,
                     message: editTag.alarm_definition.message,
-                    severity: editTag.alarm_definition.severity as any,
+                    severity: editTag.alarm_definition.severity === 1 ? 'INFO' : editTag.alarm_definition.severity === 2 ? 'WARNING' : 'CRITICAL',
                     hh: editTag.alarm_definition.limits?.HH,
                     h: editTag.alarm_definition.limits?.H,
                     l: editTag.alarm_definition.limits?.L,
@@ -121,9 +121,15 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
 
             // Agregar alarma si está habilitada
             if (data.alarm?.enabled) {
+                const severityMap: Record<string, number> = {
+                    'INFO': 1,
+                    'WARNING': 2,
+                    'CRITICAL': 3
+                };
+
                 payload.alarm = {
                     message: data.alarm.message,
-                    severity: data.alarm.severity || 'WARNING',
+                    severity: severityMap[data.alarm.severity || 'WARNING'] || 2,
                     limits: {
                         ...(data.alarm.hh !== undefined && { HH: data.alarm.hh }),
                         ...(data.alarm.h !== undefined && { H: data.alarm.h }),
@@ -146,7 +152,23 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
             onSuccess();
             onClose();
         } catch (error: any) {
-            const message = error.response?.data?.detail || error.message || 'Error al guardar el tag';
+            console.error("Error saving tag:", error);
+            let message = 'Error al guardar el tag';
+
+            if (error.response?.data?.detail) {
+                const detail = error.response.data.detail;
+                if (Array.isArray(detail)) {
+                    // Si es un array de errores de validación, los unimos
+                    message = detail.map((err: any) => `${err.loc.join('.')} : ${err.msg}`).join('\n');
+                } else if (typeof detail === 'string') {
+                    message = detail;
+                } else {
+                    message = JSON.stringify(detail);
+                }
+            } else if (error.message) {
+                message = error.message;
+            }
+
             toast.error(message);
         } finally {
             setIsSubmitting(false);
