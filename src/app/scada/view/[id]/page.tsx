@@ -81,7 +81,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
     }, [screenId]);
 
     // Memoize imported nodeTypes to satisfy React Flow stability check (especially for HMR)
-    const nodeTypesMemo = React.useMemo(() => debugNodeTypes, []);
+    const nodeTypesMemo = React.useMemo(() => nodeTypes, []);
 
     // ... (rest of useEffect)
 

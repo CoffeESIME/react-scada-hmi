@@ -109,12 +109,6 @@ interface ScreenData {
 
 import { ScadaModeProvider } from '@/contexts/ScadaModeContext';
 
-// --- DEBUG CONSTANTS ---
-const DEBUG_MODE = false; // Set to TRUE to force dummy data
-const DUMMY_NODES: Node[] = [
-    { id: '1', type: 'valve', position: { x: 100, y: 100 }, data: { label: 'Dummy Valve' } },
-    { id: '2', type: 'gauge', position: { x: 300, y: 100 }, data: { label: 'Dummy Gauge' } },
-];
 // -----------------------
 
 function EditScreenContent({ screenId }: { screenId: string }) {
@@ -139,14 +133,7 @@ function EditScreenContent({ screenId }: { screenId: string }) {
         const loadScreen = async () => {
             setIsLoading(true);
             try {
-                if (DEBUG_MODE) {
 
-                    setScreenData({ id: 0, name: 'Debug Screen', slug: 'debug', is_home: false, description: '', layout_data: { nodes: [], edges: [] } });
-                    setNodes(DUMMY_NODES);
-                    setEdges([]);
-                    setIsLoading(false);
-                    return;
-                }
 
                 const response = await api.get<ScreenData>(`/screens/${screenId}`);
                 const data = response.data;
@@ -428,7 +415,7 @@ function EditScreenContent({ screenId }: { screenId: string }) {
                     {/* Canvas React Flow */}
                     <div style={canvasStyle}>
                         <ReactFlow
-                            nodeTypes={debugNodeTypes}
+                            nodeTypes={nodeTypes}
                             nodes={nodes}
                             edges={edges}
                             onNodesChange={onNodesChange}

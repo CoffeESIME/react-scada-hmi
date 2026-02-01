@@ -273,7 +273,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
   // ---------------------------------------------------------------------
   const onConnect = useCallback(
     (params: Connection) => {
-      console.log('[onConnect] Intentando conectar:', params);
+
       // params: { source, target, sourceHandle, targetHandle, ... }
       setEdges((eds) => addEdge(params, eds));
     },
@@ -285,7 +285,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
   // ---------------------------------------------------------------------
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
-      console.log('[onNodeClick] Nodo seleccionado:', node);
+
       setSelectedNode(node);
     },
     []
@@ -296,7 +296,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
   // ---------------------------------------------------------------------
   const onNodesDelete = useCallback(
     (deleted: Node[]) => {
-      console.log('[onNodesDelete] Nodos borrados:', deleted);
+
       if (selectedNode && deleted.some((n) => n.id === selectedNode.id)) {
         setSelectedNode(null);
       }
@@ -331,7 +331,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
         data: getDefaultDataForNode(nodeType),
       };
 
-      console.log('[onDrop] Creando nodo:', newNode);
+
       setNodes((nds) => nds.concat(newNode));
     },
     []
@@ -468,7 +468,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
       target: targetId,
     };
 
-    console.log('[handleAddEdge] Agregando edge:', newEdge);
+
     setEdges((eds) => [...eds, newEdge]);
   };
 
@@ -782,7 +782,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
       nodes: clonedNodes,
       edges,
     };
-    console.log('JSON final (handles conectados):', screenData);
+
     alert('JSON generado. Revisa la consola.');
   };
 
