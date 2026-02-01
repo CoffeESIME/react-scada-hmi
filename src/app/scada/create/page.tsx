@@ -6,7 +6,6 @@ import React, {
   CSSProperties,
   ChangeEvent,
   useEffect,
-  useMemo,
 } from 'react';
 import ReactFlow, {
   Background,
@@ -18,10 +17,7 @@ import ReactFlow, {
   Connection,
   Edge,
   Node,
-  NodeTypes,
-  Handle,
   Position,
-  useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -201,7 +197,7 @@ function getDefaultDataForNode(nodeType: string) {
     case 'cardData':
       return {
         label: ['Título', 'Subtítulo'],
-        href: '#',
+        actionType: 'NONE',
       };
     case 'controlDataCard':
       return {
@@ -639,6 +635,84 @@ function CreateHmiScreenContentInner(): React.ReactElement {
               <option value="HIGH">HIGH</option>
               <option value="URGENT">URGENT</option>
             </select>
+          </>
+        )}
+
+        {/* ============================================================ */}
+        {/* INTERACTIVIDAD (COMPARTIDO: BUTTON & CARD) */}
+        {/* ============================================================ */}
+        {/* ============================================================ */}
+        {/* INTERACTIVIDAD (COMPARTIDO: BUTTON & CARD) */}
+        {/* ============================================================ */}
+        {['button', 'cardData'].includes(type ?? '') && (
+          <>
+            <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+            <h4 className="text-sm font-semibold text-admin-text mb-2">Interactividad</h4>
+
+            <label className="mb-1 block">Tipo de Acción:</label>
+            <select
+              style={selectStyle}
+              value={data?.actionType ?? 'NONE'}
+              onChange={handleChangeDataField('actionType')}
+            >
+              <option value="NONE">Ninguna</option>
+              <option value="NAVIGATE">Navegación</option>
+              <option value="WRITE_TAG">Comando (Write Tag)</option>
+              <option value="SETPOINT_DIALOG">Setpoint (Popup)</option>
+              {/* SETPOINT_INPUT solo tiene sentido si el componente tiene input visual (ButtonNode lo tiene) */}
+              {type === 'button' && <option value="SETPOINT_INPUT">Input de Setpoint (Inline)</option>}
+            </select>
+
+            {/* 1. NAVIGATE CONFIG */}
+            {data?.actionType === 'NAVIGATE' && (
+              <>
+                <label className="mb-1 block mt-2">ID Pantalla Destino:</label>
+                <input
+                  style={inputStyle}
+                  type="number"
+                  placeholder="Ej: 12"
+                  value={data?.targetScreenId ?? ''}
+                  onChange={handleChangeDataField('targetScreenId')}
+                />
+              </>
+            )}
+
+            {/* 2. WRITE_TAG CONFIG */}
+            {data?.actionType === 'WRITE_TAG' && (
+              <>
+                <div className="mb-4 mt-2">
+                  <TagSelector
+                    value={data?.targetTagId ?? null}
+                    onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
+                    label="Tag de Comando"
+                    placeholder="Selecciona Tag..."
+                    size="sm"
+                  />
+                </div>
+                <label className="mb-1 block">Valor a Escribir:</label>
+                <input
+                  style={inputStyle}
+                  placeholder="Ej: 1, true, 50.5"
+                  value={data?.writeValue ?? ''}
+                  onChange={handleChangeDataField('writeValue')}
+                />
+              </>
+            )}
+
+            {/* 3. SETPOINT CONFIG (DIALOG OR INPUT) */}
+            {(data?.actionType === 'SETPOINT_DIALOG' || data?.actionType === 'SETPOINT_INPUT') && (
+              <>
+                <div className="mb-4 mt-2">
+                  <TagSelector
+                    value={data?.targetTagId ?? null}
+                    onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
+                    label="Tag Setpoint"
+                    placeholder="Selecciona Tag..."
+                    size="sm"
+                  />
+                </div>
+              </>
+            )}
           </>
         )}
 

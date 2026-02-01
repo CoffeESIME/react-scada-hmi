@@ -1,10 +1,10 @@
 import { NodeProps } from 'reactflow';
 import { CardData } from './CardData';
+import { NodeActionConfig } from '@/utils/actionTypes';
+import { useNodeAction } from '@/hooks/useNodeAction';
 
-type CardDataNodeData = {
+export type CardDataNodeData = NodeActionConfig & {
   label: string[];
-  href?: string; // Navigation path
-  onPress?: () => void; // Custom action
 };
 
 type CardDataNodeProps = NodeProps & {
@@ -12,11 +12,11 @@ type CardDataNodeProps = NodeProps & {
 };
 
 export const CardDataNode: React.FC<CardDataNodeProps> = ({ data }) => {
+  const { executeAction } = useNodeAction(data);
   return (
     <CardData
       label={data.label}
-      href={data.href}
-      onPress={data.onPress}
+      onPress={executeAction}
     />
   );
 };
