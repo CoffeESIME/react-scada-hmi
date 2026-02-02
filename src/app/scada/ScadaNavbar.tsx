@@ -19,6 +19,12 @@ export default function ScadaNavbar(): React.ReactElement {
             {/* Enlaces principales */}
             <div className="flex items-center gap-6">
                 <Link
+                    href="/scada/home"
+                    className="text-admin-text-secondary hover:text-admin-text transition-colors font-semibold text-primary-400"
+                >
+                    Runtime
+                </Link>
+                <Link
                     href="/scada/create"
                     className="text-admin-text-secondary hover:text-admin-text transition-colors"
                 >

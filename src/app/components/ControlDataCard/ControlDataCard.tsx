@@ -41,17 +41,17 @@ export const ControlDataCard: React.FC<ControlDataCardProps> = ({
             {' '}
             PV{' '}
             <span className="font-bold text-data-fg">
-              {processVariableValue}
+              {typeof processVariableValue === 'number' ? processVariableValue.toFixed(2) : processVariableValue}
             </span>{' '}
             {processVariable}
           </p>
           <p className="text-xs">
             {' '}
-            SP <span className="font-bold text-label-fg">{setPoint}</span>
+            SP <span className="font-bold text-label-fg">{typeof setPoint === 'number' ? setPoint.toFixed(2) : setPoint}</span>
           </p>
           <p className="text-xs">
             {' '}
-            O <span className="font-bold text-data-fg">{output}</span> %
+            O <span className="font-bold text-data-fg">{typeof output === 'number' ? output.toFixed(2) : output}</span> %
           </p>
         </div>
       </CardBody>
