@@ -943,4 +943,4 @@ function PropertiesPanel({
             }
         </div>
     );
-};
+}

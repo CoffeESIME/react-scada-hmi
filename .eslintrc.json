@@ -1,94 +1,25 @@
 {
   "extends": [
     "next/core-web-vitals",
-    "./node_modules/ts-standard/eslintrc.json",
-    "prettier"
+    "plugin:@typescript-eslint/recommended"
   ],
-  "parserOptions": {
-    "project": "tsconfig.json",
-    "tsconfigRootDir": "./",
-    "sourceType": "module"
-  },
   "rules": {
-    "react/jsx-filename-extension": [
-      1,
-      {
-        "extensions": [
-          ".ts",
-          ".tsx",
-          ".js",
-          ".jsx"
-        ]
-      }
-    ],
-    "no-use-before-define": [
-      "error",
-      {
-        "variables": false
-      }
-    ],
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-uses-react": "off",
-    "react/prop-types": "off",
-    "react/prefer-stateless-function": "error",
-    "react/button-has-type": "error",
-    "react/jsx-pascal-case": "error",
-    "react/jsx-no-script-url": "error",
-    "react/no-children-prop": "error",
-    "react/no-danger": "error",
-    "react/no-danger-with-children": "error",
-    "react/no-unstable-nested-components": [
-      "error",
-      {
-        "allowAsProps": true
-      }
-    ],
-    "react/jsx-fragments": "error",
-    "react/destructuring-assignment": [
-      "error",
-      "always",
-      {
-        "destructureInSignature": "always"
-      }
-    ],
-    "react/jsx-no-leaked-render": [
-      "error",
-      {
-        "validStrategies": [
-          "ternary"
-        ]
-      }
-    ],
-    "react/jsx-max-depth": [
-      "error",
-      {
-        "max": 5
-      }
-    ],
-    "react/function-component-definition": [
-      "warn",
-      {
-        "namedComponents": "arrow-function"
-      }
-    ],
-    "react/jsx-key": [
-      "error",
-      {
-        "checkFragmentShorthand": true,
-        "checkKeyMustBeforeSpread": true,
-        "warnOnDuplicates": true
-      }
-    ],
-    "react/jsx-no-useless-fragment": "warn",
-    "react/jsx-curly-brace-presence": "warn",
-    "react/no-typos": "warn",
-    "react/display-name": "warn",
-    "react/self-closing-comp": "warn",
-    "react/jsx-one-expression-per-line": "off",
-    "react/props-types": "off",
-    "@typescript-eslint/restrict-template-expressions": "warn",
-    "@typescript-eslint/no-unused-vars": "off",
-    "react/jsx-sort-props": "off",
-    "react/no-unused-prop-types": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/promise-function-async": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/prefer-nullish-coalescing": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "react/jsx-no-leaked-render": "off",
+    "react/function-component-definition": "off",
+    "react/self-closing-comp": "off",
+    "react/jsx-boolean-value": "off",
+    "react/no-unescaped-entities": "off",
+    "react-hooks/exhaustive-deps": "warn"
   }
 }

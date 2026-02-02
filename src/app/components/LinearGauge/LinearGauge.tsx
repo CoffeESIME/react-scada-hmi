@@ -37,7 +37,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
     width: `${setPointSize}px`,
     height: `${setPointSize}px`,
     backgroundColor: 'black',
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     bottom: setPoint,
     left: '50%',
     transform: 'translate(-50%, 50%) rotate(45deg)',

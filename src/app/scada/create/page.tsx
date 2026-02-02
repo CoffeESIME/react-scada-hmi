@@ -1140,4 +1140,4 @@ function PropertiesPanel({
       }
     </div >
   );
-};
+}
