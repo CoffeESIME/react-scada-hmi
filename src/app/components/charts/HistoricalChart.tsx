@@ -18,16 +18,17 @@ export interface ChartSeries {
 }
 
 interface HistoricalChartProps {
+    id?: string;
     title: string;
     series: ChartSeries[];
     height?: string | number;
 }
 
-export const HistoricalChart: React.FC<HistoricalChartProps> = ({ title, series, height = '100%' }) => {
+export const HistoricalChart: React.FC<HistoricalChartProps> = ({ id, title, series, height = '100%' }) => {
 
     // Prepare data for Plotly
     const plotData: Plotly.Data[] = useMemo(() => {
-        return series.map((s, index) => ({
+        return series.map((s) => ({
             name: s.name,
             x: s.data.map(p => p.x),
             y: s.data.map(p => p.y),
@@ -97,6 +98,7 @@ export const HistoricalChart: React.FC<HistoricalChartProps> = ({ title, series,
     return (
         <div style={{ width: '100%', height: height, minHeight: '400px' }}>
             <Plot
+                divId={id}
                 data={plotData}
                 layout={layout}
                 config={config}

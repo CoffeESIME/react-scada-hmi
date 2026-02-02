@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { TagMultiSelector } from '@/app/components/tags/TagMultiSelector';
 import { getHistory, HistorySeries } from '@/lib/api';
 import { HistoricalChart, ChartSeries } from '@/app/components/charts/HistoricalChart';
+import { useReportExport } from '@/hooks/useReportExport';
 
 export default function AnalysisPage() {
     const searchParams = useSearchParams();
@@ -18,6 +19,10 @@ export default function AnalysisPage() {
     const [endDate, setEndDate] = useState<string>('');
     const [chartSeries, setChartSeries] = useState<ChartSeries[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Export Hook
+    const { exportToCSV, exportToPDF } = useReportExport();
+    const CHART_ID = 'analysis-chart-div';
 
     // Initialize defaults on mount
     useEffect(() => {
@@ -84,14 +89,32 @@ export default function AnalysisPage() {
     };
 
     const handleExportCSV = () => {
-        console.log("Exporting CSV...", chartSeries);
-        toast.info("Descarga CSV simulada");
+        if (chartSeries.length === 0) {
+            toast.warning("No hay datos para exportar");
+            return;
+        }
+        const filename = `reporte_scada_${new Date().toISOString().slice(0, 10)}`;
+        exportToCSV(chartSeries, filename);
+        toast.success("CSV Generado");
     };
 
-    const handleExportPDF = () => {
-        console.log("Exporting PDF...", chartSeries);
-        toast.info("Descarga PDF simulada");
+    const handleExportPDF = async () => {
+        if (chartSeries.length === 0) {
+            toast.warning("No hay datos para exportar");
+            return;
+        }
+        const filename = `reporte_scada_${new Date().toISOString().slice(0, 10)}`;
+        await exportToPDF(CHART_ID, {
+            title: selectedTagIds.map(id => chartSeries.find(s => s.name.includes(id.toString()))?.name || id).join(', '),
+            dateRange: `${startDate.replace('T', ' ')} a ${endDate.replace('T', ' ')}`
+        }, filename);
+        toast.success("PDF Generado");
     };
+
+    const handleExportPDFClick = () => {
+        handleExportPDF();
+    };
+
 
     return (
         <div className="flex h-screen bg-[#1a1a2e] text-white">
@@ -167,7 +190,7 @@ export default function AnalysisPage() {
                         <Button size="sm" variant="flat" onPress={handleExportCSV} className="text-gray-300 hover:text-white">
                             📄 CSV
                         </Button>
-                        <Button size="sm" variant="flat" onPress={handleExportPDF} className="text-gray-300 hover:text-white">
+                        <Button size="sm" variant="flat" onPress={handleExportPDFClick} className="text-gray-300 hover:text-white">
                             📑 PDF
                         </Button>
                     </div>
@@ -177,6 +200,7 @@ export default function AnalysisPage() {
                     <CardBody className="p-0 h-full relative overflow-hidden flex flex-col">
                         {chartSeries.length > 0 ? (
                             <HistoricalChart
+                                id={CHART_ID}
                                 title="Comparativa de Variables de Proceso"
                                 series={chartSeries}
                             />

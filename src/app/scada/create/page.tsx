@@ -467,38 +467,6 @@ function CreateHmiScreenContentInner(): React.ReactElement {
     setEdges((eds) => [...eds, newEdge]);
   };
 
-
-  // ---------------------------------------------------------------------
-  // 10) Generar JSON
-  // ---------------------------------------------------------------------
-  const handleGenerateJson = () => {
-    // Clonamos los nodos (deep clone)
-    const clonedNodes = JSON.parse(JSON.stringify(nodes));
-
-    // Para cada nodo, si data.handles existe, la filtramos
-    clonedNodes.forEach((node: any) => {
-      if (node.data?.handles?.length) {
-        node.data.handles = node.data.handles.filter((handle: any) => {
-          const handleId = handle.id;
-          // Se conserva si hay un edge que use ese handle
-          return edges.some((edge) => {
-            return (
-              (edge.source === node.id && edge.sourceHandle === handleId) ||
-              (edge.target === node.id && edge.targetHandle === handleId)
-            );
-          });
-        });
-      }
-    });
-
-    const screenData = {
-      nodes: clonedNodes,
-      edges,
-    };
-
-    alert('JSON generado. Revisa la consola.');
-  };
-
   // ---------------------------------------------------------------------
   // 11) RENDER PRINCIPAL
   // ---------------------------------------------------------------------
@@ -563,21 +531,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
               {item.label}
             </div>
           ))}
-          <button
-            onClick={handleGenerateJson}
-            style={{
-              marginTop: '12px',
-              padding: '8px 12px',
-              backgroundColor: '#6366f1', // admin-primary
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '12px',
-            }}
-          >
-            Generar JSON
-          </button>
+
         </aside>
 
         {/* Canvas React Flow (centro) */}
