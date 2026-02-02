@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NodeProps } from 'reactflow';
+import { useRouter } from 'next/navigation';
 import DataTrend from './DataTrend';
 import { useNodeLiveData } from '@/hooks/useNodeLiveData';
 import { useScadaMode } from '@/contexts/ScadaModeContext';
@@ -30,6 +31,8 @@ type DataTrendNodeProps = NodeProps<DataTrendNodeData>;
 const HISTORY_LENGTH = 50;
 
 export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
+  const router = useRouter();
+
   // 1. Live Data Hooks
   const { value: pvValue } = useNodeLiveData(data.tagId);
   const { value: spValue } = useNodeLiveData(data.spTagId);
@@ -48,12 +51,6 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   }, [data.dataPoints]);
 
   // 3. Update Buffer on PV change (or interval?)
-  // Using useEffect on pvValue might be too fast or irregular. 
-  // Ideally we should sample at fixed rate or on change. 
-  // For SCADA, on change is often acceptable if rate is controlled, 
-  // but for a trend chart, periodic sampling is better for X-axis consistency.
-  // However, useNodeLiveData updates on MQTT message.
-  // Let's just append on change for now, assuming data comes at ~1s from backend/simulator.
   useEffect(() => {
     if (typeof pvValue === 'number') {
       setHistory(prev => {
@@ -67,14 +64,21 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   }, [pvValue]);
 
   // 4. Resolve Setpoint (Dynamic or Static)
-  // If spTagId is present, use spValue. Else use static data.setPoint.
   const resolvedSetPoint = data.spTagId ? (typeof spValue === 'number' ? spValue : undefined) : data.setPoint;
 
   // 5. Check Edit Mode
   const { isEditMode } = useScadaMode();
 
+  const handleViewHistory = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (data.tagId) {
+      // Use query param for pre-selection
+      router.push(`/scada/analysis?preselectedTagId=${data.tagId}`);
+    }
+  };
+
   return (
-    <div className="z-40" style={{ pointerEvents: isEditMode ? 'none' : 'auto' }}>
+    <div className="z-40 relative group" style={{ pointerEvents: isEditMode ? 'none' : 'auto' }}>
       <DataTrend
         width={data.width}
         height={data.height}
@@ -85,6 +89,16 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
         yAxis={data.yAxis}
         title={data.title}
       />
+      {/* History Button (Only visible in View Mode and on Hover) */}
+      {!isEditMode && data.tagId && (
+        <button
+          onClick={handleViewHistory}
+          className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-blue-600 text-white text-[10px] px-2 py-1 rounded shadow-md hover:bg-blue-500"
+          title="Ver Historial Completo"
+        >
+          📜 Historial
+        </button>
+      )}
     </div>
   );
 };

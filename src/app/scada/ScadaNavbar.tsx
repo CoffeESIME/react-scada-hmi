@@ -30,6 +30,12 @@ export default function ScadaNavbar(): React.ReactElement {
                 >
                     Tags
                 </Link>
+                <Link
+                    href="/scada/analysis"
+                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
+                >
+                    Historial
+                </Link>
             </div>
 
             {/* Usuario y Logout */}

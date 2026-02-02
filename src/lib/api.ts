@@ -42,3 +42,24 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+export interface HistoryPoint {
+    x: string; // ISO Date
+    y: number;
+}
+
+export interface HistorySeries {
+    tagId: number;
+    data: HistoryPoint[];
+}
+
+export const getHistory = async (tagIds: number[], start: string, end: string) => {
+    const response = await api.get<HistorySeries[]>('/history', {
+        params: {
+            tag_ids: tagIds.join(','),
+            start,
+            end
+        }
+    });
+    return response.data;
+};
