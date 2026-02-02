@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import DataTrend from './DataTrend';
 import { useNodeLiveData } from '@/hooks/useNodeLiveData';
 import { useScadaMode } from '@/contexts/ScadaModeContext';
+import { getLatestHistory } from '@/lib/api';
 
 type DataTrendNodeData = {
   tagId?: number;
@@ -43,14 +44,34 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   const initialized = useRef(false);
 
   useEffect(() => {
-    // If we have manual dataPoints and haven't initialized, use them
-    if (!initialized.current && data.dataPoints && data.dataPoints.length > 0) {
+    console.log(`[DataTrend Debug] Mount. Tag: ${data.tagId}, Init: ${initialized.current}, Points: ${data.dataPoints?.length}`);
+
+    // Priority 1: Backfilling (if Tag ID exists, use it!)
+    if (!initialized.current && data.tagId) {
+      console.log(`[DataTrend] Backfilling for Tag ${data.tagId}...`);
+      getLatestHistory(data.tagId!, HISTORY_LENGTH)
+        .then(response => {
+          console.log(`[DataTrend] Received ${response.data.length} points for Tag ${data.tagId}`);
+          const points = response.data.map(p => p.y);
+          setHistory(points);
+          initialized.current = true;
+        })
+        .catch(err => {
+          console.error("Error backfilling trend:", err);
+          initialized.current = true;
+        });
+    }
+    // Priority 2: Manual Data (Only if NO Tag ID)
+    else if (!initialized.current && data.dataPoints && data.dataPoints.length > 0) {
+      console.log(`[DataTrend] Using manual points for Tag ${data.tagId}`);
       setHistory(data.dataPoints);
       initialized.current = true;
+    } else {
+      console.log(`[DataTrend] Skipping init for Tag ${data.tagId}. Condition not met.`);
     }
-  }, [data.dataPoints]);
+  }, [data.dataPoints, data.tagId]);
 
-  // 3. Update Buffer on PV change (or interval?)
+  // 3. Update Buffer on PV change
   useEffect(() => {
     if (typeof pvValue === 'number') {
       setHistory(prev => {

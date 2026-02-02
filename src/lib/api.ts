@@ -63,3 +63,15 @@ export const getHistory = async (tagIds: number[], start: string, end: string) =
     });
     return response.data;
 };
+
+export interface LatestHistoryResponse {
+    tagId: number;
+    data: HistoryPoint[];
+}
+
+export const getLatestHistory = async (tagId: number, limit: number = 50) => {
+    const response = await api.get<LatestHistoryResponse>(`/history/latest/${tagId}`, {
+        params: { limit }
+    });
+    return response.data;
+};

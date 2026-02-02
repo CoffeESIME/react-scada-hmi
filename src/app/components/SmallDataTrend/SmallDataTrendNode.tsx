@@ -4,6 +4,7 @@ import { SmallDataTrend, smallLineChart } from './SmallDataTrend';
 import { NodeProps } from 'reactflow';
 import { useNodeLiveData } from '@/hooks/useNodeLiveData';
 import { useScadaMode } from '@/contexts/ScadaModeContext';
+import { getLatestHistory } from '@/lib/api';
 
 // Extend the type to include new props
 type SmallDataTrendNodeData = smallLineChart & {
@@ -27,11 +28,27 @@ export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) 
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (!initialized.current && data.data && data.data.length > 0) {
+    console.log(`[SmallDataTrend Debug] Mount. Tag: ${data.tagId}, Init: ${initialized.current}, Len: ${data.data?.length}`);
+
+    // Priority 1: Backfilling (Check Tag ID FIRST)
+    if (!initialized.current && data.tagId) {
+      // Backfilling
+      console.log(`[SmallDataTrend] Backfilling for Tag ${data.tagId}...`);
+      getLatestHistory(data.tagId!, HISTORY_LENGTH)
+        .then(response => {
+          console.log(`[SmallDataTrend] Received ${response.data.length} points for Tag ${data.tagId}`);
+          const points = response.data.map(p => p.y);
+          setHistory(points);
+          initialized.current = true;
+        })
+        .catch(err => console.error("Error backfilling small trend:", err));
+    }
+    // Priority 2: Manual Data
+    else if (!initialized.current && data.data && data.data.length > 0) {
       setHistory(data.data);
       initialized.current = true;
     }
-  }, [data.data]);
+  }, [data.data, data.tagId]);
 
   useEffect(() => {
     if (typeof liveValue === 'number') {
@@ -46,10 +63,6 @@ export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) 
   }, [liveValue]);
 
   // Calculate Band
-  // If spTagId -> use spValue. Else no SP? User prompt implies SP is key for band.
-  // We need an SP to calculate band. If no SP, maybe just use manual min/max if provided?
-  // User said: "Calcular min = spValue - deadband. Calcular max = spValue + deadband."
-
   let bandMin = data.min;
   let bandMax = data.max;
 
@@ -59,8 +72,6 @@ export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) 
     bandMin = currentSP - data.deadband;
     bandMax = currentSP + data.deadband;
   }
-
-  // If no dynamic band, fall back to props min/max (legacy)
 
   return (
     <div style={{ pointerEvents: isEditMode ? 'none' : 'auto' }}>

@@ -77,7 +77,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
         };
 
         loadScreen();
-    }, [screenId, setViewport, fitView, router]);
+    }, [screenId]);
 
     // Memoize imported nodeTypes to satisfy React Flow stability check
     const nodeTypesMemo = React.useMemo(() => nodeTypes, []);
