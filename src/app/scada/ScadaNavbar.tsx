@@ -22,25 +22,7 @@ export default function ScadaNavbar(): React.ReactElement {
                     href="/scada/create"
                     className="text-admin-text-secondary hover:text-admin-text transition-colors"
                 >
-                    Crear
-                </Link>
-                <Link
-                    href="/scada/edit"
-                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
-                >
-                    Editar
-                </Link>
-                <Link
-                    href="/scada/organize"
-                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
-                >
-                    Organizar Flujo
-                </Link>
-                <Link
-                    href="/scada/settings"
-                    className="text-admin-text-secondary hover:text-admin-text transition-colors"
-                >
-                    Ajustes
+                    Editor
                 </Link>
                 <Link
                     href="/scada/tags"
