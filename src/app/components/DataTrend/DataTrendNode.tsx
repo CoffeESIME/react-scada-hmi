@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { NodeProps } from 'reactflow';
 import DataTrend from './DataTrend';
 import { useNodeLiveData } from '@/hooks/useNodeLiveData';
+import { useScadaMode } from '@/contexts/ScadaModeContext';
 
 type DataTrendNodeData = {
   tagId?: number;
@@ -69,8 +70,11 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   // If spTagId is present, use spValue. Else use static data.setPoint.
   const resolvedSetPoint = data.spTagId ? (typeof spValue === 'number' ? spValue : undefined) : data.setPoint;
 
+  // 5. Check Edit Mode
+  const { isEditMode } = useScadaMode();
+
   return (
-    <div className="z-40">
+    <div className="z-40" style={{ pointerEvents: isEditMode ? 'none' : 'auto' }}>
       <DataTrend
         width={data.width}
         height={data.height}

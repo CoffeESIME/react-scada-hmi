@@ -365,12 +365,23 @@ function EditScreenContent({ screenId }: { screenId: string }) {
     );
 
     // Funciones de edición
+    // Funciones de edición
     const updateSelectedNodeData = (field: string, value: any) => {
         if (!selectedNode) return;
+
+        const updatedNode = {
+            ...selectedNode,
+            data: { ...selectedNode.data, [field]: value }
+        };
+
+        // Update local selection state so Panel reflects changes immediately
+        setSelectedNode(updatedNode);
+
+        // Update React Flow nodes state
         setNodes((prevNodes) =>
             prevNodes.map((node) => {
                 if (node.id === selectedNode.id) {
-                    return { ...node, data: { ...node.data, [field]: value } };
+                    return updatedNode;
                 }
                 return node;
             })
@@ -772,9 +783,79 @@ function PropertiesPanel({
             )}
 
             {/* ============================================================ */}
+            {/* TRENDS (DataTrend & SmallDataTrend) */}
+            {/* ============================================================ */}
+            {(type === 'dataTrend' || type === 'smallDataTrend') && (
+                <>
+                    <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+                    <h4 className="text-sm font-semibold text-admin-text mb-2">Configuración de Tendencia</h4>
+
+                    {/* PV */}
+                    <div className="mb-3">
+                        <TagSelector
+                            value={data?.tagId ?? null}
+                            onChange={(tagId) => updateSelectedNodeData('tagId', tagId)}
+                            label="Variable a Graficar (PV)"
+                            size="sm"
+                        />
+                    </div>
+
+                    {/* SP */}
+                    <div className="mb-3">
+                        <TagSelector
+                            value={data?.spTagId ?? null}
+                            onChange={(tagId) => updateSelectedNodeData('spTagId', tagId)}
+                            label="Tag de Setpoint (SP)"
+                            size="sm"
+                        />
+                        <p className="text-[10px] text-gray-500 mt-1">Opcional. Si se omite, usa valor estático/ninguno.</p>
+                    </div>
+                </>
+            )}
+
+            {type === 'dataTrend' && (
+                <>
+                    <div className="mb-3">
+                        <label className="text-xs text-gray-400 mb-1 block">Título</label>
+                        <input style={inputStyle} value={data?.title ?? ''} onChange={handleChangeDataField('title')} />
+                    </div>
+
+                    <div className="flex gap-2 mb-2">
+                        <div className="flex-1">
+                            <label className="text-xs mb-1 block text-gray-400">Límite Alto</label>
+                            <input type="number" style={inputStyle} value={data?.limitTop ?? ''} onChange={(e) => updateSelectedNodeData('limitTop', Number(e.target.value))} />
+                        </div>
+                        <div className="flex-1">
+                            <label className="text-xs mb-1 block text-gray-400">Límite Bajo</label>
+                            <input type="number" style={inputStyle} value={data?.limitBottom ?? ''} onChange={(e) => updateSelectedNodeData('limitBottom', Number(e.target.value))} />
+                        </div>
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="text-xs mb-1 block text-blue-400">Setpoint Estático</label>
+                        <input type="number" style={inputStyle} value={data?.setPoint ?? ''} onChange={(e) => updateSelectedNodeData('setPoint', Number(e.target.value))} />
+                    </div>
+                </>
+            )}
+
+            {type === 'smallDataTrend' && (
+                <div className="mb-3">
+                    <label className="text-xs text-gray-400 mb-1 block">Banda Muerta (Deadband)</label>
+                    <input
+                        type="number"
+                        style={inputStyle}
+                        placeholder="Ej: 5"
+                        value={data?.deadband ?? ''}
+                        onChange={(e) => updateSelectedNodeData('deadband', Number(e.target.value))}
+                    />
+                    <p className="text-[10px] text-gray-500 mt-1">Ancho de banda +/- respecto al SP.</p>
+                </div>
+            )}
+
+            {/* ============================================================ */}
             {/* TAG BINDING SECTION - Solo para nodos con datos en vivo */}
             {/* ============================================================ */}
-            {['motor', 'valve', 'gauge', 'alarm', 'dataTrend', 'smallDataTrend'].includes(type ?? '') && (
+            {['motor', 'valve', 'gauge', 'alarm'].includes(type ?? '') && (
                 <>
                     <hr style={{ margin: '12px 0', borderColor: '#666' }} />
                     <div className="mb-4">

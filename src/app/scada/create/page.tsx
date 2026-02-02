@@ -1046,7 +1046,7 @@ function PropertiesPanel({
           <hr style={{ margin: '12px 0', borderColor: '#666' }} />
           <h4 className="text-sm font-semibold text-admin-text mb-2">Configuración de Tendencia</h4>
 
-          {/* Variable Principal */}
+          {/* PV */}
           <div className="mb-3">
             <TagSelector
               value={data?.tagId ?? null}
@@ -1056,7 +1056,7 @@ function PropertiesPanel({
             />
           </div>
 
-          {/* Setpoint (Opcional) */}
+          {/* SP */}
           <div className="mb-3">
             <TagSelector
               value={data?.spTagId ?? null}
@@ -1064,7 +1064,7 @@ function PropertiesPanel({
               label="Tag de Setpoint (SP)"
               size="sm"
             />
-            <p className="text-[10px] text-gray-500 mt-1">Si no se selecciona, usa el valor estático.</p>
+            <p className="text-[10px] text-gray-500 mt-1">Opcional. Si se omite, usa valor estático/ninguno.</p>
           </div>
         </>
       )}
@@ -1073,137 +1073,117 @@ function PropertiesPanel({
         <>
           <div className="mb-3">
             <label className="text-xs text-gray-400 mb-1 block">Título</label>
-            <input
-              style={inputStyle}
-              value={data?.title ?? ''}
-              onChange={handleChangeDataField('title')}
-            />
+            <input style={inputStyle} value={data?.title ?? ''} onChange={handleChangeDataField('title')} />
           </div>
 
           <div className="flex gap-2 mb-2">
             <div className="flex-1">
               <label className="text-xs mb-1 block text-gray-400">Límite Alto</label>
-              <input
-                type="number"
-                style={inputStyle}
-                value={data?.limitTop ?? ''}
-                onChange={(e) => updateSelectedNodeData('limitTop', Number(e.target.value))}
-              />
+              <input type="number" style={inputStyle} value={data?.limitTop ?? ''} onChange={(e) => updateSelectedNodeData('limitTop', Number(e.target.value))} />
             </div>
             <div className="flex-1">
               <label className="text-xs mb-1 block text-gray-400">Límite Bajo</label>
-              <input
-                type="number"
-                style={inputStyle}
-                value={data?.limitBottom ?? ''}
-                onChange={(e) => updateSelectedNodeData('limitBottom', Number(e.target.value))}
-              />
+              <input type="number" style={inputStyle} value={data?.limitBottom ?? ''} onChange={(e) => updateSelectedNodeData('limitBottom', Number(e.target.value))} />
             </div>
           </div>
 
-          <div className="flex gap-2 mb-2">
-            <div className="flex-1">
-              <label className="text-xs mb-1 block text-blue-400">Setpoint (Estático)</label>
-              <input
-                type="number"
-                style={inputStyle}
-                value={data?.setPoint ?? ''}
-                onChange={(e) => updateSelectedNodeData('setPoint', Number(e.target.value))}
-              />
-            </div>
+          <div className="mb-3">
+            <label className="text-xs mb-1 block text-blue-400">Setpoint Estático</label>
+            <input type="number" style={inputStyle} value={data?.setPoint ?? ''} onChange={(e) => updateSelectedNodeData('setPoint', Number(e.target.value))} />
           </div>
         </>
       )}
 
+      {/* SmallDataTrend Specifics */}
       {type === 'smallDataTrend' && (
-        <>
-          <div className="mb-3">
-            <label className="text-xs text-gray-400 mb-1 block">Banda Muerta (Deadband)</label>
-            <input
-              type="number"
-              style={inputStyle}
-              placeholder="Ej: 5"
-              value={data?.deadband ?? ''}
-              onChange={(e) => updateSelectedNodeData('deadband', Number(e.target.value))}
-            />
-            <p className="text-[10px] text-gray-500 mt-1">Ancho de banda +/- respecto al SP.</p>
-          </div>
-        </>
+        <div className="mb-3">
+          <label className="text-xs text-gray-400 mb-1 block">Banda Muerta (Deadband)</label>
+          <input
+            type="number"
+            style={inputStyle}
+            placeholder="Ej: 5"
+            value={data?.deadband ?? ''}
+            onChange={(e) => updateSelectedNodeData('deadband', Number(e.target.value))}
+          />
+          <p className="text-[10px] text-gray-500 mt-1">Ancho de banda +/- respecto al SP.</p>
+        </div>
       )}
 
       {/* ============================================================ */}
       {/* TAG BINDING SECTION - Solo para nodos con datos en vivo */}
       {/* ============================================================ */}
-      {['motor', 'valve', 'gauge', 'alarm'].includes(type ?? '') && (
-        <>
-          <hr style={{ margin: '12px 0', borderColor: '#666' }} />
-          <div className="mb-4">
-            <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Edges para este nodo</h4>
-            {edgesForNode.length === 0 && <p style={{ margin: 0 }}>Ninguna Edge</p>}
-            <ul style={{ margin: 0, paddingLeft: '14px', marginBottom: '1rem' }}>
-              {edgesForNode.map((edge) => (
-                <li key={edge.id} style={{ marginBottom: '6px' }}>
-                  <span>
-                    {edge.source} → {edge.target} (id: {edge.id})
-                  </span>
-                  <button
-                    style={{
-                      marginLeft: '8px',
-                      padding: '2px 6px',
-                      backgroundColor: '#ef4444', // admin-danger
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '3px',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => removeEdgeById(edge.id)}
-                  >
-                    Eliminar
-                  </button>
-                </li>
-              ))}
-            </ul>
+      {
+        ['motor', 'valve', 'gauge', 'alarm'].includes(type ?? '') && (
+          <>
+            <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+            <div className="mb-4">
+              <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Edges para este nodo</h4>
+              {edgesForNode.length === 0 && <p style={{ margin: 0 }}>Ninguna Edge</p>}
+              <ul style={{ margin: 0, paddingLeft: '14px', marginBottom: '1rem' }}>
+                {edgesForNode.map((edge) => (
+                  <li key={edge.id} style={{ marginBottom: '6px' }}>
+                    <span>
+                      {edge.source} → {edge.target} (id: {edge.id})
+                    </span>
+                    <button
+                      style={{
+                        marginLeft: '8px',
+                        padding: '2px 6px',
+                        backgroundColor: '#ef4444', // admin-danger
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => removeEdgeById(edge.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </li>
+                ))}
+              </ul>
 
-            <h4 className="text-sm font-semibold text-admin-text mb-2">Vinculación de Tag</h4>
-            <TagSelector
-              value={data?.tagId ?? null}
-              onChange={(tagId) => updateSelectedNodeData('tagId', tagId)}
-              label="Tag de datos"
-              placeholder="Seleccionar tag..."
-              size="sm"
-              className="w-full"
-            />
-
-            {/* Crear edge */}
-            <label className="mb-1 block mt-4">Crear edge hacia nodeId:</label>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <input
-                style={{ ...inputStyle, marginBottom: 0 }}
-                placeholder="nodeId destino"
-                value={newEdgeTarget}
-                onChange={(e) => setNewEdgeTarget(e.target.value)}
+              <h4 className="text-sm font-semibold text-admin-text mb-2">Vinculación de Tag</h4>
+              <TagSelector
+                value={data?.tagId ?? null}
+                onChange={(tagId) => updateSelectedNodeData('tagId', tagId)}
+                label="Tag de datos"
+                placeholder="Seleccionar tag..."
+                size="sm"
+                className="w-full"
               />
-              <button
-                style={{
-                  padding: '6px 10px',
-                  backgroundColor: '#6366f1', // admin-primary
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                }}
-                onClick={() => {
-                  handleAddEdge(newEdgeTarget.trim());
-                  setNewEdgeTarget('');
-                }}
-              >
-                Agregar
-              </button>
+
+              {/* Crear edge */}
+              <label className="mb-1 block mt-4">Crear edge hacia nodeId:</label>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <input
+                  style={{ ...inputStyle, marginBottom: 0 }}
+                  placeholder="nodeId destino"
+                  value={newEdgeTarget}
+                  onChange={(e) => setNewEdgeTarget(e.target.value)}
+                />
+                <button
+                  style={{
+                    padding: '6px 10px',
+                    backgroundColor: '#6366f1', // admin-primary
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                  onClick={() => {
+                    handleAddEdge(newEdgeTarget.trim());
+                    setNewEdgeTarget('');
+                  }}
+                >
+                  Agregar
+                </button>
+              </div>
             </div>
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )
+      }
+    </div >
   );
 };

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { SmallDataTrend, smallLineChart } from './SmallDataTrend';
 import { NodeProps } from 'reactflow';
 import { useNodeLiveData } from '@/hooks/useNodeLiveData';
+import { useScadaMode } from '@/contexts/ScadaModeContext';
 
 // Extend the type to include new props
 type SmallDataTrendNodeData = smallLineChart & {
@@ -19,6 +20,7 @@ export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) 
   // 1. Hook for live PV
   const { value: liveValue } = useNodeLiveData(data.tagId);
   const { value: spValue } = useNodeLiveData(data.spTagId);
+  const { isEditMode } = useScadaMode();
 
   // Buffer
   const [history, setHistory] = useState<number[]>([]);
@@ -61,12 +63,14 @@ export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) 
   // If no dynamic band, fall back to props min/max (legacy)
 
   return (
-    <SmallDataTrend
-      data={history}
-      height={data.height}
-      width={data.width}
-      min={bandMin}
-      max={bandMax}
-    />
+    <div style={{ pointerEvents: isEditMode ? 'none' : 'auto' }}>
+      <SmallDataTrend
+        data={history}
+        height={data.height}
+        width={data.width}
+        min={bandMin}
+        max={bandMax}
+      />
+    </div>
   );
 };
