@@ -50,6 +50,7 @@ export interface HistoryPoint {
 
 export interface HistorySeries {
     tagId: number;
+    tagName?: string;
     data: HistoryPoint[];
 }
 

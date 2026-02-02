@@ -60,7 +60,7 @@ export default function AnalysisPage() {
 
             // Transform to Plotly Series
             const formattedSeries: ChartSeries[] = history.map((h: HistorySeries) => ({
-                name: `Tag ${h.tagId}`, // Ideally we'd map this to a specific name if we had the Tag object
+                name: h.tagName || `Tag ${h.tagId}`,
                 data: h.data.map(p => ({ x: new Date(p.x), y: p.y })),
                 unit: ''
             }));
