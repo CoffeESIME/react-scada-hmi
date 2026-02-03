@@ -34,9 +34,9 @@ const HISTORY_LENGTH = 50;
 export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   const router = useRouter();
 
-  // 1. Live Data Hooks
-  const { value: pvValue } = useNodeLiveData(data.tagId);
-  const { value: spValue } = useNodeLiveData(data.spTagId);
+  // 1. Live Data Hooks - Get full data including timestamp
+  const pvData = useNodeLiveData(data.tagId);
+  const spData = useNodeLiveData(data.spTagId);
 
   // 2. History Buffer
   const [history, setHistory] = useState<number[]>([]);
@@ -71,21 +71,22 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
     }
   }, [data.dataPoints, data.tagId]);
 
-  // 3. Update Buffer on PV change
+  // 3. Update Buffer on each MQTT update (using timestamp as trigger)
+  // This ensures updates even when the value stays constant
   useEffect(() => {
-    if (typeof pvValue === 'number') {
+    if (pvData.isLive && typeof pvData.value === 'number') {
       setHistory(prev => {
-        const newHistory = [...prev, pvValue];
+        const newHistory = [...prev, pvData.value];
         if (newHistory.length > HISTORY_LENGTH) {
           return newHistory.slice(newHistory.length - HISTORY_LENGTH);
         }
         return newHistory;
       });
     }
-  }, [pvValue]);
+  }, [pvData.timestamp]); // ← Use timestamp as dependency, not value!
 
   // 4. Resolve Setpoint (Dynamic or Static)
-  const resolvedSetPoint = data.spTagId ? (typeof spValue === 'number' ? spValue : undefined) : data.setPoint;
+  const resolvedSetPoint = data.spTagId ? (typeof spData.value === 'number' ? spData.value : undefined) : data.setPoint;
 
   // 5. Check Edit Mode
   const { isEditMode } = useScadaMode();
@@ -107,7 +108,10 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
         setPoint={resolvedSetPoint}
         limitBottom={data.limitBottom}
         limitTop={data.limitTop}
-        yAxis={data.yAxis}
+        yAxis={data.yAxis ?? (data.limitBottom !== undefined || data.limitTop !== undefined ? {
+          min: data.limitBottom ?? 0,
+          max: data.limitTop ?? 100
+        } : undefined)}
         title={data.title}
       />
       {/* History Button (Only visible in View Mode and on Hover) */}

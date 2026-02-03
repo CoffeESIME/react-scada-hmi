@@ -11,6 +11,8 @@ export type LinearGaugeProps = BaseProps & {
   borderColor?: string;
   borderWidth?: string;
   bottom?: number;
+  scaleMin?: number;  // Min value of the scale (default 0)
+  scaleMax?: number;  // Max value of the scale (default 100)
   setPoint?: number;
   thresholds?: Threshold[];
 };

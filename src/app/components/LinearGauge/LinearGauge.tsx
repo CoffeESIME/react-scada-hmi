@@ -18,6 +18,8 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
   borderColor = 'black',
   borderWidth = '2px',
   bottom = 30,
+  scaleMin = 0,
+  scaleMax = 100,
   setPoint = calculateSetPointBottom(35, -30, 100),
   thresholds = thresholdsStyle(
     [
@@ -32,6 +34,14 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
   ),
 }) => {
   const needleSize: number = useMemo(() => parseInt(width) * 0.3, [width]);
+
+  // Calcular el porcentaje del valor dentro del rango de escala
+  const valuePercent = useMemo(() => {
+    const range = scaleMax - scaleMin;
+    if (range === 0) return 0;
+    const percent = ((value - scaleMin) / range) * 100;
+    return Math.max(0, Math.min(100, percent)); // Clamp 0-100
+  }, [value, scaleMin, scaleMax]);
   const setPointSize: number = parseInt(width) / 2;
   const setPointStyle = {
     width: `${setPointSize}px`,
@@ -65,7 +75,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
       <div
         className="absolute left-3/4 flex translate-x-3 translate-y-3 transform flex-col items-center"
         style={{
-          bottom: `${value - 1}%`,
+          bottom: `${valuePercent - 1}%`,
         }}
       >
         <div
@@ -96,7 +106,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
           (tailwindConfig.theme?.extend?.colors as any)[
           'primary-indicator-fg'
           ] || '#defaultColorValue',
-          value
+          valuePercent
         )}
       ></div>
     </div>

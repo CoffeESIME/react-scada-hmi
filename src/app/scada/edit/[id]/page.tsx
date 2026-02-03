@@ -822,12 +822,41 @@ function PropertiesPanel({
 
                     <div className="flex gap-2 mb-2">
                         <div className="flex-1">
-                            <label className="text-xs mb-1 block text-gray-400">Límite Alto</label>
+                            <label className="text-xs mb-1 block text-gray-400">Límite Alto (Línea)</label>
                             <input type="number" style={inputStyle} value={data?.limitTop ?? ''} onChange={(e) => updateSelectedNodeData('limitTop', Number(e.target.value))} />
                         </div>
                         <div className="flex-1">
-                            <label className="text-xs mb-1 block text-gray-400">Límite Bajo</label>
+                            <label className="text-xs mb-1 block text-gray-400">Límite Bajo (Línea)</label>
                             <input type="number" style={inputStyle} value={data?.limitBottom ?? ''} onChange={(e) => updateSelectedNodeData('limitBottom', Number(e.target.value))} />
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2 mb-2">
+                        <div className="flex-1">
+                            <label className="text-xs mb-1 block text-blue-400">Eje Y Max</label>
+                            <input
+                                type="number"
+                                style={inputStyle}
+                                placeholder="Ej: 100"
+                                value={data?.yAxis?.max ?? ''}
+                                onChange={(e) => updateSelectedNodeData('yAxis', {
+                                    ...data?.yAxis,
+                                    max: e.target.value === '' ? undefined : Number(e.target.value)
+                                })}
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <label className="text-xs mb-1 block text-blue-400">Eje Y Min</label>
+                            <input
+                                type="number"
+                                style={inputStyle}
+                                placeholder="Ej: 0"
+                                value={data?.yAxis?.min ?? ''}
+                                onChange={(e) => updateSelectedNodeData('yAxis', {
+                                    ...data?.yAxis,
+                                    min: e.target.value === '' ? undefined : Number(e.target.value)
+                                })}
+                            />
                         </div>
                     </div>
 

@@ -97,6 +97,8 @@ const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
       width={data.width}
       height={data.height}
       bottom={data.bottom}
+      scaleMin={data.scaleMin ?? 0}
+      scaleMax={data.scaleMax ?? 100}
       setPoint={data.setPoint}
     />
   );

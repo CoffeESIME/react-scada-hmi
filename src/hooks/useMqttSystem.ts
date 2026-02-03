@@ -59,9 +59,14 @@ export function useMqttSystem() {
                     const alarmData = JSON.parse(message);
                     const tagId = parseInt(alarmData.alarm_id, 10);
 
+                    // DEBUG: Ver mensajes de alarma
+                    console.log(`[ALARM] 🚨 Recibido: tagId=${tagId}, status=${alarmData.status}, severity=${alarmData.severity}`);
+
                     if (['RESOLVED', 'NORMAL', 'CLEARED'].includes(alarmData.status)) {
+                        console.log(`[ALARM] ✅ Resolviendo alarma para tag ${tagId}`);
                         removeAlarmByTag(tagId);
                     } else {
+                        console.log(`[ALARM] ⚠️ Activando alarma para tag ${tagId}`);
                         addAlarm({
                             id: alarmData.alarm_id,
                             tagId: tagId,
