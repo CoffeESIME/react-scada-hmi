@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, CSSProperties } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ReactFlow, {
     ReactFlowProvider,
@@ -30,6 +30,12 @@ interface ScreenData {
         viewport?: { x: number; y: number; zoom: number };
     };
 }
+
+const canvasStyle: CSSProperties = {
+    height: 'calc(100vh - 50px)',
+    //flex: 1,
+    backgroundColor: '#C0C0C0',
+};
 
 function ViewScreenContent({ screenId }: { screenId: string }) {
     const router = useRouter();
@@ -133,7 +139,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                 </header>
 
                 {/* Canvas en modo lectura */}
-                <div className="flex-1 w-full relative" style={{ height: 'calc(100vh - 50px)' }}>
+                <div className="flex-1 w-full relative" style={canvasStyle}>
                     <ReactFlow
                         nodeTypes={nodeTypesMemo}
                         nodes={nodes}
@@ -149,7 +155,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                         preventScrolling={true}
                         // =================================
                         fitView
-                        className="bg-[#0f0f1a]"
+                    //className="bg-[#0f0f1a]"
                     >
                         <Background
                             variant={BackgroundVariant.Dots}

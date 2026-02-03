@@ -44,6 +44,15 @@ export function useMqttSystem() {
         try {
             const message = payload.toString();
 
+            // Log solo cada 5 segundos para no saturar (usa throttle básico)
+            const now = Date.now();
+            const lastLog = (window as any).__lastMqttLog || 0;
+            const shouldLog = now - lastLog > 5000;
+            if (shouldLog) {
+                console.log(`[MQTT] 📩 Topic: ${topic} | Sample value: ${message.substring(0, 100)}`);
+                (window as any).__lastMqttLog = now;
+            }
+
             // Check for alarms
             if (topic.startsWith('scada/alarms/')) {
                 try {
@@ -55,7 +64,7 @@ export function useMqttSystem() {
                     } else {
                         addAlarm({
                             id: alarmData.alarm_id,
-                            tagId: tagId, // Assuming alarm_id is tag_id
+                            tagId: tagId,
                             severity: alarmData.severity,
                             message: alarmData.message,
                             timestamp: alarmData.timestamp,
@@ -63,7 +72,7 @@ export function useMqttSystem() {
                         });
                     }
                 } catch (e) {
-                    console.error('Error parsing alarm:', e);
+                    console.error('[MQTT] Error parsing alarm:', e);
                 }
                 return;
             }
@@ -80,16 +89,21 @@ export function useMqttSystem() {
                         timestamp: data.timestamp || new Date().toISOString(),
                     };
                     updateTag(tagId, tagValue);
+
+                    // Log cuando el tag 12 (Modbus) se actualiza
+                    if (tagId === 12) {
+                        console.log(`[MQTT] ✅ Tag 12 (Modbus) actualizado: ${data.value}`);
+                    }
+                } else {
+                    console.warn(`[MQTT] ⚠️ Mensaje sin tagId:`, data);
                 }
             } catch {
                 // Not JSON - try to extract tagId from topic
-                // Topic format: scada/tags/{tag_name} or scada/tags/{tag_id}
                 const parts = topic.split('/');
                 const tagIdentifier = parts[parts.length - 1];
                 const tagIdFromTopic = parseInt(tagIdentifier, 10);
 
                 if (!isNaN(tagIdFromTopic)) {
-                    // Raw value message
                     const value = parseFloat(message) || message;
                     const tagValue: TagValue = {
                         value,

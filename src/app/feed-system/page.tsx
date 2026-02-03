@@ -291,10 +291,7 @@ export default function FeedSystemPage(): React.ReactElement {
                             style={{
                                 width: '100vw',
                                 height: '100vw',
-                                background: `${
-                                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                                    (config.theme?.extend?.colors as any)['display-bg-tabs']
-                                    }`,
+
                             }}
                         >
                             <Background />

@@ -36,6 +36,9 @@ const LinearGaugeNode: React.FC<LinearGaugeNodeProps> = ({ data }) => {
   // Get live value from tagStore if tagId is set
   const { value: liveValue } = useNodeLiveData(data.tagId, data.initialValue ?? 0);
 
+  // DEBUG: Ver qué tagId tiene configurado y qué valor recibe
+  console.log(`[LinearGauge] tagId=${data.tagId}, liveValue=${liveValue}`);
+
   // Check for active alarm on this tag
   const isAlarmActive = useAlarmStore((state) =>
     data.tagId ? !!state.activeAlarms[data.tagId] : false
