@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -34,36 +34,39 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
     const isEditing = !!editTag;
 
     // Preparar valores por defecto
-    const defaultValues: Partial<TagFormData> = editTag
-        ? {
-            name: editTag.name,
-            description: editTag.description || '',
-            unit: editTag.unit || '',
-            source_protocol: editTag.source_protocol,
-            connection_config: editTag.connection_config,
-            scan_rate_ms: editTag.scan_rate_ms,
-            mqtt_topic: editTag.mqtt_topic,
-            is_enabled: editTag.is_enabled,
-            alarm: editTag.alarm_definition
-                ? {
-                    enabled: true,
-                    message: editTag.alarm_definition.message,
-                    severity: editTag.alarm_definition.severity === 1 ? 'INFO' : editTag.alarm_definition.severity === 2 ? 'WARNING' : 'CRITICAL',
-                    hh: editTag.alarm_definition.limits?.HH,
-                    h: editTag.alarm_definition.limits?.H,
-                    l: editTag.alarm_definition.limits?.L,
-                    ll: editTag.alarm_definition.limits?.LL,
-                    deadband: editTag.alarm_definition.deadband,
-                }
-                : { enabled: false, severity: 'WARNING' as const, deadband: 0 },
+    const getDefaultValues = (tag?: Tag | null): Partial<TagFormData> => {
+        if (tag) {
+            return {
+                name: tag.name,
+                description: tag.description || '',
+                unit: tag.unit || '',
+                source_protocol: tag.source_protocol,
+                connection_config: tag.connection_config,
+                scan_rate_ms: tag.scan_rate_ms,
+                mqtt_topic: tag.mqtt_topic,
+                is_enabled: tag.is_enabled,
+                alarm: tag.alarm_definition
+                    ? {
+                        enabled: true,
+                        message: tag.alarm_definition.message,
+                        severity: tag.alarm_definition.severity === 1 ? 'INFO' : tag.alarm_definition.severity === 2 ? 'WARNING' : 'CRITICAL',
+                        hh: tag.alarm_definition.limits?.HH,
+                        h: tag.alarm_definition.limits?.H,
+                        l: tag.alarm_definition.limits?.L,
+                        ll: tag.alarm_definition.limits?.LL,
+                        deadband: tag.alarm_definition.deadband,
+                    }
+                    : { enabled: false, severity: 'WARNING' as const, deadband: 0 },
+            };
         }
-        : {
+        return {
             source_protocol: 'simulated',
             connection_config: { signal_type: 'sine', min: 0, max: 100 },
             scan_rate_ms: 1000,
             is_enabled: true,
             alarm: { enabled: false, severity: 'WARNING' as const, deadband: 0 },
         };
+    };
 
     const {
         control,
@@ -74,8 +77,15 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
         reset,
     } = useForm<TagFormInput>({
         resolver: zodResolver(TagFormSchema),
-        defaultValues,
+        defaultValues: getDefaultValues(editTag),
     });
+
+    // Reset form when editTag or isOpen changes
+    useEffect(() => {
+        if (isOpen) {
+            reset(getDefaultValues(editTag));
+        }
+    }, [isOpen, editTag, reset]);
 
     const selectedProtocol = watch('source_protocol');
     const alarmEnabled = watch('alarm.enabled');

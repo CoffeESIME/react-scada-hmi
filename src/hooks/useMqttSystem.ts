@@ -15,7 +15,7 @@ import { useAlarmStore } from '@/app/store/alarmStore';
 // Use dynamic import for MQTT to avoid SSR issues
 import type { MqttClient, IClientOptions } from 'mqtt';
 
-const MQTT_URL = process.env.NEXT_PUBLIC_MQTT_WS_URL || 'ws://localhost:9001';
+const MQTT_URL = process.env.NEXT_PUBLIC_MQTT_WS_URL || 'ws://192.168.0.188:9001';
 const RECONNECT_DELAY_BASE = 1000; // 1 second
 const RECONNECT_DELAY_MAX = 30000; // 30 seconds
 const TAG_TOPIC = 'scada/tags/#';
