@@ -43,7 +43,7 @@ export function useMqttSystem() {
     const parseMessage = useCallback((topic: string, payload: Buffer): void => {
         try {
             const message = payload.toString();
-
+            console.log("Mensaje MQTT: ", message)
             // Log solo cada 5 segundos para no saturar (usa throttle básico)
             const now = Date.now();
             const lastLog = (window as any).__lastMqttLog || 0;
@@ -153,11 +153,19 @@ export function useMqttSystem() {
 
         console.log(`[MQTT] Connecting to ${MQTT_URL}...`);
 
+        // NUEVO: Añadimos las credenciales desde las variables de entorno
         const options: IClientOptions = {
-            protocol: 'ws',
+            protocol: MQTT_URL.startsWith('wss') ? 'wss' : 'ws',
             reconnectPeriod: 0, // We handle reconnection manually
             connectTimeout: 10000,
             clientId: `scada-hmi-${Math.random().toString(16).slice(2, 10)}`,
+
+            // Credenciales de acceso (Requeridas por el puerto 8083 en AWS)
+            username: process.env.NEXT_PUBLIC_MQTT_USERNAME,
+            password: process.env.NEXT_PUBLIC_MQTT_PASSWORD,
+
+            // Obliga al navegador a validar el certificado de Let's Encrypt
+            rejectUnauthorized: true
         };
 
         const client = mqtt.connect(MQTT_URL, options);
