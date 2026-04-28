@@ -9,13 +9,18 @@ export const useNodeAction = (config: NodeActionConfig) => {
     const { isEditMode } = useScadaMode();
 
     const executeAction = async (overrideValue?: number | string) => {
-        if (isEditMode) return; // En edición no hace nada
+        
+        if (isEditMode) {
+            return; // En edición no hace nada
+        }
 
         switch (config.actionType) {
             case 'NAVIGATE':
                 if (config.targetScreenId) {
-                    router.push(`/scada/view/${config.targetScreenId}`);
+                    const url = `/scada/view/${config.targetScreenId}`;
+                    router.push(url);
                 } else {
+                    console.warn('[useNodeAction] NAVIGATE blocked: No targetScreenId provided');
                     toast.warning('No hay pantalla destino configurada');
                 }
                 break;

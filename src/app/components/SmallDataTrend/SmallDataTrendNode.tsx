@@ -28,15 +28,11 @@ export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) 
   const initialized = useRef(false);
 
   useEffect(() => {
-    console.log(`[SmallDataTrend Debug] Mount. Tag: ${data.tagId}, Init: ${initialized.current}, Len: ${data.data?.length}`);
-
     // Priority 1: Backfilling (Check Tag ID FIRST)
     if (!initialized.current && data.tagId) {
       // Backfilling
-      console.log(`[SmallDataTrend] Backfilling for Tag ${data.tagId}...`);
       getLatestHistory(data.tagId!, HISTORY_LENGTH)
         .then(response => {
-          console.log(`[SmallDataTrend] Received ${response.data.length} points for Tag ${data.tagId}`);
           const points = response.data.map(p => p.y);
           setHistory(points);
           initialized.current = true;

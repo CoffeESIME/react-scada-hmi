@@ -39,7 +39,6 @@ export const useTagStore = create<TagStore>()(
             data: {},
 
             updateTag: (tagId, tagValue) => {
-                console.log(`[TAG STORE] 📥 updateTag llamado: tagId=${tagId}, value=${tagValue.value}`);
                 set(
                     (state) => ({
                         data: {
@@ -50,7 +49,6 @@ export const useTagStore = create<TagStore>()(
                     false,
                     'updateTag'
                 );
-                console.log(`[TAG STORE] ✅ Store actualizado. Tags actuales:`, Object.keys(useTagStore.getState().data));
             },
 
             updateTagValue: (tagId, value) =>

@@ -44,14 +44,10 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   const initialized = useRef(false);
 
   useEffect(() => {
-    console.log(`[DataTrend Debug] Mount. Tag: ${data.tagId}, Init: ${initialized.current}, Points: ${data.dataPoints?.length}`);
-
     // Priority 1: Backfilling (if Tag ID exists, use it!)
     if (!initialized.current && data.tagId) {
-      console.log(`[DataTrend] Backfilling for Tag ${data.tagId}...`);
       getLatestHistory(data.tagId!, HISTORY_LENGTH)
         .then(response => {
-          console.log(`[DataTrend] Received ${response.data.length} points for Tag ${data.tagId}`);
           const points = response.data.map(p => p.y);
           setHistory(points);
           initialized.current = true;
@@ -63,11 +59,8 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
     }
     // Priority 2: Manual Data (Only if NO Tag ID)
     else if (!initialized.current && data.dataPoints && data.dataPoints.length > 0) {
-      console.log(`[DataTrend] Using manual points for Tag ${data.tagId}`);
       setHistory(data.dataPoints);
       initialized.current = true;
-    } else {
-      console.log(`[DataTrend] Skipping init for Tag ${data.tagId}. Condition not met.`);
     }
   }, [data.dataPoints, data.tagId]);
 

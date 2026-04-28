@@ -23,6 +23,7 @@ import 'reactflow/dist/style.css';
 
 // 1) IMPORTA TUS COMPONENTES CUSTOM
 import { TagSelector } from '@/app/components/tags/TagSelector';
+import { ScreenSelector } from '@/app/components/screens/ScreenSelector';
 import { SaveScreenModal } from '@/app/components/screens/SaveScreenModal';
 import { ConfirmationModal } from '@/app/components/common/ConfirmationModal';
 import { useRouter } from 'next/navigation';
@@ -880,12 +881,12 @@ function PropertiesPanel({
           {/* Configuración NAVIGATE */}
           {data?.actionType === 'NAVIGATE' && (
             <div className="mb-3 p-2 bg-gray-800 rounded border border-gray-700">
-              <label className="text-xs text-gray-400 mb-1 block">ID Pantalla Destino</label>
-              <input
-                style={inputStyle}
-                placeholder="Ej: screen-123"
-                value={data?.targetScreenId ?? ''}
-                onChange={(e) => updateSelectedNodeData('targetScreenId', e.target.value)}
+              <ScreenSelector
+                value={data?.targetScreenId ?? null}
+                onChange={(screenId) => updateSelectedNodeData('targetScreenId', screenId)}
+                label="Pantalla Destino"
+                size="sm"
+                className="w-full"
               />
             </div>
           )}

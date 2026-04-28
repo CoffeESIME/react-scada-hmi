@@ -43,13 +43,11 @@ export function useMqttSystem() {
     const parseMessage = useCallback((topic: string, payload: Buffer): void => {
         try {
             const message = payload.toString();
-            console.log("Mensaje MQTT: ", message)
             // Log solo cada 5 segundos para no saturar (usa throttle básico)
             const now = Date.now();
             const lastLog = (window as any).__lastMqttLog || 0;
             const shouldLog = now - lastLog > 5000;
             if (shouldLog) {
-                console.log(`[MQTT] 📩 Topic: ${topic} | Sample value: ${message.substring(0, 100)}`);
                 (window as any).__lastMqttLog = now;
             }
 
@@ -60,13 +58,10 @@ export function useMqttSystem() {
                     const tagId = parseInt(alarmData.alarm_id, 10);
 
                     // DEBUG: Ver mensajes de alarma
-                    console.log(`[ALARM] 🚨 Recibido: tagId=${tagId}, status=${alarmData.status}, severity=${alarmData.severity}`);
 
                     if (['RESOLVED', 'NORMAL', 'CLEARED'].includes(alarmData.status)) {
-                        console.log(`[ALARM] ✅ Resolviendo alarma para tag ${tagId}`);
                         removeAlarmByTag(tagId);
                     } else {
-                        console.log(`[ALARM] ⚠️ Activando alarma para tag ${tagId}`);
                         addAlarm({
                             id: alarmData.alarm_id,
                             tagId: tagId,
@@ -94,11 +89,6 @@ export function useMqttSystem() {
                         timestamp: data.timestamp || new Date().toISOString(),
                     };
                     updateTag(tagId, tagValue);
-
-                    // Log cuando el tag 12 (Modbus) se actualiza
-                    if (tagId === 12) {
-                        console.log(`[MQTT] ✅ Tag 12 (Modbus) actualizado: ${data.value}`);
-                    }
                 } else {
                     console.warn(`[MQTT] ⚠️ Mensaje sin tagId:`, data);
                 }
@@ -133,8 +123,6 @@ export function useMqttSystem() {
             RECONNECT_DELAY_BASE * Math.pow(2, reconnectAttemptRef.current),
             RECONNECT_DELAY_MAX
         );
-
-        console.log(`[MQTT] Scheduling reconnect in ${delay}ms (attempt ${reconnectAttemptRef.current + 1})`);
 
         reconnectTimeoutRef.current = setTimeout(() => {
             reconnectAttemptRef.current++;

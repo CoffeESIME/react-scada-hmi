@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { SaveScreenModal } from '@/app/components/screens/SaveScreenModal';
 import { TagSelector } from '@/app/components/tags/TagSelector';
+import { ScreenSelector } from '@/app/components/screens/ScreenSelector';
 import { ConfirmationModal } from '@/app/components/common/ConfirmationModal';
 import { nodeTypes, debugNodeTypes, availableNodeTypes } from '../../nodeTypes';
 import { ScadaModeProvider } from '@/contexts/ScadaModeContext';
@@ -730,14 +731,16 @@ function PropertiesPanel({
                     {/* 1. NAVIGATE CONFIG */}
                     {data?.actionType === 'NAVIGATE' && (
                         <>
-                            <label className="mb-1 block mt-2">ID Pantalla Destino:</label>
-                            <input
-                                style={inputStyle}
-                                type="number"
-                                placeholder="Ej: 12"
-                                value={data?.targetScreenId ?? ''}
-                                onChange={handleChangeDataField('targetScreenId')}
-                            />
+                            <div className="mb-4 mt-2">
+                                <ScreenSelector
+                                    value={data?.targetScreenId ?? null}
+                                    onChange={(screenId) => updateSelectedNodeData('targetScreenId', screenId)}
+                                    label="Pantalla Destino"
+                                    placeholder="Selecciona Pantalla..."
+                                    size="sm"
+                                    className="w-full"
+                                />
+                            </div>
                         </>
                     )}
 

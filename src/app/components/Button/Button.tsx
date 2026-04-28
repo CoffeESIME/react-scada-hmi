@@ -45,12 +45,14 @@ export const CustomButton: React.FC<ButtonProps> = ({
   }
 
   return (
-    <Button
-      onPress={handlePress}
-      isDisabled={isEditMode} // Deshabilitar visualmente en edit mode
-      className={`border-3 border-nav-button-border bg-nav-button-fg min-w-[100px] ${isEditMode ? 'pointer-events-none opacity-80' : ''}`}
-    >
-      {displayLabel || 'Botón'}
-    </Button>
+    <div className={`nodrag ${isEditMode ? 'pointer-events-none opacity-80' : ''}`} onClick={handlePress}>
+      <Button
+        onPress={handlePress}
+        isDisabled={isEditMode}
+        className="border-3 border-nav-button-border bg-nav-button-fg min-w-[100px]"
+      >
+        {displayLabel || 'Botón'}
+      </Button>
+    </div>
   );
 };

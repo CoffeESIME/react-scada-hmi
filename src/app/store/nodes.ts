@@ -29,9 +29,7 @@ export const useNodeStore = create<State & Actions>((set, get) => {
       });
       client.on('message', (topic, message) => {
         // Logic to update nodes based on the received message
-        console.log(`Received message on ${topic}: ${message.toString()}`);
         if (topic === 'controlCard2') {
-          console.log('message updated################################');
           const newData = {
             processVariableValue: parseFloat(message.toString()),
           };

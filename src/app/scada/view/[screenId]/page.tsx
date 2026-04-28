@@ -144,10 +144,10 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                         nodeTypes={nodeTypesMemo}
                         nodes={nodes}
                         edges={edges}
-                        // ===== MODO LECTURA ESTRICTO =====
-                        nodesDraggable={false}
-                        nodesConnectable={false}
-                        elementsSelectable={false}
+                        // ===== MODO LECTURA ESTRICTO (APAGADO TEMPORALMENTE) =====
+                        // nodesDraggable={false}
+                        // nodesConnectable={false}
+                        // elementsSelectable={false}
                         panOnDrag={true}
                         zoomOnScroll={true}
                         zoomOnPinch={true}

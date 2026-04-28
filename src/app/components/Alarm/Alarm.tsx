@@ -16,13 +16,14 @@ export const Alarm: React.FC<AlarmProps> = ({
   useEffect(() => {
     switch (type) {
       case 'LOW':
-        setAlarmColor('#FFFFFF');
+        setAlarmColor('#916AAD');
         break;
       case 'MEDIUM':
         setAlarmColor('#F5E11B');
         break;
       case 'HIGH':
         setAlarmColor('#EC8629');
+        break;
       case 'URGENT':
         setAlarmColor('#E22028');
         break;
