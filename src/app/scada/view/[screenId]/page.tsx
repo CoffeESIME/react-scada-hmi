@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, CSSProperties } from 'react';
+import React, { useState, useEffect, CSSProperties, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ReactFlow, {
     ReactFlowProvider,
@@ -12,11 +12,14 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Spinner, Button, Chip } from '@nextui-org/react';
-import { toast } from 'sonner';
+import ShareScreenModal from '@/app/components/ShareScreenModal';
+import WriteTagModal, { WriteTagTarget } from '@/app/components/WriteTagModal';
 
 import { api } from '@/lib/api';
-import { nodeTypes } from '../../nodeTypes'; // Shared nodeTypes
+import { nodeTypes } from '../../nodeTypes';
 import { ScadaModeProvider } from '@/contexts/ScadaModeContext';
+import { useAuthStore } from '@/app/store/useAuthStore';
+import { useGlobalToaster } from '@/hooks/useGlobalToaster';
 
 interface ScreenData {
     id: number;
@@ -29,6 +32,8 @@ interface ScreenData {
         edges: Edge[];
         viewport?: { x: number; y: number; zoom: number };
     };
+    owner_id?: number | null;
+    access_role?: string;
 }
 
 const canvasStyle: CSSProperties = {
@@ -40,11 +45,34 @@ const canvasStyle: CSSProperties = {
 function ViewScreenContent({ screenId }: { screenId: string }) {
     const router = useRouter();
     const { setViewport, fitView } = useReactFlow();
+    const { user } = useAuthStore();
+    const { addError } = useGlobalToaster();
+    const isAdmin = user?.role === 'ADMIN' || user?.is_superuser;
 
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
     const [screenData, setScreenData] = useState<ScreenData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [writeTarget, setWriteTarget] = useState<WriteTagTarget | null>(null);
+    const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
+
+    /** 
+     * Handler que los nodos del canvas invocan cuando el usuario quiere escribir.
+     * Si el usuario es ADMIN → abre WriteTagModal.
+     * Si es OPERATOR → muestra error persistente y NO abre nada.
+     */
+    const handleWriteRequest = useCallback((target: WriteTagTarget) => {
+        if (isAdmin) {
+            setWriteTarget(target);
+            setIsWriteModalOpen(true);
+        } else {
+            addError(
+                '🔒 Sin permisos de escritura',
+                `No tienes permisos para modificar "${target.tagName}". Contacta a tu supervisor.`
+            );
+        }
+    }, [isAdmin, addError]);
 
     // Cargar pantalla al montar
     useEffect(() => {
@@ -100,7 +128,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
     }
 
     return (
-        <ScadaModeProvider isEditMode={false}>
+        <ScadaModeProvider isEditMode={false} onWriteRequest={handleWriteRequest}>
             <div className="bg-[#1a1a2e] h-screen flex flex-col overflow-hidden">
                 {/* Header minimalista */}
                 <header className="bg-[#16213e] border-b border-[#3a3a5c] px-4 py-2 flex justify-between items-center h-[50px] shrink-0 z-50">
@@ -118,15 +146,27 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                         <Chip color="danger" size="sm" variant="dot" className="border-none bg-transparent text-gray-400">
                             RUNTIME
                         </Chip>
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            color="primary"
-                            className="bg-[#3a3a5c] text-white hover:bg-[#4a4a6c]"
-                            onPress={() => router.push(`/scada/edit/${screenData?.id}`)}
-                        >
-                            ✏️ Editar
-                        </Button>
+                        {screenData?.access_role === 'OWNER' && (
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                color="secondary"
+                                onPress={() => setIsShareModalOpen(true)}
+                            >
+                                🤝 Compartir
+                            </Button>
+                        )}
+                        {(screenData?.access_role === 'OWNER' || screenData?.access_role === 'EDITOR') && (
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                color="primary"
+                                className="bg-[#3a3a5c] text-white hover:bg-[#4a4a6c]"
+                                onPress={() => router.push(`/scada/edit/${screenData?.id}`)}
+                            >
+                                ✏️ Editar
+                            </Button>
+                        )}
                         <Button
                             size="sm"
                             variant="light"
@@ -165,6 +205,17 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                         />
                     </ReactFlow>
                 </div>
+
+                <ShareScreenModal 
+                    isOpen={isShareModalOpen} 
+                    onClose={() => setIsShareModalOpen(false)} 
+                    screenId={screenData?.id} 
+                />
+                <WriteTagModal
+                    isOpen={isWriteModalOpen}
+                    target={writeTarget}
+                    onClose={() => { setIsWriteModalOpen(false); setWriteTarget(null); }}
+                />
             </div>
         </ScadaModeProvider>
     );

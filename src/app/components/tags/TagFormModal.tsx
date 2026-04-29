@@ -45,6 +45,8 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                 scan_rate_ms: tag.scan_rate_ms,
                 mqtt_topic: tag.mqtt_topic,
                 is_enabled: tag.is_enabled,
+                data_type: tag.data_type || 'float',
+                access_mode: tag.access_mode || 'R',
                 alarm: tag.alarm_definition
                     ? {
                         enabled: true,
@@ -64,6 +66,8 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
             connection_config: { signal_type: 'sine', min: 0, max: 100 },
             scan_rate_ms: 1000,
             is_enabled: true,
+            data_type: 'float',
+            access_mode: 'R',
             alarm: { enabled: false, severity: 'WARNING' as const, deadband: 0 },
         };
     };
@@ -89,6 +93,7 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
 
     const selectedProtocol = watch('source_protocol');
     const alarmEnabled = watch('alarm.enabled');
+    const scalingType = (watch('connection_config.scaling.type') as string) || 'none';
 
     // Cambiar config al cambiar protocolo
     const handleProtocolChange = (protocol: string) => {
@@ -112,21 +117,28 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
     };
 
     const onSubmit = async (formData: TagFormInput) => {
-        // After Zod validation, data is guaranteed to have defaults applied
         const data = formData as TagFormData;
         setIsSubmitting(true);
 
         try {
+            // Build scaling object from connection_config subfields
+            const scaling = data.connection_config?.scaling || { type: 'none' };
+
             // Construir payload para el backend
             const payload: any = {
                 name: data.name,
                 description: data.description,
                 unit: data.unit,
                 source_protocol: data.source_protocol,
-                connection_config: data.connection_config,
+                connection_config: {
+                    ...data.connection_config,
+                    scaling,
+                },
                 scan_rate_ms: data.scan_rate_ms,
                 mqtt_topic: data.mqtt_topic || undefined,
                 is_enabled: data.is_enabled,
+                data_type: data.data_type || 'float',
+                access_mode: data.access_mode || 'R',
             };
 
             // Agregar alarma si está habilitada
@@ -300,6 +312,40 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                             />
                         </div>
 
+                        {/* Data Type / Access Mode row */}
+                        <div className="grid grid-cols-3 gap-4">
+                            <Controller
+                                name="data_type"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        label="Tipo de Dato"
+                                        selectedKeys={[field.value || 'float']}
+                                        onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
+                                    >
+                                        <SelectItem key="float" value="float">Float (decimal)</SelectItem>
+                                        <SelectItem key="integer" value="integer">Integer (entero)</SelectItem>
+                                        <SelectItem key="boolean" value="boolean">Boolean (on/off)</SelectItem>
+                                    </Select>
+                                )}
+                            />
+                            <Controller
+                                name="access_mode"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        label="Modo de Acceso"
+                                        selectedKeys={[field.value || 'R']}
+                                        onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
+                                    >
+                                        <SelectItem key="R" value="R">Solo Lectura (R)</SelectItem>
+                                        <SelectItem key="W" value="W">Solo Escritura (W)</SelectItem>
+                                        <SelectItem key="RW" value="RW">Lectura/Escritura (RW)</SelectItem>
+                                    </Select>
+                                )}
+                            />
+                        </div>
+
                         {/* === Configuración de Protocolo (Dinámica) === */}
                         <Divider className="my-2" />
                         <div className="flex items-center gap-2 mb-2">
@@ -465,6 +511,81 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                                             label="Máximo"
                                             value={String(field.value)}
                                         />
+                                    )}
+                                />
+                            </div>
+                        )}
+
+                        {/* === Escalado de Señal === */}
+                        <Divider className="my-2" />
+                        <div className="flex items-center gap-2 mb-2">
+                            <Chip color="warning" variant="flat" size="sm">ESCALADO</Chip>
+                            <span className="text-sm text-gray-500">Transformación de señal raw → ingeniería</span>
+                        </div>
+                        <Controller
+                            name="connection_config.scaling.type"
+                            control={control}
+                            render={({ field }) => (
+                                <Select
+                                    label="Tipo de Escalado"
+                                    selectedKeys={[field.value || 'none']}
+                                    onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
+                                >
+                                    <SelectItem key="none" value="none">Ninguno</SelectItem>
+                                    <SelectItem key="multiplier" value="multiplier">Multiplicador</SelectItem>
+                                    <SelectItem key="linear" value="linear">Lineal (ecuación de recta)</SelectItem>
+                                </Select>
+                            )}
+                        />
+
+                        {scalingType === 'multiplier' && (
+                            <Controller
+                                name="connection_config.scaling.multiplier_factor"
+                                control={control}
+                                render={({ field }) => (
+                                    <Input
+                                        {...field}
+                                        type="number"
+                                        label="Factor Multiplicador"
+                                        placeholder="Ej: 0.1 (divide por 10)"
+                                        description="Valor UI = valor_raw × factor"
+                                        value={String(field.value ?? 1)}
+                                        className="max-w-xs"
+                                    />
+                                )}
+                            />
+                        )}
+
+                        {scalingType === 'linear' && (
+                            <div className="grid grid-cols-2 gap-4 p-4 bg-admin-surface border border-admin-border rounded-lg">
+                                <p className="col-span-2 text-xs text-gray-400">Rango Raw del dispositivo (ej. 0–27648 para Siemens)</p>
+                                <Controller
+                                    name="connection_config.scaling.linear_config.raw_min"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input {...field} type="number" label="Raw Mínimo" placeholder="0" value={String(field.value ?? 0)} />
+                                    )}
+                                />
+                                <Controller
+                                    name="connection_config.scaling.linear_config.raw_max"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input {...field} type="number" label="Raw Máximo" placeholder="27648" value={String(field.value ?? 27648)} />
+                                    )}
+                                />
+                                <p className="col-span-2 text-xs text-gray-400">Rango escalado en unidades de ingeniería</p>
+                                <Controller
+                                    name="connection_config.scaling.linear_config.scaled_min"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input {...field} type="number" label="Escalado Mínimo" placeholder="0.0" value={String(field.value ?? 0)} />
+                                    )}
+                                />
+                                <Controller
+                                    name="connection_config.scaling.linear_config.scaled_max"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input {...field} type="number" label="Escalado Máximo" placeholder="100.0" value={String(field.value ?? 100)} />
                                     )}
                                 />
                             </div>

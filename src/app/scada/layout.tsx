@@ -3,6 +3,7 @@ import { Providers } from '../providers';
 import ScadaAuthWrapper from './ScadaAuthWrapper';
 import ScadaNavbar from './ScadaNavbar';
 import MqttProvider from './MqttProvider';
+import GlobalToaster from '@/app/components/GlobalToaster';
 
 export const metadata = {
   title: 'SCADA Section',
@@ -25,6 +26,8 @@ export default function ScadaLayout({
               {/* CONTENIDO DINÁMICO */}
               <main className="flex-1  p-4">{children}</main>
             </div>
+            {/* Notificaciones persistentes globales */}
+            <GlobalToaster />
           </MqttProvider>
         </ScadaAuthWrapper>
       </Providers>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Spinner } from '@nextui-org/react';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/app/store/useAuthStore';
 
 interface ScreenData {
     id: number;
@@ -20,6 +21,8 @@ export default function ScadaHomePage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoHome, setHasNoHome] = useState(false);
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'ADMIN' || user?.is_superuser;
 
     useEffect(() => {
         const loadHome = async () => {
@@ -61,16 +64,19 @@ export default function ScadaHomePage() {
                     Sin Pantalla Principal
                 </h1>
                 <p className="text-gray-400 mb-6">
-                    No hay una pantalla configurada como principal.
-                    Crea una nueva o selecciona una existente.
+                    {isAdmin 
+                        ? "No hay una pantalla configurada como principal. Crea una nueva o selecciona una existente." 
+                        : "No hay una pantalla configurada como principal. Contacta a tu administrador para configurar una."}
                 </p>
                 <div className="flex gap-3 justify-center">
-                    <button
-                        onClick={() => router.push('/scada/create')}
-                        className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition"
-                    >
-                        + Crear Pantalla
-                    </button>
+                    {isAdmin && (
+                        <button
+                            onClick={() => router.push('/scada/create')}
+                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition"
+                        >
+                            + Crear Pantalla
+                        </button>
+                    )}
                     <button
                         onClick={() => router.push('/scada/organize')}
                         className="px-6 py-2 bg-admin-border text-admin-text rounded-lg hover:bg-admin-border/80 transition"

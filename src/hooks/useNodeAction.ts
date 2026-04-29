@@ -1,85 +1,95 @@
 import { useRouter } from 'next/navigation';
 import { useScadaMode } from '@/contexts/ScadaModeContext';
-import { api } from '@/lib/api';
-import { toast } from 'sonner';
+import { useGlobalToaster } from '@/hooks/useGlobalToaster';
 import { NodeActionConfig } from '@/utils/actionTypes';
+import { api } from '@/lib/api';
 
+/**
+ * Hook que ejecuta la acción configurada en un nodo del canvas.
+ *
+ * En modo Runtime:
+ *  - NAVIGATE        → router.push
+ *  - WRITE_TAG       → delega en onWriteRequest (verificación de rol + WriteTagModal)
+ *  - SETPOINT_DIALOG → igual que WRITE_TAG (abre el modal con input libre)
+ *  - SETPOINT_INPUT  → escribe directamente el valor (inline input ya validado)
+ *
+ * NUNCA llama a prompt() ni a toast de sonner directamente.
+ * Los errores van al GlobalToaster persistente.
+ */
 export const useNodeAction = (config: NodeActionConfig) => {
     const router = useRouter();
-    const { isEditMode } = useScadaMode();
+    const { isEditMode, onWriteRequest } = useScadaMode();
+    const { addError, addInfo } = useGlobalToaster();
 
     const executeAction = async (overrideValue?: number | string) => {
-        
-        if (isEditMode) {
-            return; // En edición no hace nada
-        }
+        // En modo edición los botones/cards no hacen nada
+        if (isEditMode) return;
 
         switch (config.actionType) {
+            // ── NAVIGATE ──────────────────────────────────────────────
             case 'NAVIGATE':
                 if (config.targetScreenId) {
-                    const url = `/scada/view/${config.targetScreenId}`;
-                    router.push(url);
+                    router.push(`/scada/view/${config.targetScreenId}`);
                 } else {
-                    console.warn('[useNodeAction] NAVIGATE blocked: No targetScreenId provided');
-                    toast.warning('No hay pantalla destino configurada');
+                    addInfo('Sin pantalla destino', 'Este botón no tiene pantalla configurada.');
                 }
                 break;
 
+            // ── WRITE_TAG (valor fijo, ej. Start/Stop) ─────────────────
             case 'WRITE_TAG':
                 if (!config.targetTagId) {
-                    toast.warning('No hay Tag destino configurado');
+                    addInfo('Sin tag configurado', 'Este botón no tiene un tag destino asignado.');
                     return;
                 }
-                try {
-                    await api.post(`/tags/${config.targetTagId}/write`, {
-                        value: config.writeValue
-                    });
-                    toast.success(`Comando enviado: ${config.writeValue}`);
-                } catch (error) {
-                    console.error(error);
-                    toast.error('Error enviando comando');
+                if (!onWriteRequest) {
+                    // Fallback: fuera del Runtime (no debería ocurrir)
+                    addError('Error de contexto', 'onWriteRequest no disponible en este contexto.');
+                    return;
                 }
+                onWriteRequest({
+                    tagId: config.targetTagId,
+                    tagName: config.tagName || `Tag #${config.targetTagId}`,
+                    dataType: config.dataType || 'float',
+                    accessMode: config.accessMode || 'RW',
+                    unit: config.unit,
+                    scaling: config.scaling,
+                    // Pre-fill el modal con el valor configurado (si existe)
+                    prefillValue: config.writeValue !== undefined ? String(config.writeValue) : undefined,
+                });
                 break;
 
-            case 'SETPOINT_INPUT':
-                // Caso Inline Input (ButtonNode)
-                if (!config.targetTagId) return;
-                if (overrideValue === undefined) return;
-                try {
-                    await api.post(`/tags/${config.targetTagId}/write`, { value: overrideValue });
-                    toast.success(`Setpoint enviado: ${overrideValue}`);
-                } catch (e) {
-                    console.error(e);
-                    toast.error('Error enviando setpoint');
-                }
-                break;
-
+            // ── SETPOINT_DIALOG (input libre del usuario) ──────────────
             case 'SETPOINT_DIALOG':
                 if (!config.targetTagId) {
-                    toast.warning('No hay Tag destino configurado');
+                    addInfo('Sin tag configurado', 'Este elemento no tiene un tag destino asignado.');
                     return;
                 }
-                // TODO: Reemplazar con un Modal más elegante en el futuro
-                const userInput = prompt("Ingrese el nuevo valor:");
-                if (userInput !== null && userInput !== '') {
-                    try {
-                        // Intentamos parsear a número si es posible
-                        const numericVal = Number(userInput);
-                        const finalValue = isNaN(numericVal) ? userInput : numericVal;
+                if (!onWriteRequest) {
+                    addError('Error de contexto', 'onWriteRequest no disponible en este contexto.');
+                    return;
+                }
+                onWriteRequest({
+                    tagId: config.targetTagId,
+                    tagName: config.tagName || `Tag #${config.targetTagId}`,
+                    dataType: config.dataType || 'float',
+                    accessMode: config.accessMode || 'RW',
+                    unit: config.unit,
+                    scaling: config.scaling,
+                });
+                break;
 
-                        await api.post(`/tags/${config.targetTagId}/write`, {
-                            value: finalValue
-                        });
-                        toast.success(`Setpoint enviado: ${finalValue}`);
-                    } catch (error) {
-                        console.error(error);
-                        toast.error('Error enviando setpoint');
-                    }
+            // ── SETPOINT_INPUT (inline — ya tiene el valor del input) ──
+            case 'SETPOINT_INPUT':
+                if (!config.targetTagId || overrideValue === undefined) return;
+                try {
+                    await api.post(`/tags/${config.targetTagId}/write`, { value: overrideValue });
+                } catch (err: any) {
+                    const detail = err.response?.data?.detail || err.message || 'Error desconocido';
+                    addError(`Error al escribir tag #${config.targetTagId}`, detail);
                 }
                 break;
 
             default:
-                // 'NONE' or undefined -> Do nothing
                 break;
         }
     };

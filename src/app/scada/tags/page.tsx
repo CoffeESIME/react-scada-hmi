@@ -18,6 +18,7 @@ import { Toaster, toast } from 'sonner';
 import TagFormModal from '@/app/components/tags/TagFormModal';
 import { Tag, TagListResponse } from '@/app/components/tags/schemas';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/app/store/useAuthStore';
 
 const protocolColors: Record<string, 'primary' | 'secondary' | 'success' | 'warning'> = {
     modbus: 'primary',
@@ -30,6 +31,8 @@ export default function TagsPage() {
     const [tags, setTags] = useState<Tag[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [editingTag, setEditingTag] = useState<Tag | null>(null);
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'ADMIN' || user?.is_superuser;
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -90,9 +93,11 @@ export default function TagsPage() {
                         <h1 className="text-2xl font-bold text-admin-text">Ingeniería de Tags</h1>
                         <p className="text-admin-text-secondary">Gestión de variables y configuración de alarmas</p>
                     </div>
-                    <Button color="primary" onPress={handleNew}>
-                        + Nuevo Tag
-                    </Button>
+                    {isAdmin && (
+                        <Button color="primary" onPress={handleNew}>
+                            + Nuevo Tag
+                        </Button>
+                    )}
                 </div>
 
                 {/* Table */}
@@ -151,27 +156,29 @@ export default function TagsPage() {
                                     </Chip>
                                 </TableCell>
                                 <TableCell>
-                                    <div className="flex gap-2 justify-center">
-                                        <Tooltip content="Editar">
-                                            <Button
-                                                size="sm"
-                                                variant="light"
-                                                onPress={() => handleEdit(tag)}
-                                            >
-                                                ✏️
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip content="Eliminar" color="danger">
-                                            <Button
-                                                size="sm"
-                                                variant="light"
-                                                color="danger"
-                                                onPress={() => handleDelete(tag)}
-                                            >
-                                                🗑️
-                                            </Button>
-                                        </Tooltip>
-                                    </div>
+                                    {isAdmin && (
+                                        <div className="flex gap-2 justify-center">
+                                            <Tooltip content="Editar">
+                                                <Button
+                                                    size="sm"
+                                                    variant="light"
+                                                    onPress={() => handleEdit(tag)}
+                                                >
+                                                    ✏️
+                                                </Button>
+                                            </Tooltip>
+                                            <Tooltip content="Eliminar" color="danger">
+                                                <Button
+                                                    size="sm"
+                                                    variant="light"
+                                                    color="danger"
+                                                    onPress={() => handleDelete(tag)}
+                                                >
+                                                    🗑️
+                                                </Button>
+                                            </Tooltip>
+                                        </div>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}

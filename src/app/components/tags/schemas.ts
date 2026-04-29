@@ -76,6 +76,10 @@ export const TagFormSchema = z.object({
     // Connection config - validated by protocol
     connection_config: z.record(z.string(), z.any()),
 
+    // Signal metadata
+    data_type: z.enum(['boolean', 'integer', 'float']).default('float'),
+    access_mode: z.enum(['R', 'W', 'RW']).default('R'),
+
     // Alarm settings
     alarm: AlarmSchema.optional(),
 }).superRefine((data, ctx) => {
@@ -126,6 +130,8 @@ export interface Tag {
     scan_rate_ms: number;
     mqtt_topic: string;
     is_enabled: boolean;
+    data_type: 'boolean' | 'integer' | 'float';
+    access_mode: 'R' | 'W' | 'RW';
     alarm_definition?: {
         id: number;
         severity: number;

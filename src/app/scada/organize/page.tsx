@@ -16,6 +16,7 @@ import {
 } from '@nextui-org/react';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/app/store/useAuthStore';
 
 interface ScreenListItem {
   id: number;
@@ -23,6 +24,8 @@ interface ScreenListItem {
   slug: string;
   description: string | null;
   is_home: boolean;
+  access_role?: string;
+  owner_id?: number | null;
 }
 
 export default function OrganizeScreensPage() {
@@ -30,6 +33,8 @@ export default function OrganizeScreensPage() {
   const [screens, setScreens] = useState<ScreenListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const { user } = useAuthStore();
+  const isAdmin = user?.role === 'ADMIN' || user?.is_superuser;
 
   const fetchScreens = async () => {
     setIsLoading(true);
@@ -91,12 +96,14 @@ export default function OrganizeScreensPage() {
               Gestiona las pantallas SCADA del sistema
             </p>
           </div>
-          <Button
-            color="primary"
-            onPress={() => router.push('/scada/create')}
-          >
-            + Nueva Pantalla
-          </Button>
+          {isAdmin && (
+            <Button
+              color="primary"
+              onPress={() => router.push('/scada/create')}
+            >
+              + Nueva Pantalla
+            </Button>
+          )}
         </div>
 
         {/* Table */}
@@ -124,15 +131,17 @@ export default function OrganizeScreensPage() {
                 <div className="py-8 text-center text-gray-400">
                   No hay pantallas creadas.
                   <br />
-                  <Button
-                    color="primary"
-                    variant="flat"
-                    size="sm"
-                    className="mt-4"
-                    onPress={() => router.push('/scada/create')}
-                  >
-                    Crear primera pantalla
-                  </Button>
+                  {isAdmin && (
+                    <Button
+                      color="primary"
+                      variant="flat"
+                      size="sm"
+                      className="mt-4"
+                      onPress={() => router.push('/scada/create')}
+                    >
+                      Crear primera pantalla
+                    </Button>
+                  )}
                 </div>
               }
             >
@@ -183,27 +192,33 @@ export default function OrganizeScreensPage() {
                           👁 Ver
                         </Button>
                       </Tooltip>
-                      <Tooltip content="Editar en Canvas" className="text-black">
-                        <Button
-                          size="sm"
-                          variant="solid"
-                          color="primary"
-                          onPress={() => router.push(`/scada/edit/${screen.id}`)}
-                        >
-                          ✏️ Editar
-                        </Button>
-                      </Tooltip>
-                      <Tooltip content="Eliminar pantalla" className="text-black">
-                        <Button
-                          size="sm"
-                          variant="solid"
-                          color="danger"
-                          isLoading={deletingId === screen.id}
-                          onPress={() => handleDelete(screen.id, screen.name)}
-                        >
-                          🗑
-                        </Button>
-                      </Tooltip>
+                      
+                      {(screen.access_role === 'OWNER' || screen.access_role === 'EDITOR') && (
+                        <Tooltip content="Editar en Canvas" className="text-black">
+                          <Button
+                            size="sm"
+                            variant="solid"
+                            color="primary"
+                            onPress={() => router.push(`/scada/edit/${screen.id}`)}
+                          >
+                            ✏️ Editar
+                          </Button>
+                        </Tooltip>
+                      )}
+
+                      {screen.access_role === 'OWNER' && (
+                        <Tooltip content="Eliminar pantalla" className="text-black">
+                          <Button
+                            size="sm"
+                            variant="solid"
+                            color="danger"
+                            isLoading={deletingId === screen.id}
+                            onPress={() => handleDelete(screen.id, screen.name)}
+                          >
+                            🗑
+                          </Button>
+                        </Tooltip>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

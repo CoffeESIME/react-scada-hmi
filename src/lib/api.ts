@@ -3,6 +3,7 @@
  * Centralized axios instance for all API calls
  */
 import axios from 'axios';
+import { useAuthStore } from '@/app/store/useAuthStore';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888';
 
@@ -16,9 +17,7 @@ export const api = axios.create({
 // Request interceptor for auth token (if needed)
 api.interceptors.request.use((config) => {
     // Add auth token if available
-    const token = typeof window !== 'undefined'
-        ? localStorage.getItem('access_token')
-        : null;
+    const token = useAuthStore.getState().token;
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -75,4 +74,30 @@ export const getLatestHistory = async (tagId: number, limit = 50) => {
         params: { limit }
     });
     return response.data;
+};
+
+export interface ScreenShare {
+    id: number;
+    screen_id: number;
+    user_id: number;
+    role: 'VIEWER' | 'EDITOR';
+    username: string;
+    email: string;
+}
+
+export const shareScreen = async (screenId: number, usernameOrEmail: string, role: 'VIEWER' | 'EDITOR' = 'VIEWER') => {
+    const response = await api.post<ScreenShare>(`/screens/${screenId}/share`, {
+        username_or_email: usernameOrEmail,
+        role
+    });
+    return response.data;
+};
+
+export const getScreenShares = async (screenId: number) => {
+    const response = await api.get<ScreenShare[]>(`/screens/${screenId}/shares`);
+    return response.data;
+};
+
+export const revokeScreenShare = async (screenId: number, userId: number) => {
+    await api.delete(`/screens/${screenId}/share/${userId}`);
 };
