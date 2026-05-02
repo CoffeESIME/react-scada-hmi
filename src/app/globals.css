@@ -30,3 +30,54 @@ body {
   height: 100vh;
   background-color: gray;
 }
+
+/* ApexCharts High Contrast Tooltip Overrides */
+.apexcharts-tooltip {
+  background: #334155 !important;
+  border: 1px solid #1e293b !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5) !important;
+  color: #f8fafc !important;
+  border-radius: 4px !important;
+}
+
+.apexcharts-tooltip-title {
+  background: #1e293b !important;
+  border-bottom: 1px solid #0f172a !important;
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  padding: 4px 8px !important;
+}
+
+.apexcharts-tooltip-text-y-label {
+  color: #cbd5e1 !important;
+}
+
+.apexcharts-tooltip-text-y-value {
+  font-weight: 800 !important;
+  color: #38bdf8 !important; /* Azul claro brillante */
+  font-size: 14px !important;
+}
+
+/* Fix NextUI Select Dropdown Contrast (Portals) */
+div[data-slot="popover"] .bg-content1,
+div[data-slot="popover"],
+ul[data-slot="listbox"] {
+  background-color: #1e293b !important; /* slate-800 */
+  border-color: #334155 !important;
+}
+
+ul[data-slot="listbox"] li {
+  color: #f8fafc !important; /* slate-50 */
+}
+
+ul[data-slot="listbox"] li[data-hover="true"],
+ul[data-slot="listbox"] li:hover {
+  background-color: #3b82f6 !important; /* blue-500 */
+  color: #ffffff !important;
+}
+
+ul[data-slot="listbox"] li[data-selected="true"] {
+  background-color: #2563eb !important; /* blue-600 */
+  color: #ffffff !important;
+}
+

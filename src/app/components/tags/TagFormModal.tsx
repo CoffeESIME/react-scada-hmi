@@ -11,12 +11,13 @@ import {
     ModalFooter,
     Button,
     Input,
-    Select,
     SelectItem,
     Switch,
     Divider,
     Chip,
 } from '@nextui-org/react';
+import { DarkSelect } from '@/app/components/ui/DarkSelect';
+import { darkItemClassNames } from '@/app/components/ui/DarkSelectItem';
 import { toast } from 'sonner';
 import { TagFormSchema, TagFormData, TagFormInput, Tag, ProtocolType } from './schemas';
 import { api } from '@/lib/api';
@@ -265,7 +266,7 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                                 name="source_protocol"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select
+                                    <DarkSelect
                                         label="Protocolo"
                                         selectedKeys={[field.value]}
                                         onSelectionChange={(keys) => {
@@ -274,11 +275,11 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                                         }}
                                         isRequired
                                     >
-                                        <SelectItem key="simulated" value="simulated">Simulado</SelectItem>
-                                        <SelectItem key="modbus" value="modbus">Modbus TCP</SelectItem>
-                                        <SelectItem key="opcua" value="opcua">OPC UA</SelectItem>
-                                        <SelectItem key="mqtt" value="mqtt">MQTT Externo</SelectItem>
-                                    </Select>
+                                        <SelectItem classNames={darkItemClassNames} key="simulated" value="simulated">Simulado</SelectItem>
+                                        <SelectItem classNames={darkItemClassNames} key="modbus" value="modbus">Modbus TCP</SelectItem>
+                                        <SelectItem classNames={darkItemClassNames} key="opcua" value="opcua">OPC UA</SelectItem>
+                                        <SelectItem classNames={darkItemClassNames} key="mqtt" value="mqtt">MQTT Externo</SelectItem>
+                                    </DarkSelect>
                                 )}
                             />
 
@@ -318,30 +319,30 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                                 name="data_type"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select
+                                    <DarkSelect
                                         label="Tipo de Dato"
                                         selectedKeys={[field.value || 'float']}
                                         onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
                                     >
-                                        <SelectItem key="float" value="float">Float (decimal)</SelectItem>
-                                        <SelectItem key="integer" value="integer">Integer (entero)</SelectItem>
-                                        <SelectItem key="boolean" value="boolean">Boolean (on/off)</SelectItem>
-                                    </Select>
+                                        <SelectItem classNames={darkItemClassNames} key="float" value="float">Float (decimal)</SelectItem>
+                                        <SelectItem classNames={darkItemClassNames} key="integer" value="integer">Integer (entero)</SelectItem>
+                                        <SelectItem classNames={darkItemClassNames} key="boolean" value="boolean">Boolean (on/off)</SelectItem>
+                                    </DarkSelect>
                                 )}
                             />
                             <Controller
                                 name="access_mode"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select
+                                    <DarkSelect
                                         label="Modo de Acceso"
                                         selectedKeys={[field.value || 'R']}
                                         onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
                                     >
-                                        <SelectItem key="R" value="R">Solo Lectura (R)</SelectItem>
-                                        <SelectItem key="W" value="W">Solo Escritura (W)</SelectItem>
-                                        <SelectItem key="RW" value="RW">Lectura/Escritura (RW)</SelectItem>
-                                    </Select>
+                                        <SelectItem classNames={darkItemClassNames} key="R" value="R">Solo Lectura (R)</SelectItem>
+                                        <SelectItem classNames={darkItemClassNames} key="W" value="W">Solo Escritura (W)</SelectItem>
+                                        <SelectItem classNames={darkItemClassNames} key="RW" value="RW">Lectura/Escritura (RW)</SelectItem>
+                                    </DarkSelect>
                                 )}
                             />
                         </div>
@@ -477,16 +478,16 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                                     name="connection_config.signal_type"
                                     control={control}
                                     render={({ field }) => (
-                                        <Select
+                                        <DarkSelect
                                             label="Tipo de Señal"
                                             selectedKeys={[field.value]}
                                             onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
                                         >
-                                            <SelectItem key="sine" value="sine">Senoidal</SelectItem>
-                                            <SelectItem key="random" value="random">Aleatorio</SelectItem>
-                                            <SelectItem key="ramp" value="ramp">Rampa</SelectItem>
-                                            <SelectItem key="static" value="static">Estático</SelectItem>
-                                        </Select>
+                                            <SelectItem classNames={darkItemClassNames} key="sine" value="sine">Senoidal</SelectItem>
+                                            <SelectItem classNames={darkItemClassNames} key="random" value="random">Aleatorio</SelectItem>
+                                            <SelectItem classNames={darkItemClassNames} key="ramp" value="ramp">Rampa</SelectItem>
+                                            <SelectItem classNames={darkItemClassNames} key="static" value="static">Estático</SelectItem>
+                                        </DarkSelect>
                                     )}
                                 />
                                 <Controller
@@ -526,15 +527,15 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                             name="connection_config.scaling.type"
                             control={control}
                             render={({ field }) => (
-                                <Select
+                                <DarkSelect
                                     label="Tipo de Escalado"
                                     selectedKeys={[field.value || 'none']}
                                     onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
                                 >
-                                    <SelectItem key="none" value="none">Ninguno</SelectItem>
-                                    <SelectItem key="multiplier" value="multiplier">Multiplicador</SelectItem>
-                                    <SelectItem key="linear" value="linear">Lineal (ecuación de recta)</SelectItem>
-                                </Select>
+                                    <SelectItem classNames={darkItemClassNames} key="none" value="none">Ninguno</SelectItem>
+                                    <SelectItem classNames={darkItemClassNames} key="multiplier" value="multiplier">Multiplicador</SelectItem>
+                                    <SelectItem classNames={darkItemClassNames} key="linear" value="linear">Lineal (ecuación de recta)</SelectItem>
+                                </DarkSelect>
                             )}
                         />
 
@@ -628,15 +629,15 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                                     name="alarm.severity"
                                     control={control}
                                     render={({ field }) => (
-                                        <Select
+                                        <DarkSelect
                                             label="Severidad"
                                             selectedKeys={[field.value || 'WARNING']}
                                             onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
                                         >
-                                            <SelectItem key="INFO" value="INFO">Info</SelectItem>
-                                            <SelectItem key="WARNING" value="WARNING">Warning</SelectItem>
-                                            <SelectItem key="CRITICAL" value="CRITICAL">Crítico</SelectItem>
-                                        </Select>
+                                            <SelectItem classNames={darkItemClassNames} key="INFO" value="INFO">Info</SelectItem>
+                                            <SelectItem classNames={darkItemClassNames} key="WARNING" value="WARNING">Warning</SelectItem>
+                                            <SelectItem classNames={darkItemClassNames} key="CRITICAL" value="CRITICAL">Crítico</SelectItem>
+                                        </DarkSelect>
                                     )}
                                 />
 
@@ -726,3 +727,4 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
         </Modal>
     );
 }
+
