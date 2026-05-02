@@ -9,7 +9,7 @@ interface AlarmProps {
 
 export const Alarm: React.FC<AlarmProps> = ({
   size = 20,
-  isActive = true,
+  isActive = false,
   type,
 }) => {
   const [alarmColor, setAlarmColor] = useState<string>('#FFFFFF');

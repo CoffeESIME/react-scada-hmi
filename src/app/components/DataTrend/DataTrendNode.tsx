@@ -11,83 +11,91 @@ type DataTrendNodeData = {
   spTagId?: number;
   limitBottom?: number;
   limitTop?: number;
-  yAxis?: {
-    max: number;
-    min: number;
-  };
-  xAxis?: {
-    max: number;
-    min: number;
-  };
+  yAxis?: { max: number; min: number };
+  xAxis?: { max: number; min: number };
   title: string;
   width?: number;
   height?: number;
-  // Legacy/Manual props
+  // Legacy/Manual props (sin tagId)
   dataPoints?: number[];
   setPoint?: number;
 };
 
 type DataTrendNodeProps = NodeProps<DataTrendNodeData>;
 
+/** Par timestampeado — lo que el trend necesita para mostrar tiempo real */
+interface TimedPoint {
+  x: string; // ISO timestamp
+  y: number;
+}
+
 const HISTORY_LENGTH = 50;
 
 export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   const router = useRouter();
 
-  // 1. Live Data Hooks - Get full data including timestamp
+  // 1. Live data con timestamp real del broker MQTT
   const pvData = useNodeLiveData(data.tagId);
   const spData = useNodeLiveData(data.spTagId);
 
-  // 2. History Buffer
-  const [history, setHistory] = useState<number[]>([]);
-  // Store initial run or manual data if provided
+  // 2. Buffer: almacena pares {timestamp, value} — nunca sólo números
+  const [history, setHistory] = useState<TimedPoint[]>([]);
   const initialized = useRef(false);
 
+  // 3. Backfill al montar: recupera los últimos N puntos del backend con sus timestamps reales
   useEffect(() => {
-    // Priority 1: Backfilling (if Tag ID exists, use it!)
-    if (!initialized.current && data.tagId) {
-      getLatestHistory(data.tagId!, HISTORY_LENGTH)
+    if (initialized.current) return;
+
+    if (data.tagId) {
+      getLatestHistory(data.tagId, HISTORY_LENGTH)
         .then(response => {
-          const points = response.data.map(p => p.y);
+          // El endpoint devuelve [{x: ISO_timestamp, y: value}, ...]
+          const points: TimedPoint[] = response.data.map((p: any) => ({
+            x: typeof p.x === 'string' ? p.x : new Date(p.x).toISOString(),
+            y: typeof p.y === 'number' ? p.y : Number(p.y),
+          }));
           setHistory(points);
           initialized.current = true;
         })
         .catch(err => {
-          console.error("Error backfilling trend:", err);
+          console.error('[DataTrendNode] Error backfilling trend:', err);
           initialized.current = true;
         });
-    }
-    // Priority 2: Manual Data (Only if NO Tag ID)
-    else if (!initialized.current && data.dataPoints && data.dataPoints.length > 0) {
-      setHistory(data.dataPoints);
+    } else if (data.dataPoints && data.dataPoints.length > 0) {
+      // Modo legado sin tagId: inventa timestamps equiespaciados sólo para este caso
+      const now = Date.now();
+      const points: TimedPoint[] = data.dataPoints.map((val, i) => ({
+        x: new Date(now - (data.dataPoints!.length - i) * 1000).toISOString(),
+        y: val,
+      }));
+      setHistory(points);
       initialized.current = true;
     }
-  }, [data.dataPoints, data.tagId]);
+  }, [data.tagId, data.dataPoints]);
 
-  // 3. Update Buffer on each MQTT update (using timestamp as trigger)
-  // This ensures updates even when the value stays constant
+  // 4. Actualizar buffer con cada nuevo valor MQTT — usando el timestamp real del mensaje
   useEffect(() => {
     if (pvData.isLive && typeof pvData.value === 'number') {
+      const realTimestamp = pvData.timestamp ?? new Date().toISOString();
       setHistory(prev => {
-        const newHistory = [...prev, pvData.value];
-        if (newHistory.length > HISTORY_LENGTH) {
-          return newHistory.slice(newHistory.length - HISTORY_LENGTH);
-        }
-        return newHistory;
+        const next = [...prev, { x: realTimestamp, y: pvData.value as number }];
+        return next.length > HISTORY_LENGTH
+          ? next.slice(next.length - HISTORY_LENGTH)
+          : next;
       });
     }
-  }, [pvData.timestamp]); // ← Use timestamp as dependency, not value!
+  }, [pvData.timestamp]); // timestamp como dependencia — dispara aunque el valor no cambie
 
-  // 4. Resolve Setpoint (Dynamic or Static)
-  const resolvedSetPoint = data.spTagId ? (typeof spData.value === 'number' ? spData.value : undefined) : data.setPoint;
+  // 5. Setpoint (dinámico o estático)
+  const resolvedSetPoint = data.spTagId
+    ? (typeof spData.value === 'number' ? spData.value : undefined)
+    : data.setPoint;
 
-  // 5. Check Edit Mode
   const { isEditMode } = useScadaMode();
 
   const handleViewHistory = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (data.tagId) {
-      // Use query param for pre-selection
       router.push(`/scada/analysis?preselectedTagId=${data.tagId}`);
     }
   };
@@ -97,17 +105,17 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
       <DataTrend
         width={data.width}
         height={data.height}
-        dataPoints={history}
+        timedPoints={history}        /* ← puntos con timestamp real */
         setPoint={resolvedSetPoint}
         limitBottom={data.limitBottom}
         limitTop={data.limitTop}
-        yAxis={data.yAxis ?? (data.limitBottom !== undefined || data.limitTop !== undefined ? {
-          min: data.limitBottom ?? 0,
-          max: data.limitTop ?? 100
-        } : undefined)}
+        yAxis={data.yAxis ?? (
+          data.limitBottom !== undefined || data.limitTop !== undefined
+            ? { min: data.limitBottom ?? 0, max: data.limitTop ?? 100 }
+            : undefined
+        )}
         title={data.title}
       />
-      {/* History Button (Only visible in View Mode and on Hover) */}
       {!isEditMode && data.tagId && (
         <button
           onClick={handleViewHistory}

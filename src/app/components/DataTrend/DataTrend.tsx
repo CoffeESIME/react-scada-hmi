@@ -6,13 +6,16 @@ import { ApexOptions } from 'apexcharts';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface DataPoint {
-  x: string;
+  x: string; // ISO timestamp real
   y: number;
 }
 
 interface DataTrendProps {
   width?: number | string;
   height?: number | string;
+  /** Array de puntos ya con timestamp real [{x: ISO, y: value}] — fuente preferida */
+  timedPoints?: DataPoint[];
+  /** Array de números crudos (legado / sin timestamp) */
   dataPoints?: number[];
   setPoint?: number;
   limitBottom?: number;
@@ -39,6 +42,7 @@ function generateMockData(numPoints: number, min = 0, max = 100): DataPoint[] {
 export default function DataTrend({
   width = '100%',
   height = 400,
+  timedPoints,
   dataPoints = [],
   setPoint,
   limitBottom,
@@ -49,6 +53,12 @@ export default function DataTrend({
   const [seriesData, setSeriesData] = useState<DataPoint[]>([]);
 
   useEffect(() => {
+    // Prioridad 1: puntos con timestamp real (viene de DataTrendNode)
+    if (timedPoints && timedPoints.length > 0) {
+      setSeriesData(timedPoints);
+      return;
+    }
+    // Prioridad 2: array de números legado — asigna timestamps inventados solo si no hay reales
     if (dataPoints && dataPoints.length > 0) {
       const now = new Date();
       const points: DataPoint[] = dataPoints.map((val, i) => ({
@@ -56,10 +66,11 @@ export default function DataTrend({
         y: val,
       }));
       setSeriesData(points);
-    } else {
-      setSeriesData(generateMockData(20, yAxis?.min ?? 0, yAxis?.max ?? 100));
+      return;
     }
-  }, [dataPoints, yAxis]);
+    // Fallback: mock data en modo edición / sin tag
+    setSeriesData(generateMockData(20, yAxis?.min ?? 0, yAxis?.max ?? 100));
+  }, [timedPoints, dataPoints, yAxis]);
 
   const annotations: ApexAnnotations = {
     yaxis: [],

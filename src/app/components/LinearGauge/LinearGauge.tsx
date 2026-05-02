@@ -20,7 +20,7 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
   bottom = 30,
   scaleMin = 0,
   scaleMax = 100,
-  setPoint = calculateSetPointBottom(35, -30, 100),
+  setPoint = 50,
   thresholds = thresholdsStyle(
     [
       { max: -30, classColor: '', identifier: 'Normal' },
@@ -43,12 +43,14 @@ const LinearGauge: React.FC<LinearGaugeProps> = ({
     return Math.max(0, Math.min(100, percent)); // Clamp 0-100
   }, [value, scaleMin, scaleMax]);
   const setPointSize: number = parseInt(width) / 2;
+  const setPointBottomPercentage = calculateSetPointBottom(setPoint, scaleMin, scaleMax);
+  
   const setPointStyle = {
     width: `${setPointSize}px`,
     height: `${setPointSize}px`,
     backgroundColor: 'black',
     position: 'absolute' as const,
-    bottom: setPoint,
+    bottom: setPointBottomPercentage,
     left: '50%',
     transform: 'translate(-50%, 50%) rotate(45deg)',
     zIndex: 2,

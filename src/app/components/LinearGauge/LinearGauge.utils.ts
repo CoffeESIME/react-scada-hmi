@@ -26,6 +26,9 @@ export const calculateSetPointBottom = (
   min: number,
   max: number
 ): string => {
-  const percentage = Math.abs((setPoint - min) / (max - min)) * 100;
-  return `${percentage}%`;
+  const range = max - min;
+  if (range === 0) return '0%';
+  const percent = ((setPoint - min) / range) * 100;
+  const clampedPercent = Math.max(0, Math.min(100, percent));
+  return `${clampedPercent}%`;
 };
