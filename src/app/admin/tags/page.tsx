@@ -150,10 +150,12 @@ export default function TagsPage() {
                             </TableCell>
                             <TableCell>
                                 <div className="flex gap-2 justify-center">
-                                    <Tooltip content="Editar">
+                                    <Tooltip content="Editar" color="danger">
                                         <Button
                                             size="sm"
-                                            variant="light"
+                                            variant="solid"
+                                            color="primary"
+                                            className="text-white font-bold"
                                             onPress={() => handleEdit(tag)}
                                         >
                                             ✏️
@@ -162,8 +164,9 @@ export default function TagsPage() {
                                     <Tooltip content="Eliminar" color="danger">
                                         <Button
                                             size="sm"
-                                            variant="light"
+                                            variant="solid"
                                             color="danger"
+                                            className="text-white font-bold"
                                             onPress={() => handleDelete(tag)}
                                         >
                                             🗑️
