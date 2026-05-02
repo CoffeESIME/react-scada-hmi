@@ -133,6 +133,7 @@ export default function DataTrend({
       type: 'datetime',
       labels: {
         show: true,
+        datetimeUTC: false, // Fuerza a usar la zona horaria local del navegador
         style: { colors: '#64748b', fontSize: '11px' },
         datetimeFormatter: {
           year: 'yyyy',
