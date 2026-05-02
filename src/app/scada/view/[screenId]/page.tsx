@@ -173,7 +173,7 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                             className="text-gray-400 hover:text-white"
                             onPress={() => router.push('/scada/organize')}
                         >
-                            Salie
+                            Salir
                         </Button>
                     </div>
                 </header>
@@ -206,10 +206,10 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                     </ReactFlow>
                 </div>
 
-                <ShareScreenModal 
-                    isOpen={isShareModalOpen} 
-                    onClose={() => setIsShareModalOpen(false)} 
-                    screenId={screenData?.id} 
+                <ShareScreenModal
+                    isOpen={isShareModalOpen}
+                    onClose={() => setIsShareModalOpen(false)}
+                    screenId={screenData?.id}
                 />
                 <WriteTagModal
                     isOpen={isWriteModalOpen}

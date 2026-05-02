@@ -45,7 +45,6 @@ const darkSelectClassNames: SelectProps['classNames'] = {
   // Descripción de ayuda
   description: 'text-slate-500',
   innerWrapper: 'bg-transparent',
-  popoverContent: 'bg-slate-800 border border-slate-600',
 };
 
 export const DarkSelect: React.FC<DarkSelectProps> = ({ children, classNames, ...props }) => {
