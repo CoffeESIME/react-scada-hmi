@@ -15,9 +15,9 @@ type ValveNodeData = {
   valveType?: 'round' | 'rect';
   rotation?: number;
   handles?: HandleConfig[];
-  state?: 'Open' | 'Closed' | 'Transition'; // Keep for fallback/initial
+  state?: 'Open' | 'Closed' | 'Transition';
   size?: number;
-  tagId?: number; // Added for live data
+  tagId?: number;
 };
 
 type ValveNodeProps = NodeProps<ValveNodeData>;
@@ -28,14 +28,8 @@ const ValveNode: React.FC<ValveNodeProps> = ({ data }) => {
   const handles = data?.handles ?? [];
   const size = data?.size ?? 50;
 
-  // Live data integration with Safe Mode
-  // Default to data.state if tagId is not present or in Edit Mode
   const { value: liveValue } = useNodeLiveData(data.tagId, undefined);
 
-  // Logic to determine state: 
-  // If liveValue is present, map it to 'Open'/'Closed'. 
-  // Assuming 1/true = Open, 0/false = Closed.
-  // If no liveValue, fallback to data.state or 'Closed'.
   let currentState: 'Open' | 'Closed' | 'Transition' = data.state ?? 'Closed';
 
   if (liveValue !== undefined) {
@@ -44,7 +38,6 @@ const ValveNode: React.FC<ValveNodeProps> = ({ data }) => {
     } else if (liveValue === 0 || liveValue === false || liveValue === 'Closed') {
       currentState = 'Closed';
     }
-    // Can add logic for 'Transition' if needed, dependent on data
   }
 
   return (

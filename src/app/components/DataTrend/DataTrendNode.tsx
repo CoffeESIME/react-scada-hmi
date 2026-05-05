@@ -16,16 +16,14 @@ type DataTrendNodeData = {
   title: string;
   width?: number;
   height?: number;
-  // Legacy/Manual props (sin tagId)
   dataPoints?: number[];
   setPoint?: number;
 };
 
 type DataTrendNodeProps = NodeProps<DataTrendNodeData>;
 
-/** Par timestampeado — lo que el trend necesita para mostrar tiempo real */
 interface TimedPoint {
-  x: string; // ISO timestamp
+  x: string;
   y: number;
 }
 
@@ -34,22 +32,18 @@ const HISTORY_LENGTH = 50;
 export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
   const router = useRouter();
 
-  // 1. Live data con timestamp real del broker MQTT
   const pvData = useNodeLiveData(data.tagId);
   const spData = useNodeLiveData(data.spTagId);
 
-  // 2. Buffer: almacena pares {timestamp, value} — nunca sólo números
   const [history, setHistory] = useState<TimedPoint[]>([]);
   const initialized = useRef(false);
 
-  // 3. Backfill al montar: recupera los últimos N puntos del backend con sus timestamps reales
   useEffect(() => {
     if (initialized.current) return;
 
     if (data.tagId) {
       getLatestHistory(data.tagId, HISTORY_LENGTH)
         .then(response => {
-          // El endpoint devuelve [{x: ISO_timestamp, y: value}, ...]
           const points: TimedPoint[] = response.data.map((p: any) => ({
             x: typeof p.x === 'string' ? p.x : new Date(p.x).toISOString(),
             y: typeof p.y === 'number' ? p.y : Number(p.y),
@@ -62,7 +56,6 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
           initialized.current = true;
         });
     } else if (data.dataPoints && data.dataPoints.length > 0) {
-      // Modo legado sin tagId: inventa timestamps equiespaciados sólo para este caso
       const now = Date.now();
       const points: TimedPoint[] = data.dataPoints.map((val, i) => ({
         x: new Date(now - (data.dataPoints!.length - i) * 1000).toISOString(),
@@ -73,7 +66,6 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
     }
   }, [data.tagId, data.dataPoints]);
 
-  // 4. Actualizar buffer con cada nuevo valor MQTT — usando el timestamp real del mensaje
   useEffect(() => {
     if (pvData.isLive && typeof pvData.value === 'number') {
       const realTimestamp = pvData.timestamp ?? new Date().toISOString();
@@ -84,9 +76,8 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
           : next;
       });
     }
-  }, [pvData.timestamp]); // timestamp como dependencia — dispara aunque el valor no cambie
+  }, [pvData.timestamp]);
 
-  // 5. Setpoint (dinámico o estático)
   const resolvedSetPoint = data.spTagId
     ? (typeof spData.value === 'number' ? spData.value : undefined)
     : data.setPoint;
@@ -105,7 +96,7 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
       <DataTrend
         width={data.width}
         height={data.height}
-        timedPoints={history}        /* ← puntos con timestamp real */
+        timedPoints={history}
         setPoint={resolvedSetPoint}
         limitBottom={data.limitBottom}
         limitTop={data.limitTop}

@@ -6,17 +6,11 @@ import { api } from '@/lib/api';
 import { Tag, TagListResponse } from './schemas';
 
 export interface TagMultiSelectorProps {
-    /** Currently selected tag IDs */
     value?: number[];
-    /** Callback when selection changes */
     onChange: (tagIds: number[]) => void;
-    /** Placeholder text */
     placeholder?: string;
-    /** Label for the field */
     label?: string;
-    /** Additional CSS class */
     className?: string;
-    /** Size variant */
     size?: 'sm' | 'md' | 'lg';
 }
 
@@ -34,22 +28,17 @@ export function TagMultiSelector({
     const MAX_TAGS = 4;
     const isLimitReached = value.length >= MAX_TAGS;
 
-    // Derived disabled keys
     const disabledKeys = useMemo(() => {
         if (!isLimitReached) return [];
-        // Disable all tags that are NOT currently selected
         return tags
             .filter(t => !value.includes(t.id))
             .map(t => t.id.toString());
     }, [isLimitReached, tags, value]);
 
-
-    // Fetch tags on mount
     useEffect(() => {
         const fetchTags = async () => {
             setIsLoading(true);
             try {
-                // Fetch all tags (limit 100 for now)
                 const params = new URLSearchParams({
                     page_size: '100',
                     is_enabled: 'true',
@@ -66,7 +55,6 @@ export function TagMultiSelector({
         fetchTags();
     }, []);
 
-    // Handle selection change
     const handleSelectionChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         const val = e.target.value;
         if (!val) {
@@ -76,7 +64,6 @@ export function TagMultiSelector({
 
         const ids = val.split(',').map(Number).filter(n => !isNaN(n));
 
-        // Extra safety check
         if (ids.length > MAX_TAGS) {
             return;
         }

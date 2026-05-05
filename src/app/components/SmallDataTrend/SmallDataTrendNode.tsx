@@ -1,4 +1,3 @@
-// src/app/components/SmallDataTrend/SmallDataTrendNode.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { SmallDataTrend, smallLineChart } from './SmallDataTrend';
 import { NodeProps } from 'reactflow';
@@ -6,7 +5,6 @@ import { useNodeLiveData } from '@/hooks/useNodeLiveData';
 import { useScadaMode } from '@/contexts/ScadaModeContext';
 import { getLatestHistory } from '@/lib/api';
 
-// Extend the type to include new props
 type SmallDataTrendNodeData = smallLineChart & {
   tagId?: number;
   spTagId?: number;
@@ -18,19 +16,14 @@ type SmallDataTrendNodeProps = NodeProps<SmallDataTrendNodeData>;
 const HISTORY_LENGTH = 50;
 
 export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) => {
-  // 1. Hook for live PV
   const { value: liveValue } = useNodeLiveData(data.tagId);
   const { value: spValue } = useNodeLiveData(data.spTagId);
   const { isEditMode } = useScadaMode();
-
-  // Buffer
   const [history, setHistory] = useState<number[]>([]);
   const initialized = useRef(false);
 
   useEffect(() => {
-    // Priority 1: Backfilling (Check Tag ID FIRST)
     if (!initialized.current && data.tagId) {
-      // Backfilling
       getLatestHistory(data.tagId!, HISTORY_LENGTH)
         .then(response => {
           const points = response.data.map(p => p.y);
@@ -39,7 +32,6 @@ export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) 
         })
         .catch(err => console.error("Error backfilling small trend:", err));
     }
-    // Priority 2: Manual Data
     else if (!initialized.current && data.data && data.data.length > 0) {
       setHistory(data.data);
       initialized.current = true;
@@ -58,7 +50,6 @@ export const SmallDataTrendNode: React.FC<SmallDataTrendNodeProps> = ({ data }) 
     }
   }, [liveValue]);
 
-  // Calculate Band
   let bandMin = data.min;
   let bandMax = data.max;
 

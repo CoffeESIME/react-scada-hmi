@@ -34,7 +34,6 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
 
     const isEditing = !!editTag;
 
-    // Preparar valores por defecto
     const getDefaultValues = (tag?: Tag | null): Partial<TagFormData> => {
         if (tag) {
             return {
@@ -85,7 +84,6 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
         defaultValues: getDefaultValues(editTag),
     });
 
-    // Reset form when editTag or isOpen changes
     useEffect(() => {
         if (isOpen) {
             reset(getDefaultValues(editTag));
@@ -96,11 +94,9 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
     const alarmEnabled = watch('alarm.enabled');
     const scalingType = (watch('connection_config.scaling.type') as string) || 'none';
 
-    // Cambiar config al cambiar protocolo
     const handleProtocolChange = (protocol: string) => {
         setValue('source_protocol', protocol as any);
 
-        // Reset connection_config según protocolo
         switch (protocol) {
             case 'modbus':
                 setValue('connection_config', { host: '', port: 502, register: 0, slave_id: 1, register_type: 'holding' });
@@ -122,10 +118,8 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
         setIsSubmitting(true);
 
         try {
-            // Build scaling object from connection_config subfields
             const scaling = data.connection_config?.scaling || { type: 'none' };
 
-            // Construir payload para el backend
             const payload: any = {
                 name: data.name,
                 description: data.description,
@@ -142,7 +136,6 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                 access_mode: data.access_mode || 'R',
             };
 
-            // Agregar alarma si está habilitada
             if (data.alarm?.enabled) {
                 const severityMap: Record<string, number> = {
                     'INFO': 1,
@@ -181,7 +174,6 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
             if (error.response?.data?.detail) {
                 const detail = error.response.data.detail;
                 if (Array.isArray(detail)) {
-                    // Si es un array de errores de validación, los unimos
                     message = detail.map((err: any) => `${err.loc.join('.')} : ${err.msg}`).join('\n');
                 } else if (typeof detail === 'string') {
                     message = detail;
@@ -219,7 +211,6 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                     </ModalHeader>
 
                     <ModalBody className="gap-4">
-                        {/* === Información Básica === */}
                         <div className="grid grid-cols-2 gap-4">
                             <Controller
                                 name="name"
@@ -313,7 +304,6 @@ export default function TagFormModal({ isOpen, onClose, onSuccess, editTag }: Ta
                             />
                         </div>
 
-                        {/* Data Type / Access Mode row */}
                         <div className="grid grid-cols-3 gap-4">
                             <Controller
                                 name="data_type"

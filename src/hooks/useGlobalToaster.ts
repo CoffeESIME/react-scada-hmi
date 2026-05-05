@@ -1,14 +1,5 @@
 'use client';
 
-/**
- * useGlobalToaster — Hook para el sistema de notificaciones persistentes.
- * Los errores NO desaparecen automáticamente (duration = Infinity).
- * Los éxitos desaparecen en 3 segundos.
- *
- * El componente GlobalToaster monta el panel visual.
- * Este hook expone las funciones para agregar notificaciones desde cualquier parte de la app.
- */
-
 import { create } from 'zustand';
 
 export type ToastLevel = 'success' | 'error' | 'info';
@@ -19,7 +10,6 @@ export interface ToastItem {
     title: string;
     description?: string;
     createdAt: number;
-    /** Si undefined → permanente (sólo cierra manualmente) */
     autoCloseMs?: number;
 }
 
@@ -43,14 +33,13 @@ export const useToasterStore = create<ToasterState>((set) => ({
     remove: (id) => set((s) => ({ toasts: s.toasts.filter((x) => x.id !== id) })),
 }));
 
-/** Helpers rápidos para usar en cualquier componente */
 export function useGlobalToaster() {
     const { add } = useToasterStore();
     return {
         addSuccess: (title: string, description?: string) =>
             add({ level: 'success', title, description, autoCloseMs: 3000 }),
         addError: (title: string, description?: string) =>
-            add({ level: 'error', title, description }), // sin autoCloseMs → permanente
+            add({ level: 'error', title, description }),
         addInfo: (title: string, description?: string) =>
             add({ level: 'info', title, description, autoCloseMs: 5000 }),
     };

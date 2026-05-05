@@ -2,7 +2,6 @@
 
 import { z } from 'zod';
 
-// ============ Protocol Types ============
 export const ProtocolType = {
     MODBUS: 'modbus',
     OPCUA: 'opcua',
@@ -11,8 +10,6 @@ export const ProtocolType = {
 } as const;
 
 export type ProtocolTypeValue = typeof ProtocolType[keyof typeof ProtocolType];
-
-// ============ Connection Config Schemas ============
 
 const ModbusConfigSchema = z.object({
     host: z.string().min(1, 'IP requerida').regex(
@@ -41,8 +38,6 @@ const SimulatedConfigSchema = z.object({
     max: z.coerce.number().default(100),
 });
 
-// ============ Alarm Schema ============
-
 const AlarmSchema = z.object({
     enabled: z.boolean().default(false),
     message: z.string().optional(),
@@ -62,8 +57,6 @@ const AlarmSchema = z.object({
     { message: 'Mensaje de alarma requerido', path: ['message'] }
 );
 
-// ============ Main Tag Schema ============
-
 export const TagFormSchema = z.object({
     name: z.string().min(1, 'Nombre requerido').max(100),
     description: z.string().max(500).optional(),
@@ -73,17 +66,13 @@ export const TagFormSchema = z.object({
     mqtt_topic: z.string().max(200).optional(),
     is_enabled: z.boolean().default(true),
 
-    // Connection config - validated by protocol
     connection_config: z.record(z.string(), z.any()),
 
-    // Signal metadata
     data_type: z.enum(['boolean', 'integer', 'float']).default('float'),
     access_mode: z.enum(['R', 'W', 'RW']).default('R'),
 
-    // Alarm settings
     alarm: AlarmSchema.optional(),
 }).superRefine((data, ctx) => {
-    // Validar connection_config según el protocolo
     try {
         switch (data.source_protocol) {
             case 'modbus':
@@ -112,13 +101,9 @@ export const TagFormSchema = z.object({
     }
 });
 
-// Input type (before defaults are applied) - used for form state
 export type TagFormInput = z.input<typeof TagFormSchema>;
 
-// Output type (after validation with defaults) - used for submit handler
 export type TagFormData = z.output<typeof TagFormSchema>;
-
-// ============ API Types ============
 
 export interface Tag {
     id: number;

@@ -13,27 +13,16 @@ export interface ScreenData {
 }
 
 export interface ScreenSelectorProps {
-    /** Currently selected screen ID */
     value?: number | string | null;
-    /** Callback when selection changes */
     onChange: (screenId: string) => void;
-    /** Placeholder text */
     placeholder?: string;
-    /** Label for the field */
     label?: string;
-    /** Whether the field is disabled */
     isDisabled?: boolean;
-    /** Whether the field is required */
     isRequired?: boolean;
-    /** Additional CSS class */
     className?: string;
-    /** Size variant */
     size?: 'sm' | 'md' | 'lg';
 }
 
-/**
- * ScreenSelector - Reusable Select for choosing SCADA Screens
- */
 export function ScreenSelector({
     value,
     onChange,
@@ -48,13 +37,11 @@ export function ScreenSelector({
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch screens on mount
     useEffect(() => {
         const fetchScreens = async () => {
             setIsLoading(true);
             setError(null);
             try {
-                // Endpoint returns a lightweight list (no layout_data)
                 const response = await api.get<ScreenData[]>('/screens/');
                 setScreens(response.data);
             } catch (err: any) {
@@ -68,13 +55,10 @@ export function ScreenSelector({
         fetchScreens();
     }, []);
 
-    // Find selected screen for display
     const selectedScreen = useMemo(() => {
         if (!value) return null;
         return screens.find(s => s.id.toString() === value.toString() || s.slug === value) || null;
     }, [value, screens]);
-
-    // Handle selection change
     const handleSelectionChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedValue = e.target.value;
         onChange(selectedValue);
@@ -88,7 +72,6 @@ export function ScreenSelector({
         );
     }
 
-    // Usamos el ID como clave en lugar del slug por si el slug cambia en un futuro
     const displayValue = selectedScreen ? selectedScreen.id.toString() : (value ? value.toString() : '');
 
     return (

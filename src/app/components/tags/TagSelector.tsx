@@ -6,44 +6,18 @@ import { api } from '@/lib/api';
 import { Tag, TagListResponse } from './schemas';
 
 export interface TagSelectorProps {
-    /** Currently selected tag ID */
     value?: number | null;
-    /** Callback when selection changes */
     onChange: (tagId: number | null, tag: Tag | null) => void;
-    /** Filter by protocol type */
     filterProtocol?: 'modbus' | 'opcua' | 'mqtt' | 'simulated';
-    /** Placeholder text */
     placeholder?: string;
-    /** Label for the field */
     label?: string;
-    /** Whether the field is disabled */
     isDisabled?: boolean;
-    /** Whether the field is required */
     isRequired?: boolean;
-    /** Additional CSS class */
     className?: string;
-    /** Size variant */
     size?: 'sm' | 'md' | 'lg';
 }
 
-/**
- * TagSelector - Reusable Select for choosing SCADA Tags
- * 
- * Features:
- * - Fetches tags from API on mount
- * - Optional protocol filtering
- * - Agnóstico - works in any context (forms, editors, etc.)
- * 
- * @example
- * ```tsx
- * <TagSelector
- *   value={selectedTagId}
- *   onChange={(id, tag) => setSelectedTagId(id)}
- *   filterProtocol="modbus"
- *   label="Select Tag"
- * />
- * ```
- */
+
 export function TagSelector({
     value,
     onChange,
@@ -58,8 +32,6 @@ export function TagSelector({
     const [tags, setTags] = useState<Tag[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    // Fetch tags on mount
     useEffect(() => {
         const fetchTags = async () => {
             setIsLoading(true);
@@ -87,13 +59,10 @@ export function TagSelector({
         fetchTags();
     }, [filterProtocol]);
 
-    // Find selected tag for display
     const selectedTag = useMemo(() => {
         if (!value) return null;
         return tags.find(t => t.id === value) || null;
     }, [value, tags]);
-
-    // Handle selection change
     const handleSelectionChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedValue = e.target.value;
 

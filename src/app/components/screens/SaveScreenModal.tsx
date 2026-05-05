@@ -20,9 +20,7 @@ interface SaveScreenModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSaved?: (screenId: number) => void;
-    /** If provided, updates existing screen instead of creating new */
     editScreenId?: number;
-    /** Pre-fill values when editing */
     initialValues?: {
         name?: string;
         description?: string;
@@ -64,7 +62,6 @@ export function SaveScreenModal({
         setIsLoading(true);
 
         try {
-            // Get current React Flow state
             const flowState = toObject();
 
             const layoutData = {
@@ -74,7 +71,6 @@ export function SaveScreenModal({
             };
 
             if (isEditing) {
-                // Update existing screen
                 await api.put<ScreenResponse>(`/screens/${editScreenId}`, {
                     name: name.trim(),
                     description: description.trim() || null,
@@ -83,7 +79,6 @@ export function SaveScreenModal({
                 });
                 toast.success('Pantalla actualizada');
             } else {
-                // Create new screen
                 const response = await api.post<ScreenResponse>('/screens/', {
                     name: name.trim(),
                     description: description.trim() || null,

@@ -21,10 +21,6 @@ interface ConfirmationModalProps {
     isDanger?: boolean;
 }
 
-/**
- * Componente modal genérico para confirmar acciones.
- * Se usa para reemplazar window.confirm() con una UI consistente.
- */
 export function ConfirmationModal({
     isOpen,
     onClose,

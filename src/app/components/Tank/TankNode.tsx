@@ -16,21 +16,14 @@ type HandleEl = {
 
 interface TankNodeData {
   handles: HandleEl[];
-  /** Tank dimensions */
   width?: number;
   height?: number;
-  /** Tank colors */
   fillColor?: string;
   strokeColor?: string;
 }
 
 type TankNodeProps = NodeProps<TankNodeData>;
 
-/**
- * TankNode - React Flow wrapper for Tank component
- * 
- * Symbolic component, no data binding.
- */
 const TankNode: React.FC<TankNodeProps> = ({ data }) => {
   return (
     <>

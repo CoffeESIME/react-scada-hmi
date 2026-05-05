@@ -1,4 +1,3 @@
-// components/DataTrend.tsx
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
@@ -6,16 +5,14 @@ import { ApexOptions } from 'apexcharts';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface DataPoint {
-  x: string; // ISO timestamp real
+  x: string;
   y: number;
 }
 
 interface DataTrendProps {
   width?: number | string;
   height?: number | string;
-  /** Array de puntos ya con timestamp real [{x: ISO, y: value}] — fuente preferida */
   timedPoints?: DataPoint[];
-  /** Array de números crudos (legado / sin timestamp) */
   dataPoints?: number[];
   setPoint?: number;
   limitBottom?: number;
@@ -53,12 +50,10 @@ export default function DataTrend({
   const [seriesData, setSeriesData] = useState<DataPoint[]>([]);
 
   useEffect(() => {
-    // Prioridad 1: puntos con timestamp real (viene de DataTrendNode)
     if (timedPoints && timedPoints.length > 0) {
       setSeriesData(timedPoints);
       return;
     }
-    // Prioridad 2: array de números legado — asigna timestamps inventados solo si no hay reales
     if (dataPoints && dataPoints.length > 0) {
       const now = new Date();
       const points: DataPoint[] = dataPoints.map((val, i) => ({
@@ -68,7 +63,6 @@ export default function DataTrend({
       setSeriesData(points);
       return;
     }
-    // Fallback: mock data en modo edición / sin tag
     setSeriesData(generateMockData(20, yAxis?.min ?? 0, yAxis?.max ?? 100));
   }, [timedPoints, dataPoints, yAxis]);
 
@@ -79,13 +73,13 @@ export default function DataTrend({
   if (setPoint !== undefined) {
     annotations.yaxis?.push({
       y: setPoint,
-      borderColor: '#3b82f6', // Azul más sutil/estándar
+      borderColor: '#3b82f6',
       borderWidth: 1,
       strokeDashArray: 5,
       label: {
         borderColor: 'transparent',
         style: { color: '#3b82f6', background: 'transparent' },
-        text: '', // Sin texto, solo línea como en la imagen
+        text: '',
       },
     });
   }
@@ -93,7 +87,7 @@ export default function DataTrend({
   if (limitTop !== undefined) {
     annotations.yaxis?.push({
       y: limitTop,
-      borderColor: '#94a3b8', // Gris
+      borderColor: '#94a3b8',
       strokeDashArray: 2,
       borderWidth: 1,
       opacity: 0.5,
@@ -103,28 +97,27 @@ export default function DataTrend({
   if (limitBottom !== undefined) {
     annotations.yaxis?.push({
       y: limitBottom,
-      borderColor: '#94a3b8', // Gris
+      borderColor: '#94a3b8',
       strokeDashArray: 2,
       borderWidth: 1,
       opacity: 0.5,
     });
   }
 
-  // Estilo basado en la imagen de referencia (SCADA clásico/limpio)
   const chartOptions: ApexOptions = {
     chart: {
       id: 'dataTrendChart',
       toolbar: { show: false },
       background: 'transparent',
-      foreColor: '#64748b', // Slate-500 para texto
-      animations: { enabled: false }, // SCADA real-time feel
+      foreColor: '#64748b',
+      animations: { enabled: false },
     },
     title: {
       text: title,
       align: 'left',
-      margin: 20, // Reducir margen para acercarlo a los datos
+      margin: 20,
       style: {
-        color: '#475569', // Slate-600
+        color: '#475569',
         fontSize: '12px',
         fontWeight: 500
       },
@@ -133,7 +126,7 @@ export default function DataTrend({
       type: 'datetime',
       labels: {
         show: true,
-        datetimeUTC: false, // Fuerza a usar la zona horaria local del navegador
+        datetimeUTC: false,
         style: { colors: '#64748b', fontSize: '11px' },
         datetimeFormatter: {
           year: 'yyyy',
@@ -143,34 +136,34 @@ export default function DataTrend({
           minute: 'HH:mm:ss',
           second: 'HH:mm:ss',
         },
-      }, // Mostrar etiquetas X
+      },
       tooltip: { enabled: false },
-      axisBorder: { show: true, color: '#e2e8f0' }, // Mostrar línea de eje X
-      axisTicks: { show: true, color: '#e2e8f0' }, // Mostrar ticks
+      axisBorder: { show: true, color: '#e2e8f0' },
+      axisTicks: { show: true, color: '#e2e8f0' },
     },
     yaxis: {
       min: yAxis?.min,
       max: yAxis?.max,
-      tickAmount: 3, // Pocos ticks como en la imagen
+      tickAmount: 3,
       labels: {
         style: { colors: '#64748b', fontSize: '11px' },
         formatter: (val) => val.toFixed(1),
       },
     },
     grid: {
-      borderColor: '#e2e8f0', // Color muy claro (o usa 'transparent' para quitarla del todo)
-      strokeDashArray: 4, // Líneas punteadas (más sutil que sólidas)
+      borderColor: '#e2e8f0',
+      strokeDashArray: 4,
       position: 'back',
     },
     stroke: {
-      curve: 'smooth', // O 'straight' según preferencia, 'smooth' se ve bien
-      width: 1.5, // Línea delgada como en la imagen
+      curve: 'smooth',
+      width: 1.5,
     },
     theme: {
-      mode: 'light', // Forzamos light para el look limpio
+      mode: 'light',
     },
     tooltip: {
-      theme: 'dark', // Tooltip oscuro para alto contraste
+      theme: 'dark',
       style: {
         fontSize: '12px',
         fontFamily: 'inherit',
@@ -182,7 +175,7 @@ export default function DataTrend({
       marker: { show: true },
     },
     annotations: annotations,
-    colors: ['#3b82f6'], // Azul clásico
+    colors: ['#3b82f6'],
     dataLabels: { enabled: false },
   };
 

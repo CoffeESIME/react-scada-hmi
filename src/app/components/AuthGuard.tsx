@@ -5,48 +5,44 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '../store/useAuthStore';
 
 interface AuthGuardProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export default function AuthGuard({ children }: AuthGuardProps): React.ReactElement {
-    const router = useRouter();
-    const pathname = usePathname();
-    const { isAuthenticated, checkAuth, token } = useAuthStore();
-    const [isChecking, setIsChecking] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
+  const { isAuthenticated, checkAuth, token } = useAuthStore();
+  const [isChecking, setIsChecking] = useState(true);
 
-    useEffect(() => {
-        const verifyAuth = async () => {
-            setIsChecking(true);
+  useEffect(() => {
+    const verifyAuth = async () => {
+      setIsChecking(true);
 
-            // If no token, redirect immediately
-            if (!token) {
-                router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
-                return;
-            }
+      if (!token) {
+        router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+        return;
+      }
+      const isValid = await checkAuth();
 
-            // Verify token is still valid
-            const isValid = await checkAuth();
+      if (!isValid) {
+        router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+      }
 
-            if (!isValid) {
-                router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
-            }
+      setIsChecking(false);
+    };
 
-            setIsChecking(false);
-        };
+    verifyAuth();
+  }, [token, checkAuth, router, pathname]);
 
-        verifyAuth();
-    }, [token, checkAuth, router, pathname]);
+  if (isChecking) {
+    return (
+      <div className="auth-loading">
+        <div className="loading-content">
+          <div className="spinner"></div>
+          <p>Verificando sesión...</p>
+        </div>
 
-    // Show loading state while checking auth
-    if (isChecking) {
-        return (
-            <div className="auth-loading">
-                <div className="loading-content">
-                    <div className="spinner"></div>
-                    <p>Verificando sesión...</p>
-                </div>
-
-                <style jsx>{`
+        <style jsx>{`
           .auth-loading {
             min-height: 100vh;
             display: flex;
@@ -79,19 +75,18 @@ export default function AuthGuard({ children }: AuthGuardProps): React.ReactElem
             margin: 0;
           }
         `}</style>
-            </div>
-        );
-    }
+      </div>
+    );
+  }
 
-    // If not authenticated after check, don't render children
-    if (!isAuthenticated()) {
-        return (
-            <div className="auth-loading">
-                <div className="loading-content">
-                    <p>Redirigiendo al login...</p>
-                </div>
+  if (!isAuthenticated()) {
+    return (
+      <div className="auth-loading">
+        <div className="loading-content">
+          <p>Redirigiendo al login...</p>
+        </div>
 
-                <style jsx>{`
+        <style jsx>{`
           .auth-loading {
             min-height: 100vh;
             display: flex;
@@ -110,10 +105,8 @@ export default function AuthGuard({ children }: AuthGuardProps): React.ReactElem
             margin: 0;
           }
         `}</style>
-            </div>
-        );
-    }
-
-    // User is authenticated, render children
-    return <>{children}</>;
+      </div>
+    );
+  }
+  return <>{children}</>;
 }

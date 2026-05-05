@@ -20,18 +20,14 @@ export default function AnalysisPage() {
     const [chartSeries, setChartSeries] = useState<ChartSeries[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Export Hook
     const { exportToCSV, exportToPDF } = useReportExport();
     const CHART_ID = 'analysis-chart-div';
 
-    // Initialize defaults on mount
     useEffect(() => {
-        // Set default time range: Last 24 hours
         const end = new Date();
         const start = new Date();
         start.setHours(start.getHours() - 24);
 
-        // Format for input datetime-local: YYYY-MM-DDTHH:mm (Local Time)
         const formatDateTime = (date: Date) => {
             const pad = (n: number) => n.toString().padStart(2, '0');
             return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
@@ -40,22 +36,16 @@ export default function AnalysisPage() {
         setStartDate(formatDateTime(start));
         setEndDate(formatDateTime(end));
 
-        // Check for preselected tag
         const preselectedId = searchParams.get('preselectedTagId');
         if (preselectedId) {
             const id = Number(preselectedId);
             if (!isNaN(id)) {
                 setSelectedTagIds([id]);
-                // Load info immediately if we have a tag
                 loadHistoryData([id], formatDateTime(start), formatDateTime(end));
             }
         }
     }, [searchParams]);
 
-    /**
-     * Safely parse an ISO date string from the backend.
-     * Returns null if the string is empty or produces an Invalid Date.
-     */
     const safeParseDateUTC = (raw: string): Date | null => {
         if (!raw) return null;
         const d = new Date(raw);
@@ -70,13 +60,10 @@ export default function AnalysisPage() {
 
         setIsLoading(true);
         try {
-            // Convert inputs to ISO strings
             const startISO = new Date(start).toISOString();
             const endISO = new Date(end).toISOString();
 
             const history = await getHistory(ids, startISO, endISO);
-
-            // Transform to Plotly Series — filter out points with invalid timestamps
             const formattedSeries: ChartSeries[] = history.map((h: HistorySeries) => ({
                 name: h.tagName || `Tag ${h.tagId}`,
                 data: h.data
@@ -133,14 +120,12 @@ export default function AnalysisPage() {
 
     return (
         <div className="flex h-screen bg-[#1a1a2e] text-white">
-            {/* Sidebar Stats / Config */}
             <aside className="w-80 bg-[#16213e] border-r border-[#3a3a5c] p-4 flex flex-col gap-6 shrink-0 z-20 shadow-xl">
                 <div>
                     <h2 className="text-xl font-bold text-gray-100 mb-1">Análisis Histórico</h2>
                     <p className="text-xs text-gray-400">Motor: Plotly.js (WebGL)</p>
                 </div>
 
-                {/* Configuration Form */}
                 <div className="flex flex-col gap-4">
                     <TagMultiSelector
                         label="Selección de Tags (Max 4)"
@@ -189,7 +174,6 @@ export default function AnalysisPage() {
                 </div>
             </aside>
 
-            {/* Main Chart Area */}
             <main className="flex-1 p-6 overflow-hidden flex flex-col relative z-0">
                 <header className="flex justify-between items-center mb-4 bg-[#16213e]/50 p-3 rounded-lg border border-[#3a3a5c]">
                     <div>

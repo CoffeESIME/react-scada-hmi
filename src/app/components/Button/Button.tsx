@@ -4,7 +4,7 @@ import { useScadaMode } from '@/contexts/ScadaModeContext';
 
 
 type ButtonProps = {
-  label: string | string[]; // Puede ser array si viene de legacy o string normal
+  label: string | string[];
   handlePress: () => void;
   actionType: 'NAVIGATE' | 'WRITE_TAG' | 'SETPOINT_INPUT';
   handleCommit?: (value: string | number) => void;
@@ -21,7 +21,6 @@ export const CustomButton: React.FC<ButtonProps> = ({
 
   const displayLabel = Array.isArray(label) ? label.join(' ') : label;
 
-  // Si es INPUT y estamos en RUNTIME
   if (actionType === 'SETPOINT_INPUT' && !isEditMode) {
     return (
       <div className="flex flex-col gap-1 items-center bg-nav-button-fg p-2 rounded border-2 border-nav-button-border min-w-[120px]">
@@ -34,10 +33,9 @@ export const CustomButton: React.FC<ButtonProps> = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               handleCommit?.(inputValue);
-              setInputValue(''); // Limpiar tras enviar
+              setInputValue('');
             }
           }}
-          // Para evitar que pulsaciones de teclas afecten el canvas si el foco "escapa"
           onPointerDown={(e) => e.stopPropagation()}
         />
       </div>

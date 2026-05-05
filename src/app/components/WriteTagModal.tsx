@@ -22,7 +22,6 @@ export interface WriteTagTarget {
             scaled_min: number; scaled_max: number;
         };
     };
-    /** Pre-rellena el input con este valor (ej. botón Start → 1) */
     prefillValue?: string;
 }
 
@@ -38,7 +37,6 @@ export default function WriteTagModal({ isOpen, target, onClose }: Props) {
     const [isWriting, setIsWriting] = useState(false);
     const { addError, addSuccess } = useGlobalToaster();
 
-    // Reset state + apply prefill whenever the target changes
     useEffect(() => {
         if (target) {
             setNumericValue(target.prefillValue ?? '');

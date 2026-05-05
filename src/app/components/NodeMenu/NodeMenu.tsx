@@ -24,7 +24,6 @@ const NodeMenu: React.FC<NodeMenuProps> = ({ onNodeSelect }) => {
     <div>
       <DraggableNode type="type1" onDragStart={handleDragStart} />
       <DraggableNode type="type2" onDragStart={handleDragStart} />
-      {/* Add more node types as needed */}
     </div>
   );
 };
