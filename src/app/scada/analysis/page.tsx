@@ -31,8 +31,11 @@ export default function AnalysisPage() {
         const start = new Date();
         start.setHours(start.getHours() - 24);
 
-        // Format for input datetime-local: YYYY-MM-DDTHH:mm
-        const formatDateTime = (date: Date) => date.toISOString().slice(0, 16);
+        // Format for input datetime-local: YYYY-MM-DDTHH:mm (Local Time)
+        const formatDateTime = (date: Date) => {
+            const pad = (n: number) => n.toString().padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        };
 
         setStartDate(formatDateTime(start));
         setEndDate(formatDateTime(end));
@@ -49,6 +52,16 @@ export default function AnalysisPage() {
         }
     }, [searchParams]);
 
+    /**
+     * Safely parse an ISO date string from the backend.
+     * Returns null if the string is empty or produces an Invalid Date.
+     */
+    const safeParseDateUTC = (raw: string): Date | null => {
+        if (!raw) return null;
+        const d = new Date(raw);
+        return isNaN(d.getTime()) ? null : d;
+    };
+
     const loadHistoryData = async (ids: number[], start: string, end: string) => {
         if (ids.length === 0) {
             setChartSeries([]);
@@ -63,10 +76,12 @@ export default function AnalysisPage() {
 
             const history = await getHistory(ids, startISO, endISO);
 
-            // Transform to Plotly Series
+            // Transform to Plotly Series — filter out points with invalid timestamps
             const formattedSeries: ChartSeries[] = history.map((h: HistorySeries) => ({
                 name: h.tagName || `Tag ${h.tagId}`,
-                data: h.data.map(p => ({ x: new Date(p.x), y: p.y })),
+                data: h.data
+                    .map(p => ({ x: safeParseDateUTC(p.x), y: p.y }))
+                    .filter((p): p is { x: Date; y: number } => p.x !== null),
                 unit: ''
             }));
 

@@ -40,8 +40,15 @@ export const useReportExport = () => {
         seriesData.forEach(series => {
             const tagName = series.name;
             series.data.forEach(point => {
-                const timestamp = point.x instanceof Date ? point.x.toISOString() : String(point.x);
-                // Stacking data: simple approach
+                let timestamp: string;
+                if (point.x instanceof Date) {
+                    // Guard against Invalid Date objects (e.g. from malformed ISO strings)
+                    timestamp = isNaN(point.x.getTime())
+                        ? 'Invalid Date'
+                        : point.x.toISOString();
+                } else {
+                    timestamp = String(point.x);
+                }
                 rows.push(`${timestamp},${escape(tagName)},${point.y}`);
             });
         });
