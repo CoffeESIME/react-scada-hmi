@@ -583,6 +583,36 @@ function PropertiesPanel({
                 onChange={handleChangeDataField('label')}
             />
 
+            {/* CardData has a string[] label — show dedicated Title/Subtitle fields instead */}
+            {type === 'cardData' && (
+                <>
+                    <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+                    <h4 className="text-sm font-semibold text-admin-text mb-2">Contenido</h4>
+
+                    <label className="mb-1 block">Título (línea 1):</label>
+                    <input
+                        style={inputStyle}
+                        value={Array.isArray(data?.label) ? data.label[0] ?? '' : ''}
+                        onChange={(e) => {
+                            const current: string[] = Array.isArray(data?.label) ? [...data.label] : ['', ''];
+                            current[0] = e.target.value;
+                            updateSelectedNodeData('label', current);
+                        }}
+                    />
+
+                    <label className="mb-1 block">Subtítulo (línea 2):</label>
+                    <input
+                        style={inputStyle}
+                        value={Array.isArray(data?.label) ? data.label[1] ?? '' : ''}
+                        onChange={(e) => {
+                            const current: string[] = Array.isArray(data?.label) ? [...data.label] : ['', ''];
+                            current[1] = e.target.value;
+                            updateSelectedNodeData('label', current);
+                        }}
+                    />
+                </>
+            )}
+
             {/* Props según el tipo */}
             {type === 'motor' && (
                 <>

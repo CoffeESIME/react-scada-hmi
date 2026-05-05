@@ -5,12 +5,19 @@ import { Card, CardBody } from '@nextui-org/react';
 import { useScadaMode } from '@/contexts/ScadaModeContext';
 
 type CardDataProps = {
-  label: string[];
+  label: string | string[];
   onPress?: () => void;
 };
 
 export const CardData: React.FC<CardDataProps> = ({ label, onPress }) => {
   const { isEditMode } = useScadaMode();
+
+  // Normalize: the properties panel may pass a plain string when editing.
+  const lines: string[] = Array.isArray(label)
+    ? label
+    : typeof label === 'string'
+    ? label.split('\n').filter(Boolean)
+    : [];
 
   return (
     <div className={`nodrag ${isEditMode ? 'pointer-events-none' : ''}`} onClick={onPress}>
@@ -21,7 +28,7 @@ export const CardData: React.FC<CardDataProps> = ({ label, onPress }) => {
       >
         <CardBody className="flex flex-col items-center justify-center p-1">
           <div className="flex flex-col gap-0">
-            {label.map((strEl, index) => (
+            {lines.map((strEl, index) => (
               <p key={index} className="text-small">
                 {strEl}
               </p>
