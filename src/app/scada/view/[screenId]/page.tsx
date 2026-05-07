@@ -20,6 +20,7 @@ import { nodeTypes } from '../../nodeTypes';
 import { ScadaModeProvider } from '@/contexts/ScadaModeContext';
 import { useAuthStore } from '@/app/store/useAuthStore';
 import { useGlobalToaster } from '@/hooks/useGlobalToaster';
+import { toast } from 'sonner';
 
 interface ScreenData {
     id: number;
@@ -38,7 +39,6 @@ interface ScreenData {
 
 const canvasStyle: CSSProperties = {
     height: 'calc(100vh - 50px)',
-    //flex: 1,
     backgroundColor: '#C0C0C0',
 };
 
@@ -56,12 +56,6 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [writeTarget, setWriteTarget] = useState<WriteTagTarget | null>(null);
     const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
-
-    /** 
-     * Handler que los nodos del canvas invocan cuando el usuario quiere escribir.
-     * Si el usuario es ADMIN → abre WriteTagModal.
-     * Si es OPERATOR → muestra error persistente y NO abre nada.
-     */
     const handleWriteRequest = useCallback((target: WriteTagTarget) => {
         if (isAdmin) {
             setWriteTarget(target);
@@ -74,7 +68,6 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
         }
     }, [isAdmin, addError]);
 
-    // Cargar pantalla al montar
     useEffect(() => {
         if (!screenId) return;
 
@@ -85,12 +78,9 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                 const data = response.data;
                 setScreenData(data);
 
-                // Cargar nodes y edges
                 if (data.layout_data) {
                     setNodes(data.layout_data.nodes || []);
                     setEdges(data.layout_data.edges || []);
-
-                    // Restaurar viewport si existe
                     if (data.layout_data.viewport) {
                         setTimeout(() => {
                             setViewport(data.layout_data.viewport!);
@@ -113,7 +103,6 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
         loadScreen();
     }, [screenId]);
 
-    // Memoize imported nodeTypes to satisfy React Flow stability check
     const nodeTypesMemo = React.useMemo(() => nodeTypes, []);
 
     if (isLoading) {
