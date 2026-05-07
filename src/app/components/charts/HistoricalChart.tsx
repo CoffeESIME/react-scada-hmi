@@ -2,7 +2,6 @@
 
 import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
-// Dynamic import for Plotly (client-side only)
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 export interface HistoryPoint {
@@ -25,18 +24,16 @@ interface HistoricalChartProps {
 }
 
 export const HistoricalChart: React.FC<HistoricalChartProps> = ({ id, title, series, height = '100%' }) => {
-
-    // Prepare data for Plotly
     const plotData: Plotly.Data[] = useMemo(() => {
         return series.map((s) => ({
             name: s.name,
             x: s.data.map(p => p.x),
             y: s.data.map(p => p.y),
-            type: 'scattergl' as const, // WebGL for performance
+            type: 'scattergl' as const,
             mode: 'lines',
             line: {
                 width: 2,
-                color: s.color // Use provided color or let Plotly assign one
+                color: s.color
             },
             hovertemplate: `
             <b>${s.name}</b><br>
@@ -46,7 +43,6 @@ export const HistoricalChart: React.FC<HistoricalChartProps> = ({ id, title, ser
         }));
     }, [series]);
 
-    // Layout Configuration
     const layout: Partial<Plotly.Layout> = {
         title: {
             text: title,
@@ -58,7 +54,7 @@ export const HistoricalChart: React.FC<HistoricalChartProps> = ({ id, title, ser
         showlegend: true,
         legend: {
             orientation: 'h',
-            y: -0.2, // Move legend to bottom
+            y: -0.2,
             font: { color: '#cbd5e1' }
         },
         xaxis: {
@@ -77,7 +73,6 @@ export const HistoricalChart: React.FC<HistoricalChartProps> = ({ id, title, ser
             autorange: true
         },
         margin: { l: 50, r: 20, t: 50, b: 50 },
-        // Interaction tools
         dragmode: 'pan',
     };
 

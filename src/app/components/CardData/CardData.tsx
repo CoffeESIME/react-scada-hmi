@@ -12,12 +12,11 @@ type CardDataProps = {
 export const CardData: React.FC<CardDataProps> = ({ label, onPress }) => {
   const { isEditMode } = useScadaMode();
 
-  // Normalize: the properties panel may pass a plain string when editing.
   const lines: string[] = Array.isArray(label)
     ? label
     : typeof label === 'string'
-    ? label.split('\n').filter(Boolean)
-    : [];
+      ? label.split('\n').filter(Boolean)
+      : [];
 
   return (
     <div className={`nodrag ${isEditMode ? 'pointer-events-none' : ''}`} onClick={onPress}>
