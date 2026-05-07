@@ -325,6 +325,20 @@ function CreateHmiScreenContentInner(): React.ReactElement {
     );
   };
 
+  const updateSelectedNodeStyle = (styleField: string, value: any) => {
+    if (!selectedNode) return;
+    const updatedNode = {
+      ...selectedNode,
+      style: { ...(selectedNode.style ?? {}), [styleField]: value },
+    };
+    setSelectedNode(updatedNode);
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === selectedNode.id ? updatedNode : node
+      )
+    );
+  };
+
   const renameSelectedNodeId = (newId: string) => {
     if (!selectedNode) return;
     const oldId = selectedNode.id;
@@ -493,6 +507,7 @@ function CreateHmiScreenContentInner(): React.ReactElement {
           <PropertiesPanel
             selectedNode={selectedNode}
             updateSelectedNodeData={updateSelectedNodeData}
+            updateSelectedNodeStyle={updateSelectedNodeStyle}
             renameSelectedNodeId={renameSelectedNodeId}
             onDeleteRequest={() => {
               if (selectedNode) setIsDeleteModalOpen(true);
@@ -543,6 +558,7 @@ export default function CreateHmiScreen(): React.ReactElement {
 interface PropertiesPanelProps {
   selectedNode: Node | null;
   updateSelectedNodeData: (field: string, value: any) => void;
+  updateSelectedNodeStyle: (styleField: string, value: any) => void;
   renameSelectedNodeId: (newId: string) => void;
   onDeleteRequest: () => void;
   edgesForNode: Edge[];
@@ -553,6 +569,7 @@ interface PropertiesPanelProps {
 function PropertiesPanel({
   selectedNode,
   updateSelectedNodeData,
+  updateSelectedNodeStyle,
   renameSelectedNodeId,
   onDeleteRequest,
   edgesForNode,
@@ -603,6 +620,58 @@ function PropertiesPanel({
         value={id}
         onChange={handleNodeIdChange}
       />
+
+      <hr style={{ margin: '10px 0', borderColor: '#666' }} />
+      <h4 className="text-sm font-semibold text-admin-text mb-2">Orden de Capas</h4>
+      <div style={{ display: 'flex', gap: '4px', marginBottom: '8px', flexWrap: 'wrap' }}>
+        <button
+          title="Traer al frente (zIndex máximo)"
+          onClick={() => updateSelectedNodeStyle('zIndex', 9999)}
+          style={{
+            flex: 1, padding: '5px 4px', backgroundColor: '#1f1f38',
+            color: '#e2e8f0', border: '1px solid #3a3a5c', borderRadius: '4px',
+            cursor: 'pointer', fontSize: '11px', textAlign: 'center',
+          }}
+        >
+          ⬆⬆ Frente
+        </button>
+        <button
+          title="Traer hacia adelante (+1)"
+          onClick={() => updateSelectedNodeStyle('zIndex', Number(selectedNode.style?.zIndex ?? 0) + 1)}
+          style={{
+            flex: 1, padding: '5px 4px', backgroundColor: '#1f1f38',
+            color: '#e2e8f0', border: '1px solid #3a3a5c', borderRadius: '4px',
+            cursor: 'pointer', fontSize: '11px', textAlign: 'center',
+          }}
+        >
+          ⬆ Adelante
+        </button>
+        <button
+          title="Enviar hacia atrás (-1)"
+          onClick={() => updateSelectedNodeStyle('zIndex', Number(selectedNode.style?.zIndex ?? 0) - 1)}
+          style={{
+            flex: 1, padding: '5px 4px', backgroundColor: '#1f1f38',
+            color: '#e2e8f0', border: '1px solid #3a3a5c', borderRadius: '4px',
+            cursor: 'pointer', fontSize: '11px', textAlign: 'center',
+          }}
+        >
+          ⬇ Atrás
+        </button>
+        <button
+          title="Enviar al fondo (zIndex mínimo)"
+          onClick={() => updateSelectedNodeStyle('zIndex', -9999)}
+          style={{
+            flex: 1, padding: '5px 4px', backgroundColor: '#1f1f38',
+            color: '#e2e8f0', border: '1px solid #3a3a5c', borderRadius: '4px',
+            cursor: 'pointer', fontSize: '11px', textAlign: 'center',
+          }}
+        >
+          ⬇⬇ Fondo
+        </button>
+      </div>
+      <p style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>
+        zIndex actual: <strong style={{ color: '#e2e8f0' }}>{selectedNode.style?.zIndex ?? 0}</strong>
+      </p>
 
       <label className="mb-1 block">Etiqueta (data.label):</label>
       <input
