@@ -1,4 +1,4 @@
-export type ActionType = 'NONE' | 'NAVIGATE' | 'WRITE_TAG' | 'SETPOINT_DIALOG' | 'SETPOINT_INPUT';
+export type ActionType = 'NONE' | 'NAVIGATE' | 'SETPOINT_DIALOG';
 
 export interface ScalingConfig {
     type: 'none' | 'multiplier' | 'linear';

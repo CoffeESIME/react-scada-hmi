@@ -141,6 +141,7 @@ function getDefaultDataForNode(nodeType: string) {
         label: 'Gauge Node',
         value: 50,
         setPoint: 60,
+        units: 'lt/s',
         handles: [
           {
             type: 'target' as const,
@@ -720,6 +721,16 @@ function PropertiesPanel({
 
       {type === 'gauge' && (
         <>
+          <label className="mb-1 block">Unidades (data.units):</label>
+          <input
+            style={inputStyle}
+            value={data?.units ?? ''}
+            maxLength={5}
+            placeholder="lt/s"
+            onChange={handleChangeDataField('units')}
+          />
+          <p style={{ fontSize: '11px', color: '#888', marginBottom: '6px', marginTop: '-4px' }}>Máximo 5 caracteres (ej: lt/s, m³/h, psi)</p>
+
           <label className="mb-1 block">Valor Inicial (data.initialValue):</label>
           <input
             type="number"
@@ -847,9 +858,7 @@ function PropertiesPanel({
             >
               <option value="NONE">Ninguna</option>
               <option value="NAVIGATE">Navegar a Pantalla</option>
-              <option value="WRITE_TAG">Escribir Valor a Tag</option>
-              <option value="SETPOINT_INPUT">Input de Setpoint</option>
-              <option value="SETPOINT_DIALOG">Diálogo de Setpoint</option>
+              <option value="SETPOINT_DIALOG">Setpoint (Popup Modal)</option>
             </select>
           </div>
 
@@ -865,35 +874,32 @@ function PropertiesPanel({
             </div>
           )}
 
-          {data?.actionType === 'WRITE_TAG' && (
+          {data?.actionType === 'SETPOINT_DIALOG' && (
             <div className="mb-3 p-2 bg-gray-800 rounded border border-gray-700">
-              <label className="text-xs text-gray-400 mb-1 block">Tag a Escribir</label>
-              <TagSelector
-                value={data?.targetTagId ?? null}
-                onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
-                placeholder="Selecciona Tag..."
-                size="sm"
-              />
-              <label className="text-xs text-gray-400 mt-2 mb-1 block">Valor a Escribir</label>
-              <input
-                style={inputStyle}
-                placeholder="Valor constante (ej: 1, true)"
-                value={data?.writeValue ?? ''}
-                onChange={(e) => updateSelectedNodeData('writeValue', e.target.value)}
-              />
-              <p className="text-[10px] text-gray-500 mt-1">Si dejas vacío, usará toggle (bool) o prompt (num).</p>
-            </div>
-          )}
-
-          {(data?.actionType === 'SETPOINT_INPUT' || data?.actionType === 'SETPOINT_DIALOG') && (
-            <div className="mb-3 p-2 bg-gray-800 rounded border border-gray-700">
-              <label className="text-xs text-gray-400 mb-1 block">Tag de Setpoint</label>
-              <TagSelector
-                value={data?.targetTagId ?? null}
-                onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
-                placeholder="Tag SP..."
-                size="sm"
-              />
+              <div className="mb-3">
+                <label className="text-xs text-gray-400 mb-1 block">Tag de Setpoint</label>
+                <TagSelector
+                  value={data?.targetTagId ?? null}
+                  onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
+                  placeholder="Tag SP..."
+                  size="sm"
+                />
+              </div>
+              <div className="mb-1">
+                <label className="text-xs text-gray-400 mb-1 block">Tipo de Dato</label>
+                <select
+                  style={selectStyle}
+                  value={data?.dataType ?? 'float'}
+                  onChange={(e) => updateSelectedNodeData('dataType', e.target.value)}
+                >
+                  <option value="float">Float (decimales)</option>
+                  <option value="integer">Integer (enteros)</option>
+                  <option value="boolean">Boolean (0 / 1)</option>
+                </select>
+                <p style={{ fontSize: '10px', color: '#888', marginTop: '2px' }}>
+                  Controla qué tipo de input se muestra en el popup.
+                </p>
+              </div>
             </div>
           )}
 

@@ -60,15 +60,32 @@ export default function WriteTagModal({ isOpen, target, onClose }: Props) {
     })();
 
     const handleWrite = async () => {
-        const value = isBoolean ? (boolValue ? 1 : 0) : parseFloat(numericValue);
-
-        if (!isBoolean && isNaN(value)) {
-            addError(`Valor inválido para el tag "${target.tagName}"`, 'Ingresa un número válido.');
-            return;
+        if (isBoolean) {
+            // boolean: siempre válido (0 o 1)
+        } else if (target.dataType === 'integer') {
+            const parsed = parseInt(numericValue, 10);
+            if (isNaN(parsed) || String(parsed) !== numericValue.trim()) {
+                addError(`Valor inválido para "${target.tagName}"`, 'Se requiere un número entero (sin decimales).');
+                return;
+            }
+        } else {
+            // float
+            if (isNaN(parseFloat(numericValue))) {
+                addError(`Valor inválido para "${target.tagName}"`, 'Ingresa un número válido.');
+                return;
+            }
         }
 
         setIsWriting(true);
         try {
+            let value: number;
+            if (isBoolean) {
+                value = boolValue ? 1 : 0;
+            } else if (target.dataType === 'integer') {
+                value = parseInt(numericValue, 10);
+            } else {
+                value = parseFloat(numericValue);
+            }
             const res = await api.post(`/tags/${target.tagId}/write`, { value });
             addSuccess(
                 `✅ Escritura exitosa — ${target.tagName}`,
@@ -97,7 +114,17 @@ export default function WriteTagModal({ isOpen, target, onClose }: Props) {
         >
             <ModalContent>
                 <ModalHeader className="flex flex-col gap-1">
-                    <span>Escribir Valor</span>
+                    <div className="flex items-center gap-2">
+                        <span>Enviar Setpoint</span>
+                        <Chip
+                            size="sm"
+                            variant="flat"
+                            color={target.dataType === 'boolean' ? 'secondary' : target.dataType === 'integer' ? 'warning' : 'primary'}
+                            className="text-[10px] uppercase"
+                        >
+                            {target.dataType}
+                        </Chip>
+                    </div>
                     <span className="text-sm font-normal text-gray-400">{target.tagName}</span>
                 </ModalHeader>
                 <ModalBody className="gap-4 py-4">
@@ -107,24 +134,47 @@ export default function WriteTagModal({ isOpen, target, onClose }: Props) {
                         </Chip>
                     )}
                     {isBoolean ? (
-                        <div className="flex items-center gap-3">
-                            <Switch
-                                isSelected={boolValue}
-                                onValueChange={setBoolValue}
-                                color="success"
-                            />
-                            <span className="text-gray-300">{boolValue ? 'ON (1)' : 'OFF (0)'}</span>
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                                <Switch
+                                    isSelected={boolValue}
+                                    onValueChange={setBoolValue}
+                                    color="success"
+                                />
+                                <span className="text-gray-300 font-mono text-lg">
+                                    {boolValue ? '1 — ON' : '0 — OFF'}
+                                </span>
+                            </div>
+                            <p className="text-[11px] text-gray-500">Solo se puede enviar 0 (OFF) o 1 (ON).</p>
                         </div>
                     ) : (
-                        <Input
-                            type="number"
-                            label={`Valor ${target.unit ? `(${target.unit})` : ''}`}
-                            placeholder="0.0"
-                            value={numericValue}
-                            onChange={(e) => setNumericValue(e.target.value)}
-                            autoFocus
-                            step={target.dataType === 'integer' ? '1' : 'any'}
-                        />
+                        <div className="flex flex-col gap-1">
+                            <Input
+                                type="number"
+                                label={`Valor ${target.unit ? `(${target.unit})` : ''}`}
+                                placeholder={target.dataType === 'integer' ? '0' : '0.00'}
+                                value={numericValue}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (target.dataType === 'integer') {
+                                        // Prevent typing decimals for integer
+                                        if (val === '' || val === '-' || /^-?\d+$/.test(val)) {
+                                            setNumericValue(val);
+                                        }
+                                    } else {
+                                        setNumericValue(val);
+                                    }
+                                }}
+                                autoFocus
+                                step={target.dataType === 'integer' ? '1' : 'any'}
+                                inputMode={target.dataType === 'integer' ? 'numeric' : 'decimal'}
+                            />
+                            <p className="text-[11px] text-gray-500">
+                                {target.dataType === 'integer'
+                                    ? 'Solo números enteros (sin decimales).'
+                                    : 'Puedes ingresar decimales (ej: 3.14).'}
+                            </p>
+                        </div>
                     )}
                 </ModalBody>
                 <ModalFooter>

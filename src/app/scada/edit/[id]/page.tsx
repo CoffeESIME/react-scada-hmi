@@ -165,6 +165,7 @@ function getDefaultDataForNode(nodeType: string) {
                 label: 'Gauge Node',
                 value: 50,
                 setPoint: 60,
+                units: 'lt/s',
                 handles: [
                     {
                         type: 'target' as const,
@@ -755,6 +756,16 @@ function PropertiesPanel({
 
             {type === 'gauge' && (
                 <>
+                    <label className="mb-1 block">Unidades (data.units):</label>
+                    <input
+                        style={inputStyle}
+                        value={data?.units ?? ''}
+                        maxLength={5}
+                        placeholder="lt/s"
+                        onChange={handleChangeDataField('units')}
+                    />
+                    <p style={{ fontSize: '11px', color: '#888', marginBottom: '6px', marginTop: '-4px' }}>Máximo 5 caracteres (ej: lt/s, m³/h, psi)</p>
+
                     <label className="mb-1 block">Valor Inicial (data.initialValue):</label>
                     <input
                         type="number"
@@ -861,10 +872,7 @@ function PropertiesPanel({
                     >
                         <option value="NONE">Ninguna</option>
                         <option value="NAVIGATE">Navegación</option>
-                        <option value="WRITE_TAG">Comando (Write Tag)</option>
-                        <option value="SETPOINT_DIALOG">Setpoint (Popup)</option>
-                        {/* SETPOINT_INPUT solo tiene sentido si el componente tiene input visual (ButtonNode lo tiene) */}
-                        {type === 'button' && <option value="SETPOINT_INPUT">Input de Setpoint (Inline)</option>}
+                        <option value="SETPOINT_DIALOG">Setpoint (Popup Modal)</option>
                     </select>
 
                     {/* 1. NAVIGATE CONFIG */}
@@ -883,33 +891,10 @@ function PropertiesPanel({
                         </>
                     )}
 
-                    {/* 2. WRITE_TAG CONFIG */}
-                    {data?.actionType === 'WRITE_TAG' && (
+                    {/* 2. SETPOINT_DIALOG CONFIG */}
+                    {data?.actionType === 'SETPOINT_DIALOG' && (
                         <>
-                            <div className="mb-4 mt-2">
-                                <TagSelector
-                                    value={data?.targetTagId ?? null}
-                                    onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
-                                    label="Tag de Comando"
-                                    placeholder="Selecciona Tag..."
-                                    size="sm"
-                                    className="w-full"
-                                />
-                            </div>
-                            <label className="mb-1 block">Valor a Escribir:</label>
-                            <input
-                                style={inputStyle}
-                                placeholder="Ej: 1, true, 50.5"
-                                value={data?.writeValue ?? ''}
-                                onChange={handleChangeDataField('writeValue')}
-                            />
-                        </>
-                    )}
-
-                    {/* 3. SETPOINT CONFIG (DIALOG OR INPUT) */}
-                    {(data?.actionType === 'SETPOINT_DIALOG' || data?.actionType === 'SETPOINT_INPUT') && (
-                        <>
-                            <div className="mb-4 mt-2">
+                            <div className="mb-3 mt-2">
                                 <TagSelector
                                     value={data?.targetTagId ?? null}
                                     onChange={(tagId) => updateSelectedNodeData('targetTagId', tagId)}
@@ -918,6 +903,21 @@ function PropertiesPanel({
                                     size="sm"
                                     className="w-full"
                                 />
+                            </div>
+                            <div className="mb-3">
+                                <label className="text-xs text-gray-400 mb-1 block">Tipo de Dato</label>
+                                <select
+                                    style={selectStyle}
+                                    value={data?.dataType ?? 'float'}
+                                    onChange={(e) => updateSelectedNodeData('dataType', e.target.value)}
+                                >
+                                    <option value="float">Float (decimales)</option>
+                                    <option value="integer">Integer (enteros)</option>
+                                    <option value="boolean">Boolean (0 / 1)</option>
+                                </select>
+                                <p style={{ fontSize: '10px', color: '#888', marginTop: '2px' }}>
+                                    Controla qué tipo de input se muestra en el popup.
+                                </p>
                             </div>
                         </>
                     )}

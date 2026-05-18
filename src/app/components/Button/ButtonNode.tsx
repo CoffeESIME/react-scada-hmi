@@ -18,9 +18,7 @@ export const ButtonNode: React.FC<CustomButtonNodeProps> = ({ data }) => {
   return (
     <CustomButton
       label={data.label}
-      actionType={data.actionType}
       handlePress={() => executeAction()}
-      handleCommit={(val) => executeAction(val)}
     />
   );
 };
