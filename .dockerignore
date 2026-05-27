@@ -1,0 +1,40 @@
+# Version control
+.git
+.gitignore
+.github
+
+# Node dependencies (re-installed in container)
+node_modules
+
+# Next.js build output (generated inside container)
+.next
+out
+build
+
+# Environment files with secrets — inject at runtime via docker-compose
+.env
+.env.local
+.env*.local
+
+# Infrastructure / IaC files — not needed in the image
+infra
+
+# Dev/editor artifacts
+.DS_Store
+*.pem
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Prettier / ESLint caches
+.eslintcache
+.prettierignore
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# README
+README.md

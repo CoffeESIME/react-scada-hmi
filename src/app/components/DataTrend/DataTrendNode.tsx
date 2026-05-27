@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { NodeProps } from 'reactflow';
 import { useRouter } from 'next/navigation';
 import DataTrend from './DataTrend';
@@ -82,6 +82,14 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
     ? (typeof spData.value === 'number' ? spData.value : undefined)
     : data.setPoint;
 
+  const resolvedYAxis = useMemo(() => {
+    if (data.yAxis) return data.yAxis;
+    if (data.limitBottom !== undefined || data.limitTop !== undefined) {
+      return { min: data.limitBottom ?? 0, max: data.limitTop ?? 100 };
+    }
+    return undefined;
+  }, [data.yAxis, data.limitBottom, data.limitTop]);
+
   const { isEditMode } = useScadaMode();
 
   const handleViewHistory = (e: React.MouseEvent) => {
@@ -100,11 +108,7 @@ export const DataTrendNode: React.FC<DataTrendNodeProps> = ({ data }) => {
         setPoint={resolvedSetPoint}
         limitBottom={data.limitBottom}
         limitTop={data.limitTop}
-        yAxis={data.yAxis ?? (
-          data.limitBottom !== undefined || data.limitTop !== undefined
-            ? { min: data.limitBottom ?? 0, max: data.limitTop ?? 100 }
-            : undefined
-        )}
+        yAxis={resolvedYAxis}
         title={data.title}
       />
       {!isEditMode && data.tagId && (
