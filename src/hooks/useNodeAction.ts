@@ -3,27 +3,16 @@ import { useScadaMode } from '@/contexts/ScadaModeContext';
 import { useGlobalToaster } from '@/hooks/useGlobalToaster';
 import { NodeActionConfig } from '@/utils/actionTypes';
 
-/**
- * Hook que ejecuta la acción configurada en un nodo del canvas.
- *
- * En modo Runtime:
- *  - NAVIGATE        → router.push
- *  - SETPOINT_DIALOG → abre el modal de escritura con input adaptado al dataType del tag
- *
- * NUNCA llama a prompt() ni a toast de sonner directamente.
- * Los errores van al GlobalToaster persistente.
- */
+
 export const useNodeAction = (config: NodeActionConfig) => {
     const router = useRouter();
     const { isEditMode, onWriteRequest } = useScadaMode();
     const { addError, addInfo } = useGlobalToaster();
 
     const executeAction = async () => {
-        // En modo edición los botones/cards no hacen nada
         if (isEditMode) return;
 
         switch (config.actionType) {
-            // ── NAVIGATE ──────────────────────────────────────────────
             case 'NAVIGATE':
                 if (config.targetScreenId) {
                     router.push(`/scada/view/${config.targetScreenId}`);
@@ -32,7 +21,6 @@ export const useNodeAction = (config: NodeActionConfig) => {
                 }
                 break;
 
-            // ── SETPOINT_DIALOG (popup modal con input según dataType) ─
             case 'SETPOINT_DIALOG':
                 if (!config.targetTagId) {
                     addInfo('Sin tag configurado', 'Este elemento no tiene un tag destino asignado.');

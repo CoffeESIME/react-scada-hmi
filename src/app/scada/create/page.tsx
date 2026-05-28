@@ -693,6 +693,16 @@ function PropertiesPanel({
             <option value="Off">Off</option>
             <option value="Transition">Transition</option>
           </select>
+
+          <label className="mb-1 block text-xs text-gray-400 mt-2">
+            Rotación (grados):
+          </label>
+          <input
+            type="number"
+            style={inputStyle}
+            value={data?.rotation ?? 0}
+            onChange={(e) => updateSelectedNodeData('rotation', Number(e.target.value))}
+          />
         </>
       )}
 
@@ -709,13 +719,53 @@ function PropertiesPanel({
             <option value="Transition">Transition</option>
           </select>
 
-          <label className="mb-1 block">Rotación (data.rotation):</label>
+          <label className="mb-1 block text-xs text-gray-400 mt-2">
+            Rotación (grados):
+          </label>
           <input
             type="number"
             style={inputStyle}
             value={data?.rotation ?? 0}
             onChange={(e) => updateSelectedNodeData('rotation', Number(e.target.value))}
           />
+          <label className="mb-1 block text-xs text-gray-400 mt-2">
+            Tamaño del ícono px (data.size):
+          </label>
+          <input
+            type="number"
+            style={inputStyle}
+            value={data?.size ?? 50}
+            min={10}
+            max={200}
+            onChange={(e) => updateSelectedNodeData('size', Number(e.target.value))}
+          />
+        </>
+      )}
+
+      {type === 'box' && (
+        <>
+          <hr style={{ margin: '12px 0', borderColor: '#666' }} />
+          <h4 className="text-sm font-semibold text-admin-text mb-2">Dimensiones del Contenedor</h4>
+          <div className="flex gap-2 mb-2">
+            <div className="flex-1">
+              <label className="text-xs mb-1 block text-gray-400">Ancho (px)</label>
+              <input
+                type="number"
+                style={inputStyle}
+                value={data?.width ?? 320}
+                onChange={(e) => updateSelectedNodeData('width', Number(e.target.value))}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-xs mb-1 block text-gray-400">Alto (px)</label>
+              <input
+                type="number"
+                style={inputStyle}
+                value={data?.height ?? 320}
+                onChange={(e) => updateSelectedNodeData('height', Number(e.target.value))}
+              />
+            </div>
+          </div>
         </>
       )}
 
@@ -820,29 +870,59 @@ function PropertiesPanel({
 
       {type === 'alarm' && (
         <>
-          <label className="mb-1 block">Activo (data.isActive):</label>
-          <select
-            style={selectStyle}
-            value={data?.isActive ? 'true' : 'false'}
-            onChange={(e) => updateSelectedNodeData('isActive', e.target.value === 'true')}
-          >
-            <option value="true">true</option>
-            <option value="false">false</option>
-          </select>
-
-          <label className="mb-1 block">Tipo (data.type):</label>
+          <label className="mb-1 block text-xs text-gray-400">
+            Color de Alarma (data.type):
+          </label>
           <select
             style={selectStyle}
             value={data?.type ?? 'LOW'}
             onChange={handleChangeDataField('type')}
           >
-            <option value="LOW">LOW</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HIGH">HIGH</option>
-            <option value="URGENT">URGENT</option>
+            <option value="LOW">LOW — 🟣 Morado (#916AAD)</option>
+            <option value="MEDIUM">MEDIUM — 🟡 Amarillo (#F5E11B)</option>
+            <option value="HIGH">HIGH — 🟠 Naranja (#EC8629)</option>
+            <option value="URGENT">URGENT — 🔴 Rojo (#E22028)</option>
           </select>
+          <p style={{ fontSize: '10px', color: '#888', marginTop: '-4px', marginBottom: '8px' }}>
+            Color mínimo en alarma. Si el backend reporta severidad mayor, se usará la más grave.
+          </p>
+
+          <label className="mb-1 block text-xs text-gray-400">
+            Estado inicial en editor (data.isActive):
+          </label>
+          <select
+            style={selectStyle}
+            value={data?.isActive ? 'true' : 'false'}
+            onChange={(e) => updateSelectedNodeData('isActive', e.target.value === 'true')}
+          >
+            <option value="true">Activa (preview del color en editor)</option>
+            <option value="false">Inactiva (oculta en editor)</option>
+          </select>
+
+          <label className="mb-1 block text-xs text-gray-400 mt-2">
+            Mensaje descriptivo (data.message):
+          </label>
+          <input
+            style={inputStyle}
+            value={data?.message ?? ''}
+            placeholder="Ej: Nivel alto de tanque"
+            onChange={handleChangeDataField('message')}
+          />
+
+          <label className="mb-1 block text-xs text-gray-400">
+            Tamaño del ícono px (data.size):
+          </label>
+          <input
+            type="number"
+            style={inputStyle}
+            value={data?.size ?? 20}
+            min={10}
+            max={100}
+            onChange={(e) => updateSelectedNodeData('size', Number(e.target.value))}
+          />
         </>
       )}
+
 
       {['button', 'cardData'].includes(type ?? '') && (
         <>

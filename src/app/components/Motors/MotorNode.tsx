@@ -17,6 +17,7 @@ type MotorNodeData = {
   handles?: HandleEl[];
   state?: MotorState;
   size?: number;
+  rotation?: number;
 };
 
 type MotorNodeProps = NodeProps<MotorNodeData>;
@@ -47,6 +48,7 @@ function parseMotorState(value: any, fallback: MotorState): MotorState {
 const MotorNode: React.FC<MotorNodeProps> = ({ data }) => {
   const handles = data?.handles ?? [];
   const size = data?.size ?? 80;
+  const rotation = data?.rotation ?? 0;
   const fallbackState = data?.state ?? 'Off';
   const { value: liveValue } = useNodeLiveData(data?.tagId, undefined);
   const state = parseMotorState(liveValue, fallbackState);
@@ -64,7 +66,7 @@ const MotorNode: React.FC<MotorNodeProps> = ({ data }) => {
         />
       ))}
 
-      <MotorIcon size={size} state={state} />
+      <MotorIcon size={size} state={state} rotation={rotation} />
     </>
   );
 };

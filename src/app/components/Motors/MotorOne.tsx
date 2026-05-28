@@ -7,11 +7,13 @@ import Image from 'next/image';
 type MotorIconProps = {
   size?: number;
   state: 'On' | 'Off' | 'Transition';
+  rotation?: number;
 };
 
 export const MotorIcon: React.FC<MotorIconProps> = ({
   size = 90,
   state = 'On',
+  rotation = 0,
 }) => {
   let pumpEL;
   switch (state) {
@@ -29,5 +31,13 @@ export const MotorIcon: React.FC<MotorIconProps> = ({
       break;
   }
 
-  return <Image src={pumpEL} alt="pump" width={size} height={size} />;
+  return (
+    <Image 
+      src={pumpEL} 
+      alt="pump" 
+      width={size} 
+      height={size} 
+      style={{ transform: `rotate(${rotation}deg)` }}
+    />
+  );
 };

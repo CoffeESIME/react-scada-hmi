@@ -1,7 +1,4 @@
-/**
- * API Client for SCADA Backend
- * Centralized axios instance for all API calls
- */
+
 import axios from 'axios';
 import { useAuthStore } from '@/app/store/useAuthStore';
 
@@ -14,9 +11,7 @@ export const api = axios.create({
     },
 });
 
-// Request interceptor for auth token (if needed)
 api.interceptors.request.use((config) => {
-    // Add auth token if available
     const token = useAuthStore.getState().token;
 
     if (token) {
@@ -25,13 +20,10 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Response interceptor for error handling
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Handle common errors
         if (error.response?.status === 401) {
-            // Redirect to login or refresh token
             if (typeof window !== 'undefined') {
                 window.location.href = '/login';
             }
@@ -101,3 +93,21 @@ export const getScreenShares = async (screenId: number) => {
 export const revokeScreenShare = async (screenId: number, userId: number) => {
     await api.delete(`/screens/${screenId}/share/${userId}`);
 };
+
+// ── Alarmas ──────────────────────────────────────────────────────────────────
+
+export interface ActiveAlarmResponse {
+    alarm_id: string;
+    tag_id: number;
+    severity: string;       // 'CRITICAL' | 'WARNING'
+    message: string;
+    status: string;         // 'ACTIVE'
+    trigger_value: number;
+    start_time: string | null;
+}
+
+export const getActiveAlarms = async (): Promise<ActiveAlarmResponse[]> => {
+    const response = await api.get<ActiveAlarmResponse[]>('/alarms/active');
+    return response.data;
+};
+

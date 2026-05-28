@@ -1,0 +1,47 @@
+services:
+  # ──────────────────────────────────────────────
+  # SCADA HMI — Next.js Frontend
+  # ──────────────────────────────────────────────
+  scada-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # NEXT_PUBLIC_ vars are baked into the JS bundle at build time.
+      # Values come from the .env file in this directory (see .env.example).
+      # Do NOT hardcode credentials here — use the .env file instead.
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_MQTT_WS_URL: ${NEXT_PUBLIC_MQTT_WS_URL}
+        NEXT_PUBLIC_MQTT_USERNAME: ${NEXT_PUBLIC_MQTT_USERNAME}
+        NEXT_PUBLIC_MQTT_PASSWORD: ${NEXT_PUBLIC_MQTT_PASSWORD}
+
+    image: scada-hmi:latest
+
+    container_name: scada-frontend
+
+    restart: unless-stopped
+
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+    # Runtime environment variables (server-side only, not exposed to the browser)
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+
+    # Optional: healthcheck so Docker/compose knows when the app is ready
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    # Optional: connect to an existing backend network
+    # networks:
+    #   - scada-net
+
+# networks:
+#   scada-net:
+#     external: true

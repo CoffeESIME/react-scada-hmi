@@ -1,8 +1,16 @@
-import { Node, NodeProps } from 'reactflow';
+import { NodeProps } from 'reactflow';
 import { BoxCard } from './Box';
 
-type BoxCardNodeProps = NodeProps;
+type BoxNodeData = {
+  width?: number;
+  height?: number;
+};
 
-export const BoxCardNode: React.FC<BoxCardNodeProps> = () => {
-  return <BoxCard />;
+type BoxCardNodeProps = NodeProps<BoxNodeData>;
+
+export const BoxCardNode: React.FC<BoxCardNodeProps> = ({ data }) => {
+  const width = data?.width ?? 320;
+  const height = data?.height ?? 320;
+  
+  return <BoxCard width={width} height={height} />;
 };

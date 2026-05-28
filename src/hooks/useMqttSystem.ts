@@ -29,6 +29,19 @@ interface MqttMessage {
     timestamp?: string;
 }
 
+
+function parseMqttSeverity(raw: unknown): 1 | 2 | 3 {
+    if (typeof raw === 'number') {
+        if (raw === 3) return 3;
+        if (raw === 2) return 2;
+        return 1;
+    }
+    const s = String(raw).toUpperCase();
+    if (s === 'CRITICAL' || s === '3') return 3;
+    if (s === 'WARNING' || s === '2') return 2;
+    return 1; // LOW / INFO / desconocido
+}
+
 export function useMqttSystem() {
     const clientRef = useRef<MqttClient | null>(null);
     const reconnectAttemptRef = useRef(0);
@@ -57,15 +70,14 @@ export function useMqttSystem() {
                     const alarmData = JSON.parse(message);
                     const tagId = parseInt(alarmData.alarm_id, 10);
 
-                    // DEBUG: Ver mensajes de alarma
-
                     if (['RESOLVED', 'NORMAL', 'CLEARED'].includes(alarmData.status)) {
                         removeAlarmByTag(tagId);
                     } else {
                         addAlarm({
                             id: alarmData.alarm_id,
                             tagId: tagId,
-                            severity: alarmData.severity,
+
+                            severity: parseMqttSeverity(alarmData.severity),
                             message: alarmData.message,
                             timestamp: alarmData.timestamp,
                             ack: false
@@ -136,23 +148,16 @@ export function useMqttSystem() {
             return;
         }
 
-        // Dynamic import of mqtt for browser environment
         const mqtt = await import('mqtt');
 
         console.log(`[MQTT] Connecting to ${MQTT_URL}...`);
-
-        // NUEVO: Añadimos las credenciales desde las variables de entorno
         const options: IClientOptions = {
             protocol: MQTT_URL.startsWith('wss') ? 'wss' : 'ws',
-            reconnectPeriod: 0, // We handle reconnection manually
+            reconnectPeriod: 0,
             connectTimeout: 10000,
             clientId: `scada-hmi-${Math.random().toString(16).slice(2, 10)}`,
-
-            // Credenciales de acceso (Requeridas por el puerto 8083 en AWS)
             username: process.env.NEXT_PUBLIC_MQTT_USERNAME,
             password: process.env.NEXT_PUBLIC_MQTT_PASSWORD,
-
-            // Obliga al navegador a validar el certificado de Let's Encrypt
             rejectUnauthorized: true
         };
 
