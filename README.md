@@ -33,29 +33,11 @@ React SCADA HMI is the **frontend layer** of an industrial monitoring system. It
 
 ## 📸 Screenshots
 
-> 💡 *Replace the placeholders below with actual screenshots of your deployment.*
 
 ### HMI Dashboard Builder
 <!-- Screenshot: drag-and-drop canvas showing industrial components connected by pipes/lines -->
-![HMI Dashboard Builder](docs/screenshots/dashboard-builder.png)
+![HMI Dashboard Builder](docs/screenshots/lienzohmi.png)
 
-### Real-time Process View
-<!-- Screenshot: live SCADA screen with tank levels, valve states and motor status updating in real-time -->
-![Real-time Process View](docs/screenshots/realtime-view.png)
-
-### Data Trend Chart
-<!-- Screenshot: ApexCharts time-series chart with multiple tag trends, setpoints and alarm thresholds -->
-![Data Trend Chart](docs/screenshots/data-trend.png)
-
-### Alarm Panel
-<!-- Screenshot: priority-based alarm list with ISA-101 color coding (purple/yellow/orange/red) -->
-![Alarm Panel](docs/screenshots/alarm-panel.png)
-
-### Tag Manager
-<!-- Screenshot: table listing all configured tags, protocols, scan rates and enable/disable toggles -->
-![Tag Manager](docs/screenshots/tag-manager.png)
-
-> 📁 Place screenshots in `docs/screenshots/` and commit them to the repo.
 
 ---
 
