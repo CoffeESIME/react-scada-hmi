@@ -27,7 +27,18 @@
 
 React SCADA HMI is the **frontend layer** of an industrial monitoring system. It provides a drag-and-drop interface to build custom HMI dashboards with live data streaming via MQTT. Screens are persisted in the backend and can be loaded dynamically by slug.
 
-> ⚙️ This frontend is designed to work with [scada-backend](https://github.com/your-org/scada-backend). See the [Backend section](#-backend) for the full API reference.
+> ⚙️ This frontend is designed to work with [react-scada-backend](https://github.com/CoffeESIME/react-scada-backend). See the [Backend section](#-backend) for the full API reference.
+
+---
+
+## 🌐 SCADA Ecosystem
+
+This frontend is part of a complete, distributed SCADA architecture. To run the full system, you will need the other components:
+
+1. **[dockerfiles-scada-iiot](https://github.com/CoffeESIME/dockerfiles-scada-iiot)**: The central orchestration repository containing `docker-compose` files for TimescaleDB, Mosquitto MQTT, and security certificates. Start here to spin up the infrastructure.
+2. **[react-scada-backend](https://github.com/CoffeESIME/react-scada-backend)**: The core API, handling Tag CRUD, historical data persistence, and screen saving.
+3. **[react-scada-hmi](https://github.com/CoffeESIME/react-scada-hmi)**: *(This repository)* The Next.js frontend with a drag-and-drop HMI builder. Connects to the backend for config/history and to MQTT for live data.
+4. **[edge-gateway](https://github.com/CoffeESIME/edge-gateway)**: A lightweight Python microservice deployed in physical plants to acquire data from PLCs (Modbus/OPC-UA) and publish it to the central Mosquitto broker via mTLS.
 
 ---
 
@@ -114,7 +125,7 @@ All components receive live data via MQTT and follow the **ISA-101 HMI Design Gu
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-org/react-scada-hmi.git
+git clone https://github.com/CoffeESIME/react-scada-hmi.git
 cd react-scada-hmi
 
 # 2. Install dependencies
@@ -147,7 +158,7 @@ npm run format:fix  # Prettier auto-fix
 
 ## ⚙️ Backend
 
-This frontend consumes the **scada-backend** REST API and MQTT topics. See the [scada-backend repository](https://github.com/your-org/scada-backend) for full API docs.
+This frontend consumes the **scada-backend** REST API and MQTT topics. See the [react-scada-backend repository](https://github.com/CoffeESIME/react-scada-backend) for full API docs.
 
 ### MQTT Topics consumed by the frontend
 
