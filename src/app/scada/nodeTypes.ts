@@ -13,6 +13,7 @@ import { CardDataNode } from '@/app/components/CardData/CardDataNode';
 import { ControlDataCardNode } from '@/app/components/ControlDataCard/ControlDataCardNode';
 import { DataTrendNode } from '@/app/components/DataTrend/DataTrendNode';
 import { SmallDataTrendNode } from '@/app/components/SmallDataTrend/SmallDataTrendNode';
+import ImageNode from '@/app/components/ImageNode/ImageNode';
 
 // import { DebugCircleNode, DebugRectNode, DebugTriangleNode } from './DebugNodes';
 
@@ -40,28 +41,42 @@ export const nodeTypes: NodeTypes = {
     controlDataCard: ControlDataCardNode,
     dataTrend: DataTrendNode,
     smallDataTrend: SmallDataTrendNode,
+    
+    // Media
+    image: ImageNode,
 };
 
 export const debugNodeTypes = nodeTypes;
 
 /**
- * availableNodeTypes: List of nodes available in the sidebar
+ * availableNodeCategories: Grouped list of nodes available in the sidebar
  */
-export const availableNodeTypes = [
-    // Equipos
-    { label: 'Motor', type: 'motor' },
-    { label: 'Valve', type: 'valve' },
-    { label: 'Tank', type: 'tank' },
-    // Indicadores
-    { label: 'Gauge', type: 'gauge' },
-    { label: 'Alarm', type: 'alarm' },
-    // UI Elements
-    { label: 'Label', type: 'label' },
-    { label: 'Button', type: 'button' },
-    { label: 'Box', type: 'box' },
-    // Data Display
-    { label: 'Card Data', type: 'cardData' },
-    { label: 'Control Card', type: 'controlDataCard' },
-    { label: 'Data Trend', type: 'dataTrend' },
-    { label: 'Mini Trend', type: 'smallDataTrend' },
+export const availableNodeCategories = [
+    {
+        title: 'Normativa ISA',
+        items: [
+            // Equipos
+            { label: 'Motor', type: 'motor' },
+            { label: 'Válvula', type: 'valve' },
+            { label: 'Tanque', type: 'tank' },
+            // Indicadores
+            { label: 'Indicador', type: 'gauge' },
+            { label: 'Alarma', type: 'alarm' },
+            // UI Elements
+            { label: 'Etiqueta', type: 'label' },
+            { label: 'Botón', type: 'button' },
+            { label: 'Contenedor', type: 'box' },
+            // Data Display
+            { label: 'Card de Datos', type: 'cardData' },
+            { label: 'Control PID', type: 'controlDataCard' },
+            { label: 'Tendencia', type: 'dataTrend' },
+            { label: 'Mini Tendencia', type: 'smallDataTrend' },
+        ],
+    },
+    {
+        title: 'Elementos Genéricos',
+        items: [
+            { label: 'Imagen', type: 'image' },
+        ],
+    },
 ];

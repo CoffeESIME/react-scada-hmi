@@ -2,6 +2,10 @@
 const nextConfig = {
     // Required for Docker: bundles a self-contained server into .next/standalone
     output: 'standalone',
+    
+    experimental: {
+        serverActions: true,
+    },
 
     webpack: (config) => {
         config.externals.push({

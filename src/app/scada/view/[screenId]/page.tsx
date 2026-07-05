@@ -32,6 +32,13 @@ interface ScreenData {
         nodes: Node[];
         edges: Edge[];
         viewport?: { x: number; y: number; zoom: number };
+        background?: {
+            color: string;
+            dotColor: string;
+            dotSize: number;
+            dotGap: number;
+            variant: 'dots' | 'lines' | 'cross' | 'none';
+        };
     };
     owner_id?: number | null;
     access_role?: string;
@@ -168,7 +175,10 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                 </header>
 
                 {/* Canvas en modo lectura */}
-                <div className="flex-1 w-full relative" style={canvasStyle}>
+                <div className="flex-1 w-full relative" style={{
+                    ...canvasStyle,
+                    backgroundColor: screenData?.layout_data?.background?.color || '#C0C0C0',
+                }}>
                     <ReactFlow
                         nodeTypes={nodeTypesMemo}
                         nodes={nodes}
@@ -184,14 +194,22 @@ function ViewScreenContent({ screenId }: { screenId: string }) {
                         preventScrolling={true}
                         // =================================
                         fitView
-                    //className="bg-[#0f0f1a]"
+                        style={{ backgroundColor: screenData?.layout_data?.background?.color || '#C0C0C0' }}
                     >
-                        <Background
-                            variant={BackgroundVariant.Dots}
-                            gap={24}
-                            size={1}
-                            color="#3a3a5c"
-                        />
+                        {(!screenData?.layout_data?.background?.variant || screenData.layout_data.background.variant !== 'none') && (
+                            <Background
+                                variant={
+                                    screenData?.layout_data?.background?.variant === 'lines'
+                                        ? BackgroundVariant.Lines
+                                        : screenData?.layout_data?.background?.variant === 'cross'
+                                        ? BackgroundVariant.Cross
+                                        : BackgroundVariant.Dots
+                                }
+                                gap={screenData?.layout_data?.background?.dotGap ?? 24}
+                                size={screenData?.layout_data?.background?.dotSize ?? 1}
+                                color={screenData?.layout_data?.background?.dotColor ?? '#3a3a5c'}
+                            />
+                        )}
                     </ReactFlow>
                 </div>
 

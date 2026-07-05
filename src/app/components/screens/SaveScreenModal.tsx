@@ -15,6 +15,7 @@ import {
 import { useReactFlow } from 'reactflow';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
+import type { BackgroundSettings } from '@/app/components/screens/ScreenEditor';
 
 interface SaveScreenModalProps {
     isOpen: boolean;
@@ -26,6 +27,7 @@ interface SaveScreenModalProps {
         description?: string;
         isHome?: boolean;
     };
+    backgroundSettings?: BackgroundSettings;
 }
 
 interface ScreenResponse {
@@ -43,6 +45,7 @@ export function SaveScreenModal({
     onSaved,
     editScreenId,
     initialValues,
+    backgroundSettings,
 }: SaveScreenModalProps) {
     const [name, setName] = useState(initialValues?.name || '');
     const [description, setDescription] = useState(initialValues?.description || '');
@@ -68,6 +71,7 @@ export function SaveScreenModal({
                 nodes: flowState.nodes,
                 edges: flowState.edges,
                 viewport: flowState.viewport,
+                background: backgroundSettings,
             };
 
             if (isEditing) {
